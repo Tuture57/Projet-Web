@@ -3,16 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Simple</title>
+    <title>Carte d'Identité</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
+            background-color: #f8f9fa;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        button {
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+        .container h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .container p {
+            font-size: 16px;
+            color: #555;
+        }
+        .container button {
             padding: 10px 20px;
             font-size: 16px;
             color: white;
@@ -21,14 +46,17 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
+        .container button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Bienvenue sur ma page web</h1>
-    <p>Ceci est une page simple créée avec HTML et un peu de CSS.</p>
-    <button onclick="alert('Bonjour !')">Cliquez-moi</button>
+    <div class="container">
+        <h1>Carte d'Identité</h1>
+        <img src="https://carthaji.fr/wp-content/uploads/2022/10/logo-layus.png" alt="Image de la carte d'identité">
+        <p>Voici une image représentant une carte d'identité. Vous pouvez personnaliser cette page avec plus d'informations.</p>
+        <button onclick="alert('Plus d\'informations bientôt disponibles !')">En savoir plus</button>
+    </div>
 </body>
 </html>
