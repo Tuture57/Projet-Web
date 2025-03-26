@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil Administrateur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Barre latérale gauche -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><a href="index.html">Alt.</a></div>
+                <button id="sidebar-toggle" class="toggle-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <ul class="nav-menu">
+                <li class="active"><a href="index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="entreprises.html"><i class="fas fa-shopping-bag"></i> Entreprises</a></li>
+                <li><a href="pilotes.html"><i class="fas fa-lightbulb"></i> Pilotes</a></li>
+                <li><a href="etudiants.html"><i class="fas fa-user"></i> Etudiants</a></li>
+                <li><a href="offres.html"><i class="fas fa-pencil-alt"></i> Offres</a></li>
+                <li class="separator"></li>
+                <li><a href="aide.html"><i class="fas fa-question-circle"></i> Aide et support</a></li>
+                <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+            </ul>
+            <div class="user-profile">
+                <a href="profil.html" class="profile-link">
+                    <div class="avatar"></div>
+                    <span>Prénom Nom</span>
+                </a>
+                <a href="notifications.html" class="notification-icon"><i class="fas fa-bell"></i></a>
+                <a href="#" class="options-icon"><i class="fas fa-ellipsis-h"></i></a>
+            </div>
+        </div>
+
+        <!-- Zone de contenu principale -->
+        <div class="main-content">
+            <h1>Accueil administrateur</h1>
+            <div class="sections">
+                <!-- Dernières infos -->
+                <div class="latest-info">
+                    <h2>Dernières infos</h2>
+                    <div class="info-entry">
+                        <i class="fas fa-sync-alt"></i>
+                        <p>Nous avons déplacé l'ancienne base de données dans le nouveau serveur Meraki de l'entreprise</p>
+                        <span>le 3 Fev. 2025 à 13:45</span>
+                    </div>
+                    <div class="info-entry">
+                        <i class="fas fa-sync-alt"></i>
+                        <p>Nous avons déplacé l'ancienne base de données dans le nouveau serveur Meraki de l'entreprise</p>
+                        <span>le 3 Fev. 2025 à 13:45</span>
+                    </div>
+                </div>
+
+                <!-- Offres de stage récentes -->
+                <div class="recent-offers">
+                    <h2>Offres de stage récentes</h2>
+                    <!-- Le bouton "Active jusqu'au 31 Jan. 2025" a été supprimé -->
+                    <div class="offer-entry">
+                        <h3>Développeur web</h3>
+                        <p>Venez chez nous pour qu'on vous exploite afin de réaliser nos projets web de nos clients.</p>
+                        <span>Active jusqu'au 31 Jan. 2025</span>
+                    </div>
+                    <div class="offer-entry">
+                        <h3>Développeur web</h3>
+                        <p>Venez chez nous pour qu'on vous exploite afin de réaliser nos projets web de nos clients.</p>
+                        <span>Active jusqu'au 31 Jan. 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trafic du site -->
+            <div class="site-traffic">
+                <h2>Trafic du site</h2>
+                <!-- Le bouton "3 mois" a été supprimé -->
+                <canvas id="traffic-graph" width="600" height="300"></canvas>
+                <div class="legend">
+                    <span><i class="dot purple"></i> Utilisateurs</span>
+                    <span><i class="dot orange"></i> Offres de stages</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="public/js/script.js"></script>
+</body>
+</html>
