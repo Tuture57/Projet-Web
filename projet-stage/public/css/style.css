@@ -355,7 +355,6 @@ body {
     padding: 3px 8px;
     border-radius: 5px;
     display: inline-block;
-    float: right;
     font-size: 12px;
     cursor: pointer;
     transition: background-color 0.2s;
