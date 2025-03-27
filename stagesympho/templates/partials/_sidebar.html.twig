@@ -1,0 +1,40 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo"><a href="{{ path('accueil') }}">Alt.</a></div>
+        <button id="sidebar-toggle" class="toggle-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <ul class="nav-menu">
+        <li class="{{ app.request.attributes.get('_route') == 'accueil' ? 'active' : '' }}">
+            <a href="{{ path('accueil') }}"><i class="fas fa-home"></i> Accueil</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'entreprise' ? 'active' : '' }}">
+            <a href="{{ path('entreprise_index') }}"><i class="fas fa-shopping-bag"></i> Entreprises</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'pilote' ? 'active' : '' }}">
+            <a href="{{ path('pilote_index') }}"><i class="fas fa-lightbulb"></i> Pilotes</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'etudiant' ? 'active' : '' }}">
+            <a href="{{ path('etudiant_index') }}"><i class="fas fa-user"></i> Etudiants</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'offre' ? 'active' : '' }}">
+            <a href="{{ path('offre_index') }}"><i class="fas fa-pencil-alt"></i> Offres</a>
+        </li>
+        <li class="separator"></li>
+        <li class="{{ app.request.attributes.get('_route') == 'aide' ? 'active' : '' }}">
+            <a href="{{ path('aide') }}"><i class="fas fa-question-circle"></i> Aide et support</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'parametres' ? 'active' : '' }}">
+            <a href="{{ path('parametres') }}"><i class="fas fa-cog"></i> Paramètres</a>
+        </li>
+    </ul>
+    <div class="user-profile">
+        <a href="{{ path('profil') }}" class="profile-link">
+            <div class="avatar" style="background-image: url('{{ asset('img/jessi.png') }}');"></div>
+            <span>{{ app.user ? app.user.prenom ~ ' ' ~ app.user.nom : 'Utilisateur' }}</span>
+        </a>
+        <a href="{{ path('notifications') }}" class="notification-icon"><i class="fas fa-bell"></i></a>
+        <a href="#" class="options-icon"><i class="fas fa-ellipsis-h"></i></a>
+    </div>
+</div>
