@@ -1,18 +1,27 @@
 <?php
-
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
-final class PageController extends AbstractController
+class PageController extends AbstractController
 {
-    #[Route('/page', name: 'app_page')]
-    public function index(): Response
+    #[Route('/', name: 'home')]
+    public function home(): Response
     {
-        return $this->render('page/index.html.twig', [
-            'controller_name' => 'PageController',
-        ]);
+        return $this->render('page/home.html.twig');
+    }
+
+    #[Route('/aide', name: 'aide')]
+    public function aide(): Response
+    {
+        return $this->render('page/aide.html.twig');
+    }
+
+    #[Route('/parametres', name: 'parametres')]
+    public function parametres(): Response
+    {
+        return $this->render('page/parametres.html.twig');
     }
 }

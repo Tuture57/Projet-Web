@@ -148,7 +148,7 @@ body {
 .avatar {
     width: 35px;
     height: 35px;
-    background-image: url('/public/images/pfp.png');
+    background-image: url('../images/pfp.png');
     background-size: cover;
     background-position: center;
     border-radius: 50%;

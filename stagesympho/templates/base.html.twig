@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Accueil{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {% block stylesheets %}{% endblock %}
 </head>
     <body>
-        {% include 'partials/_sidebar.html.twig' %}
-        {% block body %}{% endblock %}
+        <div class="container">
+            {% include 'partials/_sidebar.html.twig' %}
+            
+            <div class="main-content">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+        
         {% block javascripts %}{% endblock %}
-
+        <script src="{{ asset('js/script.js') }}"></script>
     </body>
 </html>
