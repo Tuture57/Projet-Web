@@ -10,17 +10,29 @@
             <a href="{{ path('home') }}"><i class="fas fa-home"></i> Accueil</a>
         </li>
         <li class="{{ app.request.attributes.get('_route') == 'entreprise' ? 'active' : '' }}">
-            <a href="{{ path('entreprise') }}"><i class="fas fa-shopping-bag"></i> Entreprises</a>
+            <a href="{{ path('entreprise') }}"><i class="fas fa-building"></i> Entreprises</a>
         </li>
+        {% if is_granted('ROLE_ADMIN') %}
         <li class="{{ app.request.attributes.get('_route') == 'pilote' ? 'active' : '' }}">
             <a href="{{ path('pilote') }}"><i class="fas fa-lightbulb"></i> Pilotes</a>
         </li>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
         <li class="{{ app.request.attributes.get('_route') == 'etudiant' ? 'active' : '' }}">
-            <a href="{{ path('etudiant') }}"><i class="fas fa-user"></i> Etudiants</a>
+            <a href="{{ path('etudiant') }}"><i class="fas fa-user-graduate"></i> Etudiants</a>
         </li>
+        {% endif %}
         <li class="{{ app.request.attributes.get('_route') == 'offre' ? 'active' : '' }}">
-            <a href="{{ path('offre') }}"><i class="fas fa-pencil-alt"></i> Offres</a>
+            <a href="{{ path('offre') }}"><i class="fas fa-briefcase"></i> Offres</a>
         </li>
+        {% if is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN') %}
+        <li class="{{ app.request.attributes.get('_route') == 'wishlist' ? 'active' : '' }}">
+            <a href="{{ path('wishlist') }}"><i class="fas fa-heart"></i> Wish-list</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'candidature' ? 'active' : '' }}">
+            <a href="{{ path('candidature') }}"><i class="fas fa-file-alt"></i> Mes candidatures</a>
+        </li>
+        {% endif %}
         <li class="separator"></li>
         <li class="{{ app.request.attributes.get('_route') == 'aide' ? 'active' : '' }}">
             <a href="{{ path('aide') }}"><i class="fas fa-question-circle"></i> Aide et support</a>
@@ -35,6 +47,6 @@
             <span>{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Utilisateur' }}</span>
         </a>
         <a href="{{ path('notifications') }}" class="notification-icon"><i class="fas fa-bell"></i></a>
-        <a href="#" class="options-icon"><i class="fas fa-ellipsis-h"></i></a>
+        <a href="{{ path('app_logout') }}" class="logout-icon"><i class="fas fa-sign-out-alt"></i></a>
     </div>
 </div>

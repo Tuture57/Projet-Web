@@ -46,7 +46,7 @@ body {
 .logo {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 0;
 }
 
 .logo a:hover {
@@ -155,7 +155,7 @@ body {
     margin-right: 8px;
 }
 
-.notification-icon, .options-icon {
+.notification-icon, .logout-icon {
     margin-left: 10px;
     cursor: pointer;
     display: flex;
@@ -166,7 +166,7 @@ body {
     border-radius: 50%;
 }
 
-.notification-icon:hover, .options-icon:hover {
+.notification-icon:hover, .logout-icon:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -225,7 +225,7 @@ body {
 }
 
 .sidebar.collapsed .notification-icon,
-.sidebar.collapsed .options-icon {
+.sidebar.collapsed .logout-icon {
     display: none;
 }
 
@@ -477,9 +477,10 @@ img, canvas {
     }
     
     .sidebar-header {
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
     }
     
     .toggle-btn {
@@ -559,7 +560,7 @@ img, canvas {
     .sidebar.collapsed.open .nav-menu li a,
     .sidebar.collapsed.open .user-profile span,
     .sidebar.collapsed.open .notification-icon,
-    .sidebar.collapsed.open .options-icon {
+    .sidebar.collapsed.open .logout-icon {
         display: block;
         font-size: inherit;
     }
@@ -604,7 +605,7 @@ img, canvas {
         flex-wrap: wrap;
     }
     
-    .notification-icon, .options-icon {
+    .notification-icon, .logout-icon {
         margin-top: 10px;
     }
     

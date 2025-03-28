@@ -1,9 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil administrateur{% endblock %}
+{% block title %}Alt - Trouvez votre stage{% endblock %}
 
 {% block body %}
-    <h1>Accueil administrateur</h1>
+    <h1>Accueil 
+        {% set role = app.user.roles[0]|replace({'ROLE_': ''}) %}
+        {% if role == 'ADMIN' %}
+            administrateur
+        {% elseif role == 'STUDENT' %}
+            étudiant
+        {% elseif role == 'PILOT' %}
+            pilote
+        {% else %}
+            {{ role }}
+        {% endif %}
+    </h1>
     <div class="sections">
 
         <div class="latest-info">
