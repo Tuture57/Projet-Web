@@ -10,7 +10,11 @@ class PageController extends AbstractController
     #[Route('/', name: 'home')]
     public function home(): Response
     {
-        return $this->render('page/home.html.twig');
+        if (!$this->getUser()) {
+            return $this->render('page/welcome.html.twig');
+        } else {
+            return $this->render('page/home.html.twig');
+        }
     }
 
     #[Route('/aide', name: 'aide')]

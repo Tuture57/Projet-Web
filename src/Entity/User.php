@@ -6,9 +6,11 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -35,30 +37,30 @@ class User
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?role $role = null;
+    private ?Role $role = null;
 
     /**
-     * @var Collection<int, address>
+     * @var Collection<int, Address>
      */
-    #[ORM\ManyToMany(targetEntity: address::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Address::class, inversedBy: 'users')]
     private Collection $addresses;
 
     /**
-     * @var Collection<int, offer>
+     * @var Collection<int, Offer>
      */
-    #[ORM\ManyToMany(targetEntity: offer::class, inversedBy: 'wishListUsers')]
+    #[ORM\ManyToMany(targetEntity: Offer::class, inversedBy: 'wishListUsers')]
     private Collection $wishListOffers;
 
     /**
-     * @var Collection<int, application>
+     * @var Collection<int, Application>
      */
-    #[ORM\OneToMany(targetEntity: application::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'user')]
     private Collection $applications;
 
     /**
-     * @var Collection<int, rating>
+     * @var Collection<int, Rating>
      */
-    #[ORM\OneToMany(targetEntity: rating::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'user')]
     private Collection $ratings;
 
     public function __construct()
@@ -146,12 +148,12 @@ class User
         return $this;
     }
 
-    public function getRole(): ?role
+    public function getRole(): ?Role
     {
         return $this->role;
     }
 
-    public function setRole(?role $role): static
+    public function setRole(?Role $role): static
     {
         $this->role = $role;
 
@@ -159,14 +161,14 @@ class User
     }
 
     /**
-     * @return Collection<int, address>
+     * @return Collection<int, Address>
      */
     public function getAddresses(): Collection
     {
         return $this->addresses;
     }
 
-    public function addAddress(address $address): static
+    public function addAddress(Address $address): static
     {
         if (!$this->addresses->contains($address)) {
             $this->addresses->add($address);
@@ -175,7 +177,7 @@ class User
         return $this;
     }
 
-    public function removeAddress(address $address): static
+    public function removeAddress(Address $address): static
     {
         $this->addresses->removeElement($address);
 
@@ -183,14 +185,14 @@ class User
     }
 
     /**
-     * @return Collection<int, offer>
+     * @return Collection<int, Offer>
      */
     public function getWishListOffers(): Collection
     {
         return $this->wishListOffers;
     }
 
-    public function addWishListOffer(offer $wishListOffer): static
+    public function addWishListOffer(Offer $wishListOffer): static
     {
         if (!$this->wishListOffers->contains($wishListOffer)) {
             $this->wishListOffers->add($wishListOffer);
@@ -199,7 +201,7 @@ class User
         return $this;
     }
 
-    public function removeWishListOffer(offer $wishListOffer): static
+    public function removeWishListOffer(Offer $wishListOffer): static
     {
         $this->wishListOffers->removeElement($wishListOffer);
 
@@ -207,14 +209,14 @@ class User
     }
 
     /**
-     * @return Collection<int, application>
+     * @return Collection<int, Application>
      */
     public function getApplications(): Collection
     {
         return $this->applications;
     }
 
-    public function addApplication(application $application): static
+    public function addApplication(Application $application): static
     {
         if (!$this->applications->contains($application)) {
             $this->applications->add($application);
@@ -224,7 +226,7 @@ class User
         return $this;
     }
 
-    public function removeApplication(application $application): static
+    public function removeApplication(Application $application): static
     {
         if ($this->applications->removeElement($application)) {
             // set the owning side to null (unless already changed)
@@ -237,14 +239,14 @@ class User
     }
 
     /**
-     * @return Collection<int, rating>
+     * @return Collection<int, Rating>
      */
     public function getRatings(): Collection
     {
         return $this->ratings;
     }
 
-    public function addRating(rating $rating): static
+    public function addRating(Rating $rating): static
     {
         if (!$this->ratings->contains($rating)) {
             $this->ratings->add($rating);
@@ -254,7 +256,7 @@ class User
         return $this;
     }
 
-    public function removeRating(rating $rating): static
+    public function removeRating(Rating $rating): static
     {
         if ($this->ratings->removeElement($rating)) {
             // set the owning side to null (unless already changed)
@@ -264,5 +266,21 @@ class User
         }
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roleName = $this->role->getName();
+        return ['ROLE_' . strtoupper($roleName)];
+    }
+    
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+    
+    public function eraseCredentials(): void
+    {
+        // Rien à faire ici
     }
 }

@@ -31,9 +31,9 @@ class Address
     private Collection $users;
 
     /**
-     * @var Collection<int, company>
+     * @var Collection<int, Company>
      */
-    #[ORM\ManyToMany(targetEntity: company::class, inversedBy: 'addresses')]
+    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'addresses')]
     private Collection $companies;
 
     public function __construct()
@@ -111,14 +111,14 @@ class Address
     }
 
     /**
-     * @return Collection<int, company>
+     * @return Collection<int, Company>
      */
     public function getCompanies(): Collection
     {
         return $this->companies;
     }
 
-    public function addCompany(company $company): static
+    public function addCompany(Company $company): static
     {
         if (!$this->companies->contains($company)) {
             $this->companies->add($company);
@@ -127,7 +127,7 @@ class Address
         return $this;
     }
 
-    public function removeCompany(company $company): static
+    public function removeCompany(Company $company): static
     {
         $this->companies->removeElement($company);
 

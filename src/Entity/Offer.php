@@ -47,15 +47,15 @@ class Offer
     private ?Company $company = null;
 
     /**
-     * @var Collection<int, skill>
+     * @var Collection<int, Skill>
      */
-    #[ORM\ManyToMany(targetEntity: skill::class, inversedBy: 'offers')]
+    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'offers')]
     private Collection $skills;
 
     /**
-     * @var Collection<int, application>
+     * @var Collection<int, Application>
      */
-    #[ORM\OneToMany(targetEntity: application::class, mappedBy: 'offer')]
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'offer')]
     private Collection $applications;
 
     public function __construct()
@@ -194,14 +194,14 @@ class Offer
     }
 
     /**
-     * @return Collection<int, skill>
+     * @return Collection<int, Skill>
      */
     public function getSkills(): Collection
     {
         return $this->skills;
     }
 
-    public function addSkill(skill $skill): static
+    public function addSkill(Skill $skill): static
     {
         if (!$this->skills->contains($skill)) {
             $this->skills->add($skill);
@@ -210,7 +210,7 @@ class Offer
         return $this;
     }
 
-    public function removeSkill(skill $skill): static
+    public function removeSkill(Skill $skill): static
     {
         $this->skills->removeElement($skill);
 
@@ -218,14 +218,14 @@ class Offer
     }
 
     /**
-     * @return Collection<int, application>
+     * @return Collection<int, Application>
      */
     public function getApplications(): Collection
     {
         return $this->applications;
     }
 
-    public function addApplication(application $application): static
+    public function addApplication(Application $application): static
     {
         if (!$this->applications->contains($application)) {
             $this->applications->add($application);
@@ -235,7 +235,7 @@ class Offer
         return $this;
     }
 
-    public function removeApplication(application $application): static
+    public function removeApplication(Application $application): static
     {
         if ($this->applications->removeElement($application)) {
             // set the owning side to null (unless already changed)
