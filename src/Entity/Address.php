@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AddressRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
@@ -21,6 +23,24 @@ class Address
 
     #[ORM\Column(length: 255)]
     private ?string $street = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'addresses')]
+    private Collection $users;
+
+    /**
+     * @var Collection<int, company>
+     */
+    #[ORM\ManyToMany(targetEntity: company::class, inversedBy: 'addresses')]
+    private Collection $companies;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -59,6 +79,57 @@ class Address
     public function setStreet(string $street): static
     {
         $this->street = $street;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addAddress($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeAddress($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, company>
+     */
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    public function addCompany(company $company): static
+    {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+        }
+
+        return $this;
+    }
+
+    public function removeCompany(company $company): static
+    {
+        $this->companies->removeElement($company);
 
         return $this;
     }

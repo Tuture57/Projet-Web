@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,31 @@ class Company
 
     #[ORM\Column(nullable: true)]
     private ?float $averageRating = null;
+
+    /**
+     * @var Collection<int, Address>
+     */
+    #[ORM\ManyToMany(targetEntity: Address::class, mappedBy: 'companies')]
+    private Collection $addresses;
+
+    /**
+     * @var Collection<int, offer>
+     */
+    #[ORM\OneToMany(targetEntity: offer::class, mappedBy: 'company')]
+    private Collection $offers;
+
+    /**
+     * @var Collection<int, rating>
+     */
+    #[ORM\OneToMany(targetEntity: rating::class, mappedBy: 'company')]
+    private Collection $ratings;
+
+    public function __construct()
+    {
+        $this->addresses = new ArrayCollection();
+        $this->offers = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +132,93 @@ class Company
     public function setAverageRating(?float $averageRating): static
     {
         $this->averageRating = $averageRating;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->addCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            $address->removeCompany($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, offer>
+     */
+    public function getOffers(): Collection
+    {
+        return $this->offers;
+    }
+
+    public function addOffer(offer $offer): static
+    {
+        if (!$this->offers->contains($offer)) {
+            $this->offers->add($offer);
+            $offer->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffer(offer $offer): static
+    {
+        if ($this->offers->removeElement($offer)) {
+            // set the owning side to null (unless already changed)
+            if ($offer->getCompany() === $this) {
+                $offer->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, rating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(rating $rating): static
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings->add($rating);
+            $rating->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRating(rating $rating): static
+    {
+        if ($this->ratings->removeElement($rating)) {
+            // set the owning side to null (unless already changed)
+            if ($rating->getCompany() === $this) {
+                $rating->setCompany(null);
+            }
+        }
 
         return $this;
     }

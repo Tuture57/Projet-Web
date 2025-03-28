@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OfferRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,6 +36,34 @@ class Offer
 
     #[ORM\Column]
     private ?int $numberOfApplicants = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'wishListOffers')]
+    private Collection $wishListUsers;
+
+    #[ORM\ManyToOne(inversedBy: 'offers')]
+    private ?Company $company = null;
+
+    /**
+     * @var Collection<int, skill>
+     */
+    #[ORM\ManyToMany(targetEntity: skill::class, inversedBy: 'offers')]
+    private Collection $skills;
+
+    /**
+     * @var Collection<int, application>
+     */
+    #[ORM\OneToMany(targetEntity: application::class, mappedBy: 'offer')]
+    private Collection $applications;
+
+    public function __construct()
+    {
+        $this->wishListUsers = new ArrayCollection();
+        $this->skills = new ArrayCollection();
+        $this->applications = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -120,6 +150,99 @@ class Offer
     public function setNumberOfApplicants(int $numberOfApplicants): static
     {
         $this->numberOfApplicants = $numberOfApplicants;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getWishListUsers(): Collection
+    {
+        return $this->wishListUsers;
+    }
+
+    public function addWishListUser(User $wishListUser): static
+    {
+        if (!$this->wishListUsers->contains($wishListUser)) {
+            $this->wishListUsers->add($wishListUser);
+            $wishListUser->addWishListOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWishListUser(User $wishListUser): static
+    {
+        if ($this->wishListUsers->removeElement($wishListUser)) {
+            $wishListUser->removeWishListOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, skill>
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function addSkill(skill $skill): static
+    {
+        if (!$this->skills->contains($skill)) {
+            $this->skills->add($skill);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(skill $skill): static
+    {
+        $this->skills->removeElement($skill);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, application>
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(application $application): static
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications->add($application);
+            $application->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(application $application): static
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getOffer() === $this) {
+                $application->setOffer(null);
+            }
+        }
 
         return $this;
     }
