@@ -13,7 +13,14 @@
     </button>
 </div>
 
-<h1>Entreprises</h1>
+<div class="header-with-actions">
+    <h1>Entreprises</h1>
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+        <a href="{{ path('entreprise_new') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Créer une entreprise
+        </a>
+    {% endif %}
+</div>
 
 <div class="item-list">
     {% for item in companies %}

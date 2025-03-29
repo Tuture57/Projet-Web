@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ company.name }}{% endblock %}
+
+{% block body %}
+<div class="form-page">
+    <div class="back-button">
+        <a href="{{ path('entreprise_show', {'id': company.id}) }}"><i class="fas fa-arrow-left"></i> Retour à l'entreprise</a>
+    </div>
+    
+    <h1>Modifier l'entreprise</h1>
+    
+    {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
+        <div class="form-section">
+            <h2>Informations générales</h2>
+            
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+                {{ form_errors(form.email) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.phone) }}
+                {{ form_widget(form.phone) }}
+                {{ form_errors(form.phone) }}
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+        </div>
+        
+        {% if form.addresses is defined %}
+        <div class="form-section">
+            <h2>Adresse</h2>
+            <div class="addresses-collection">
+                {% for addressForm in form.addresses %}
+                    <div class="address-item">
+                        <div class="form-group">
+                            {{ form_label(addressForm.street) }}
+                            {{ form_widget(addressForm.street) }}
+                            {{ form_errors(addressForm.street) }}
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                {{ form_label(addressForm.city) }}
+                                {{ form_widget(addressForm.city) }}
+                                {{ form_errors(addressForm.city) }}
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form_label(addressForm.country) }}
+                            {{ form_widget(addressForm.country) }}
+                            {{ form_errors(addressForm.country) }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="form-actions">
+            <a href="{{ path('entreprise_show', {'id': company.id}) }}" class="btn-cancel">Annuler</a>
+            <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

@@ -33,13 +33,12 @@ class Address
     /**
      * @var Collection<int, Company>
      */
-    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'addresses')]
-    private Collection $companies;
+    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'addresses')]
+    private ?Company $company = null;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
-        $this->companies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,24 +112,15 @@ class Address
     /**
      * @return Collection<int, Company>
      */
-    public function getCompanies(): Collection
+    public function getCompany(): ?Company
     {
-        return $this->companies;
+        return $this->company;
     }
-
-    public function addCompany(Company $company): static
+    
+    public function setCompany(?Company $company): static
     {
-        if (!$this->companies->contains($company)) {
-            $this->companies->add($company);
-        }
-
-        return $this;
-    }
-
-    public function removeCompany(Company $company): static
-    {
-        $this->companies->removeElement($company);
-
+        $this->company = $company;
+    
         return $this;
     }
 }

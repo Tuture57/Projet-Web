@@ -37,7 +37,7 @@ class Company
     /**
      * @var Collection<int, Address>
      */
-    #[ORM\ManyToMany(targetEntity: Address::class, mappedBy: 'companies')]
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company')]
     private Collection $addresses;
 
     /**

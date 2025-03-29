@@ -16,6 +16,7 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            access_denied_url: access_denied
             form_login:
                 login_path: app_login
                 check_path: app_login
@@ -27,15 +28,19 @@ security:
                 target: home
 
     access_control:
-        - { path: ^/$, roles: PUBLIC_ACCESS } # Page d’accueil accessible à tous
-        - { path: ^/login, roles: PUBLIC_ACCESS } # Page de login accessible à tous
-        - { path: ^/logout, roles: PUBLIC_ACCESS } # Page de logout accessible à tous
-        - { path: ^/company/create, roles: [ROLE_ADMINISTRATOR, ROLE_PILOT] }
-        - { path: ^/company/rate, roles: ROLE_STUDENT }
-        # Règles spécifiques pour les routes protégées
-        - { path: ^/company, roles: IS_AUTHENTICATED_FULLY } # Protège /company/* mais pas /company/create ou /company/rate (déjà définis)
-        - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY } # Protège /admin/*
-        # Supprimé : - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # Routes publiques (accessibles sans authentification)
+        - { path: ^/$, roles: PUBLIC_ACCESS }                  # Page d'accueil
+        - { path: ^/login, roles: PUBLIC_ACCESS }              # Page de login
+        - { path: ^/logout, roles: PUBLIC_ACCESS }             # Page de logout
+
+        # Routes réservées aux admins et pilotes
+        - { path: ^/entreprises/new, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/entreprises/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/company/create, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/company/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
+
+        # Toutes les autres routes nécessitent une authentification
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

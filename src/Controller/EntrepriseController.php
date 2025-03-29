@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Company;
+use App\Form\CompanyType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EntrepriseController extends AbstractController
 {
@@ -34,6 +38,35 @@ class EntrepriseController extends AbstractController
         ]);
     }
 
+    // Les routes statiques doivent être AVANT les routes avec paramètres
+    #[Route('/entreprises/new', name: 'entreprise_new')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $company = new Company();
+        $form = $this->createForm(CompanyType::class, $company);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($company);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'entreprise a été créée avec succès.');
+            return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+        }
+
+        return $this->render('entreprise/new.html.twig', [
+            'company' => $company,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/entreprises/stats', name: 'entreprise_stats')]
+    public function stats(): Response
+    {
+        return $this->render('entreprise/stats.html.twig');
+    }
+
+    // Les routes avec paramètres doivent être APRÈS les routes statiques
     #[Route('/entreprises/{id}', name: 'entreprise_show')]
     public function show(int $id, CompanyRepository $companyRepository, OfferRepository $offerRepository): Response
     {
@@ -53,15 +86,22 @@ class EntrepriseController extends AbstractController
         ]);
     }
 
-    #[Route('/entreprises/new', name: 'entreprise_new')]
-    public function new(): Response
-    {
-        return $this->render('entreprise/new.html.twig');
-    }
+    #[Route('/entreprises/{id}/edit', name: 'entreprise_edit')]
+    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
+    {   
+        $form = $this->createForm(CompanyType::class, $company);
+        $form->handleRequest($request);
 
-    #[Route('/entreprises/stats', name: 'entreprise_stats')]
-    public function stats(): Response
-    {
-        return $this->render('entreprise/stats.html.twig');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'entreprise a été modifiée avec succès.');
+            return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+        }
+
+        return $this->render('entreprise/edit.html.twig', [
+            'company' => $company,
+            'form' => $form->createView(),
+        ]);
     }
 }

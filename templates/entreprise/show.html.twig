@@ -18,6 +18,14 @@
         <div class="company-info">
             <h1>{{ company.name }}</h1>
             
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+                <div class="admin-actions">
+                    <a href="{{ path('entreprise_edit', {'id': company.id}) }}" class="btn-edit">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                </div>
+            {% endif %}
+            
             {% if company.averageRating is not null %}
                 <div class="company-rating">
                     <div class="stars">

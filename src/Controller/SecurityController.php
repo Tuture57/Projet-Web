@@ -31,4 +31,10 @@ class SecurityController extends AbstractController
     {
         // Symfony gère automatiquement la déconnexion
     }
+
+    #[Route('/access-denied', name: 'access_denied')]
+    public function accessDenied(): Response
+    {
+        return $this->redirectToRoute('home');
+    }
 }

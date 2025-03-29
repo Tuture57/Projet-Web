@@ -603,6 +603,68 @@ img, canvas {
     background-color: transparent; /* Make the input background transparent */
 }
 
+/* Admin/Pilote Action Buttons */
+.header-with-actions {
+    display: flex;
+    justify-content: flex-start;  /* Changé de space-between à flex-start */
+    align-items: center;
+    margin: 30px 0;  /* Augmenté l'espace vertical */
+    gap: 15px;  /* Ajout d'un petit espace entre le titre et le bouton */
+}
+
+.header-with-actions h1 {
+    margin-bottom: 0;  /* Supprime la marge du titre pour l'aligner avec le bouton */
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background-color: #6B5B95;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(107, 91, 149, 0.3);
+}
+
+/* Modification du bouton d'édition */
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    background-color: #FF5E3A;  /* Orange plus vif */
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: #FF3814;  /* Orange encore plus vif au survol */
+}
+
+/* Modification de la structure de l'en-tête de la page détail */
+.company-info {
+    flex: 1;
+    position: relative;  /* Pour le positionnement absolu du bouton */
+}
+
+.company-info h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 5px;
+    padding-right: 100px;  /* Espace pour le bouton à droite */
+}
+
+.admin-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 0;
+}
+
 /* ========== COMPANY DETAIL PAGE ========== */
 .company-header {
     margin-bottom: 20px;
@@ -886,6 +948,118 @@ img, canvas {
         width: 100%;
         text-align: center;
     }
+}
+
+/* ========== FORM PAGE ========== */
+/* Amélioration des espacements pour le formulaire d'édition */
+.form-page {
+    max-width: 1000px; /* Augmenté de 800px à 1000px */
+    margin: 40px auto; /* Augmenté la marge verticale */
+    padding: 30px; /* Augmenté le padding */
+}
+
+.form-page h1 {
+    margin-bottom: 30px; /* Plus d'espace sous le titre */
+    font-size: 26px; /* Titre légèrement plus grand */
+}
+
+.edit-form {
+    background-color: white;
+    border-radius: 10px; /* Coins plus arrondis */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* Ombre plus visible */
+    overflow: hidden;
+}
+
+.form-section {
+    padding: 30px; /* Plus d'espace interne */
+    border-bottom: 1px solid #E8EAF6;
+    margin-bottom: 10px; /* Espace entre les sections */
+}
+
+.form-section h2 {
+    font-size: 20px; /* Sous-titres plus grands */
+    margin-bottom: 25px; /* Plus d'espace sous les sous-titres */
+}
+
+.form-group {
+    margin-bottom: 25px; /* Plus d'espace entre les champs */
+}
+
+.form-row {
+    display: flex;
+    gap: 25px; /* Plus d'espace entre les colonnes */
+    margin-bottom: 10px; /* Espace sous les rangées */
+}
+
+label {
+    display: block;
+    margin-bottom: 8px; /* Plus d'espace sous les labels */
+    font-size: 15px; /* Labels légèrement plus grands */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 15px; /* Champs plus grands */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px; /* Texte plus grand dans les champs */
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    padding: 25px 30px; /* Plus d'espace dans la zone des boutons */
+    background-color: #F8F9FA;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px; /* Plus d'espace entre les boutons */
+}
+
+.btn-cancel {
+    display: inline-block;
+    padding: 10px 20px; /* Boutons plus grands */
+    background-color: #f0f0f0;
+    color: #555;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 15px; /* Texte des boutons plus grand */
+}
+
+.btn-submit {
+    padding: 10px 20px; /* Boutons plus grands */
+    background-color: #6B5B95;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 15px; /* Texte des boutons plus grand */
+}
+
+.btn-submit:hover {
+    background-color: #5a4d7e;
+}
+
+.addresses-collection {
+    background-color: #f9f9f9;
+    padding: 25px; /* Plus d'espace dans la collection */
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.address-item {
+    padding: 25px; /* Plus d'espace dans chaque adresse */
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 20px; /* Plus d'espace entre les adresses */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* ========== RESPONSIVE STYLES ========== */
