@@ -2,16 +2,36 @@
 
 namespace App\Controller;
 
+use App\Entity\Company;
+use App\Repository\CompanyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 class EntrepriseController extends AbstractController
 {
     #[Route('/entreprises', name: 'entreprise')]
-    public function index(): Response
+    public function index(CompanyRepository $companyRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        return $this->render('entreprise/index.html.twig');
+        $query = $companyRepository->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC')
+            ->getQuery();
+        
+        $page = $request->query->getInt('page', 1);
+        $limit = 5; 
+        
+        $pagination = $paginator->paginate(
+            $query,
+            $page,
+            $limit
+        );
+        
+        return $this->render('entreprise/index.html.twig', [
+            'companies' => $pagination,
+            'pagination' => $pagination,
+        ]);
     }
 
     #[Route('/entreprises/{id}', name: 'entreprise_show')]

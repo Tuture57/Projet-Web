@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Alt - Trouvez votre stage{% endblock %}
+{% block title %}Trouvez votre stage{% endblock %}
 
 {% block body %}
     <h1>Accueil 
@@ -17,13 +17,13 @@
     </h1>
     <div class="sections">
 
-        <div class="latest-info">
+        <div class="content-card">
             <h2>Dernières infos</h2>
             {% for info in latest_infos|default([
                 {'icon': 'fas fa-sync-alt', 'content': 'Nous avons déplacé l\'ancienne base de données dans le nouveau serveur Meraki de l\'entreprise', 'date': '3 Fev. 2025 à 13:45'},
                 {'icon': 'fas fa-sync-alt', 'content': 'Nous avons déplacé l\'ancienne base de données dans le nouveau serveur Meraki de l\'entreprise', 'date': '3 Fev. 2025 à 13:45'}
             ]) %}
-                <div class="info-entry">
+                <div class="list-item">
                     <i class="{{ info.icon }}"></i>
                     <p>{{ info.content }}</p>
                     <span>le {{ info.date }}</span>
@@ -31,13 +31,13 @@
             {% endfor %}
         </div>
 
-        <div class="recent-offers">
+        <div class="content-card">
             <h2>Offres de stage récentes</h2>
             {% for offer in recent_offers|default([
                 {'title': 'Développeur web', 'description': 'Venez chez nous pour qu\'on vous exploite afin de réaliser nos projets web de nos clients.', 'expiry': '31 Jan. 2025'},
                 {'title': 'Développeur web', 'description': 'Venez chez nous pour qu\'on vous exploite afin de réaliser nos projets web de nos clients.', 'expiry': '31 Jan. 2025'}
             ]) %}
-                <div class="offer-entry">
+                <div class="list-item">
                     <h3>{{ offer.title }}</h3>
                     <p>{{ offer.description }}</p>
                     <span>Active jusqu'au {{ offer.expiry }}</span>
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <div class="site-traffic">
+    <div class="data-visualization">
         <h2>Trafic du site</h2>
         <img src="{{ asset('images/stonks.jpg') }}" alt="Graphique de trafic" style="width: 100%; height: auto; max-height: 300px;">
         <div class="legend">
