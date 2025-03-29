@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ company.name }}{% endblock %}
+
+{% block body %}
+<div class="company-header">
+    <div class="back-button">
+        <a href="{{ path('entreprise') }}"><i class="fas fa-arrow-left"></i> Retour aux entreprises</a>
+    </div>
+    
+    <div class="company-profile">
+        <div class="company-logo-container">
+            <div class="company-logo-placeholder">
+                <i class="fas fa-building"></i>
+            </div>
+        </div>
+        
+        <div class="company-info">
+            <h1>{{ company.name }}</h1>
+            
+            {% if company.averageRating is not null %}
+                <div class="company-rating">
+                    <div class="stars">
+                        {% for i in 1..5 %}
+                            {% if i <= company.averageRating|round(0, 'floor') %}
+                                <i class="fas fa-star"></i>
+                            {% elseif i - 0.5 <= company.averageRating %}
+                                <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-value">{{ company.averageRating|number_format(1) }}</span>
+                </div>
+            {% else %}
+                <span class="no-rating">Non évalué</span>
+            {% endif %}
+            
+            <div class="company-details">
+                {% if company.addresses is not empty %}
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ company.addresses|first.city }}, {{ company.addresses|first.country }}</span>
+                    </div>
+                {% endif %}
+                
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ company.email }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ company.phone }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>{{ company.numberOfInterns }} stagiaires</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if company.description %}
+<div class="company-description card">
+    <h2>À propos de {{ company.name }}</h2>
+    <div class="description-content">
+        {{ company.description|length > 150 ? company.description|slice(0, 150) ~ '...' : company.description }}
+    </div>
+</div>
+{% endif %}
+
+<div class="company-offers card">
+    <h2>Offres actuelles <span class="offer-count">{{ offers|length }}</span></h2>
+    
+    {% if offers|length > 0 %}
+        <div class="offer-list">
+            {% for offer in offers %}
+                <div class="offer-item">
+                    <div class="offer-header">
+                        <h3>{{ offer.title }}</h3>
+                        <span class="offer-type">Stage</span>
+                    </div>
+                    
+                    {% if offer.company and offer.company.addresses is not empty %}
+                    <div class="offer-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ offer.company.addresses|first.city }}, {{ offer.company.addresses|first.country }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="offer-duration">
+                        <i class="far fa-clock"></i>
+                        <span>{{ offer.startDate|date('d/m/Y') }} - {{ offer.endDate|date('d/m/Y') }}</span>
+                    </div>
+                    
+                    <div class="offer-description">
+                        {{ offer.description|length > 150 ? offer.description|slice(0, 150) ~ '...' : offer.description }}
+                    </div>
+                    
+                    <div class="offer-footer">
+                        <span class="offer-date">Publiée le {{ offer.creationDate|date('d/m/Y') }}</span>
+                        <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn-view-offer">
+                            Voir l'offre <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-offers">
+            <i class="far fa-file-alt"></i>
+            <p>Aucune offre disponible pour le moment</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

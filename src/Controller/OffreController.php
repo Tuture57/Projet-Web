@@ -15,4 +15,13 @@ final class OffreController extends AbstractController
             'controller_name' => 'OffreController',
         ]);
     }
+
+    #[Route('/offres/{id}', name: 'offre_show')]
+    public function show(int $id): Response
+    {
+        // Logique pour afficher une offre spécifique
+        return $this->render('offre/show.html.twig', [
+            'id' => $id,
+        ]);
+    }
 }

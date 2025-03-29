@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Company;
 use App\Repository\CompanyRepository;
+use App\Repository\OfferRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,10 +35,21 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}', name: 'entreprise_show')]
-    public function show(int $id): Response
+    public function show(int $id, CompanyRepository $companyRepository, OfferRepository $offerRepository): Response
     {
+        // Récupérer l'entreprise
+        $company = $companyRepository->find($id);
+        
+        if (!$company) {
+            throw $this->createNotFoundException('Entreprise non trouvée');
+        }
+        
+        // Récupérer les offres actives de cette entreprise
+        $offers = $offerRepository->findActiveOffersByCompany($company);
+        
         return $this->render('entreprise/show.html.twig', [
-            'id' => $id,
+            'company' => $company,
+            'offers' => $offers,
         ]);
     }
 

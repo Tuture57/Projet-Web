@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Offer;
+use App\Entity\Company; // Ajouter cette importation
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,6 +15,25 @@ class OfferRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Offer::class);
+    }
+
+    /**
+     * Trouve toutes les offres actives pour une entreprise donnée dont la date de début est dans le futur
+     */
+    public function findActiveOffersByCompany(Company $company): array
+    {
+        $now = new \DateTime(); // Date actuelle
+        
+        return $this->createQueryBuilder('o')
+            ->where('o.company = :company')
+            ->andWhere('o.isActive = :active')
+            ->andWhere('o.startDate > :now') // Vérifier que la date de début est dans le futur
+            ->setParameter('company', $company)
+            ->setParameter('active', true)
+            ->setParameter('now', $now)
+            ->orderBy('o.startDate', 'ASC') // Trier par date de début (les plus proches d'abord)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**
