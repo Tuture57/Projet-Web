@@ -12,12 +12,30 @@
 
 <h1>Entreprises</h1>
 
-<div class="company-list">
-    {% for company in companies %}
-        <div class="company-item">
-            <img src="" alt="{{ company.name }} logo" class="company-logo">
-            <div class="company-details">
-                <h2>{{ company.name }}</h2>
+<div class="item-list">
+    {% for item in companies %}
+        <div class="item">
+            <img src="" alt="{{ item.name }} logo" class="item-logo">
+            <div class="item-details">
+                <h2>{{ item.name }}</h2>
+            </div>
+            <div class="item-rating">
+                {% if item.averageRating is defined %}
+                    <div class="stars">
+                        {% for i in 1..5 %}
+                            {% if i <= item.averageRating|round(0, 'floor') %}
+                                <i class="fas fa-star"></i>
+                            {% elseif i - 0.5 <= item.averageRating %}
+                                <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-value">{{ item.averageRating|number_format(1) }}</span>
+                {% else %}
+                    <span class="no-rating">Non évalué</span>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
