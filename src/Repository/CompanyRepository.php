@@ -16,6 +16,33 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
+    public function findUniqueCountries(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('DISTINCT a.country')
+            ->join('c.address', 'a')
+            ->where('a.country IS NOT NULL')
+            ->orderBy('a.country', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUniqueCities(?string $country = null): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('DISTINCT a.city')
+            ->join('c.address', 'a')
+            ->where('a.city IS NOT NULL')
+            ->orderBy('a.city', 'ASC');
+            
+        if ($country) {
+            $qb->andWhere('a.country = :country')
+               ->setParameter('country', $country);
+        }
+        
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Company[] Returns an array of Company objects
     //     */

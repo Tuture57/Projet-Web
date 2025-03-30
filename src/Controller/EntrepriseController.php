@@ -20,25 +20,86 @@ use App\Entity\Application;
 
 class EntrepriseController extends AbstractController
 {
-    #[Route('/entreprises', name: 'entreprise')]
-    public function index(CompanyRepository $companyRepository, Request $request, PaginatorInterface $paginator): Response
+    #[Route('/entreprise', name: 'entreprise')]
+    public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
-        $query = $companyRepository->createQueryBuilder('c')
-            ->orderBy('c.id', 'ASC')
-            ->getQuery();
+        // Récupérer le terme de recherche et les paramètres de filtre
+        $searchTerm = $request->query->get('search', '');
+        $country = $request->query->get('country');
+        $city = $request->query->get('city');
+        $minRating = $request->query->get('minRating');
+        $sortBy = $request->query->get('sortBy', 'name_asc');
         
-        $page = $request->query->getInt('page', 1);
-        $limit = 5; 
+        // Redirection si search est vide mais présent
+        if ($searchTerm === '' && $request->query->has('search')) {
+            return $this->redirectToRoute('entreprise');
+        }
         
+        // Créer la requête de base (version optimisée)
+        $queryBuilder = $companyRepository->createQueryBuilder('c')
+            ->leftJoin('c.address', 'a'); // Jointure avec l'adresse pour filtrer
+            
+        // Ajouter la recherche si présente
+        if (!empty($searchTerm)) {
+            $queryBuilder->andWhere('c.name LIKE :search')
+                ->setParameter('search', '%' . $searchTerm . '%');
+        }
+        
+        // Ajouter les filtres
+        if (!empty($country)) {
+            $queryBuilder->andWhere('a.country = :country')
+                ->setParameter('country', $country);
+        }
+        
+        if (!empty($city)) {
+            $queryBuilder->andWhere('a.city = :city')
+                ->setParameter('city', $city);
+        }
+        
+        if (!empty($minRating)) {
+            $queryBuilder->andWhere('c.averageRating >= :minRating')
+                ->setParameter('minRating', $minRating);
+        }
+        
+        // Appliquer le tri
+        switch ($sortBy) {
+            case 'name_desc':
+                $queryBuilder->orderBy('c.name', 'DESC');
+                break;
+            case 'rating_desc':
+                $queryBuilder->orderBy('c.averageRating', 'DESC');
+                break;
+            case 'rating_asc':
+                $queryBuilder->orderBy('c.averageRating', 'ASC');
+                break;
+            case 'name_asc':
+            default:
+                $queryBuilder->orderBy('c.name', 'ASC');
+        }
+        
+        // Paginer les résultats
         $pagination = $paginator->paginate(
-            $query,
-            $page,
-            $limit
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            5 // Nombre d'éléments par page
         );
+        
+        // Obtenir la liste des pays et villes pour les filtres
+        $countries = $companyRepository->findUniqueCountries();
+        $cities = $companyRepository->findUniqueCities($country);
         
         return $this->render('entreprise/index.html.twig', [
             'companies' => $pagination,
             'pagination' => $pagination,
+            'countries' => $countries,
+            'cities' => $cities,
+            'filters' => [
+                'search' => $searchTerm,
+                'country' => $country,
+                'city' => $city,
+                'minRating' => $minRating,
+                'sortBy' => $sortBy
+            ]
         ]);
     }
 
