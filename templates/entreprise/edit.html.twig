@@ -39,34 +39,29 @@
             </div>
         </div>
         
-        {% if form.addresses is defined %}
+        {% if form.address is defined %}
         <div class="form-section">
             <h2>Adresse</h2>
-            <div class="addresses-collection">
-                {% for addressForm in form.addresses %}
-                    <div class="address-item">
-                        <div class="form-group">
-                            {{ form_label(addressForm.street) }}
-                            {{ form_widget(addressForm.street) }}
-                            {{ form_errors(addressForm.street) }}
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                {{ form_label(addressForm.city) }}
-                                {{ form_widget(addressForm.city) }}
-                                {{ form_errors(addressForm.city) }}
-                            </div>
-                            
-                        </div>
-                        
-                        <div class="form-group">
-                            {{ form_label(addressForm.country) }}
-                            {{ form_widget(addressForm.country) }}
-                            {{ form_errors(addressForm.country) }}
-                        </div>
+            <div class="address-item">
+                <div class="form-group">
+                    {{ form_label(form.address.street) }}
+                    {{ form_widget(form.address.street) }}
+                    {{ form_errors(form.address.street) }}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.address.city) }}
+                        {{ form_widget(form.address.city) }}
+                        {{ form_errors(form.address.city) }}
                     </div>
-                {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.address.country) }}
+                    {{ form_widget(form.address.country) }}
+                    {{ form_errors(form.address.country) }}
+                </div>
             </div>
         </div>
         {% endif %}

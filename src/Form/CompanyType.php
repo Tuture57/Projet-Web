@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Company;
+use App\Entity\Address;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -19,29 +19,30 @@ class CompanyType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'entreprise',
-                'attr' => ['placeholder' => 'Ex: Acme Inc.']
+                'attr' => ['placeholder' => 'Ex: Acme Inc.'],
+                'required' => true
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'attr' => ['placeholder' => 'contact@entreprise.com']
+                'attr' => ['placeholder' => 'contact@entreprise.com'],
+                'required' => true
             ])
             ->add('phone', TelType::class, [
                 'label' => 'Téléphone',
-                'attr' => ['placeholder' => '+33 1 23 45 67 89']
+                'attr' => ['placeholder' => '+33 1 23 45 67 89'],
+                'required' => true
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'attr' => ['rows' => 5, 'placeholder' => 'Description de l\'entreprise...'],
-                'required' => false
+                'required' => true
             ])
-            ->add('addresses', CollectionType::class, [
-                'entry_type' => AddressType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'label' => false
-            ])
-        ;
+            ->add('address', AddressType::class, [
+                'label' => false,
+                'required' => true,
+            ]);
+            
+            // Le champ numberOfInterns n'est pas ajouté au formulaire
     }
 
     public function configureOptions(OptionsResolver $resolver): void

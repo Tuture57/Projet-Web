@@ -29,21 +29,19 @@ class Company
     private ?string $phone = null;
 
     #[ORM\Column]
-    private ?int $numberOfInterns = null;
+    private int $numberOfInterns = 0;
 
     #[ORM\Column(nullable: true)]
     private ?float $averageRating = null;
 
-    /**
-     * @var Collection<int, Address>
-     */
-    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company')]
-    private Collection $addresses;
+    #[ORM\ManyToOne(targetEntity: Address::class, inversedBy: 'companies', cascade: ["persist"])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $address = null;
 
     /**
      * @var Collection<int, offer>
      */
-    #[ORM\OneToMany(targetEntity: offer::class, mappedBy: 'company')]
+    #[ORM\OneToMany(targetEntity: offer::class, mappedBy: 'company', cascade: ['persist', 'remove'])]
     private Collection $offers;
 
     /**
@@ -54,7 +52,6 @@ class Company
 
     public function __construct()
     {
-        $this->addresses = new ArrayCollection();
         $this->offers = new ArrayCollection();
         $this->ratings = new ArrayCollection();
     }
@@ -136,30 +133,14 @@ class Company
         return $this;
     }
 
-    /**
-     * @return Collection<int, Address>
-     */
-    public function getAddresses(): Collection
+    public function getAddress(): ?Address
     {
-        return $this->addresses;
+        return $this->address;
     }
 
-    public function addAddress(Address $address): static
+    public function setAddress(?Address $address): static
     {
-        if (!$this->addresses->contains($address)) {
-            $this->addresses->add($address);
-            $address->addCompany($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAddress(Address $address): static
-    {
-        if ($this->addresses->removeElement($address)) {
-            $address->removeCompany($this);
-        }
-
+        $this->address = $address;
         return $this;
     }
 

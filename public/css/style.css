@@ -659,10 +659,32 @@ img, canvas {
 }
 
 .admin-actions {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin-top: 0;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+/* Ajoutez ceci à votre fichier CSS existant */
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    background-color: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-delete i {
+    margin-right: 6px;
 }
 
 /* ========== COMPANY DETAIL PAGE ========== */

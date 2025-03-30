@@ -16,18 +16,21 @@ class AddressType extends AbstractType
         $builder
             ->add('street', TextType::class, [
                 'label' => 'Rue',
-                'attr' => ['placeholder' => '123 rue de Paris']
+                'attr' => ['placeholder' => '123 rue des Exemples'],
+                'required' => true
             ])
             ->add('city', TextType::class, [
                 'label' => 'Ville',
-                'attr' => ['placeholder' => 'Paris']
+                'attr' => ['placeholder' => 'Paris'],
+                'required' => true
             ])
             ->add('country', CountryType::class, [
                 'label' => 'Pays',
-                'preferred_choices' => ['FR', 'BE', 'CH', 'LU', 'DE', 'IT', 'ES'],
-                'placeholder' => 'Sélectionnez un pays'
-            ])
-        ;
+                'preferred_choices' => ['FR', 'BE', 'CH', 'LU', 'DE', 'ES', 'IT', 'GB', 'US', 'CA'],
+                'placeholder' => 'Sélectionnez un pays',
+                'attr' => ['class' => 'form-select'],
+                'required' => true
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

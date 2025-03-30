@@ -55,7 +55,7 @@ class Offer
     /**
      * @var Collection<int, Application>
      */
-    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'offer')]
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'offer', cascade: ['persist', 'remove'])]
     private Collection $applications;
 
     #[ORM\Column]
