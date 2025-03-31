@@ -121,9 +121,7 @@ class EntrepriseController extends AbstractController
             $logoFile = $form->get('logoFile')->getData();
             
             if ($logoFile) {
-                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
+                $newFilename = 'logo_'.bin2hex(random_bytes(8)).'.'.$logoFile->guessExtension();
                 
                 try {
                     // Supprimer l'ancien logo s'il existe
@@ -197,9 +195,7 @@ class EntrepriseController extends AbstractController
             $logoFile = $form->get('logoFile')->getData();
             
             if ($logoFile) {
-                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
+                $newFilename = 'logo_'.bin2hex(random_bytes(8)).'.'.$logoFile->guessExtension();
                 
                 try {
                     // Supprimer l'ancien logo s'il existe
