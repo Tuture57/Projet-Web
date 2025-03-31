@@ -19,3 +19,9 @@ return function (array $context) {
 
     return new Application($kernel);
 };
+
+###> symfony/framework-bundle ###
+APP_ENV=dev
+APP_SECRET=changeme
+###< symfony/framework-bundle ###
+

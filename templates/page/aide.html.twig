@@ -1,9 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Aide{% endblock %}
+{% block title %}FAQ - Aide{% endblock %}
 
 {% block body %}
-<h1>Aide</h1>
-<p>Bienvenue sur la page d'aide. Vous pouvez trouver des informations utiles ici.</p>
-<a href="{{ path('home') }}">Retour à l'accueil</a>
+<div class="container"
+     style="
+       margin: 10px auto;
+       max-width: 1000px;
+       font-family: Arial, sans-serif;
+     ">
+
+  <!-- Contenu principal de la page -->
+  <div>
+    <!-- Contenu de la FAQ -->
+    <section id="faq" style="line-height: 1.6; margin-top: 10px;">
+      <!-- Question 1 -->
+      <div style="margin-bottom: 10px;">
+        <h3 style="color: rgb(70, 13, 116);">Comment consulter les offres ?</h3>
+        <p>
+          Pour consulter les offres, cliquez sur le lien <strong>« Offres »</strong> dans le menu principal.
+          Vous pourrez alors filtrer et rechercher les offres par secteur, par entreprise ou par compétences.
+        </p>
+      </div>
+
+      <!-- Question 2 -->
+      <div style="margin-bottom: 10px;">
+        <h3 style="color: rgb(70, 13, 116);">Comment voir les entreprises ?</h3>
+        <p>
+          Pour voir les entreprises, rendez-vous dans la section <strong>« Entreprises »</strong>.
+          Vous y trouverez la liste des entreprises avec leurs informations de contact et les offres de stage associées.
+        </p>
+      </div>
+
+      <!-- Question 3 -->
+      <div style="margin-bottom: 10px;">
+        <h3 style="color: rgb(70, 13, 116);">Comment se déconnecter ?</h3>
+        <p>
+          Pour vous déconnecter, cliquez sur le bouton <strong>« Déconnexion »</strong> situé en haut à droite de la page.
+          Cela terminera votre session en toute sécurité.
+        </p>
+      </div>
+
+      <!-- Autres questions -->
+      <div style="margin-bottom: 10px;">
+        <h3 style="color: rgb(70, 13, 116);">D'autres questions ?</h3>
+        <p>
+          Si vous avez d'autres questions, n'hésitez pas à envoyer un mail à l'adresse suivante :
+          <a href="mailto:contact@Alt.com" style="color: rgb(70, 13, 116); text-decoration: underline;">
+            contact@Alt.com
+          </a>.
+        </p>
+      </div><br><br>
+
+        <!-- Bouton de retour, placé juste après le contenu -->
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="{{ path('home') }}"
+        style="
+            padding: 10px 20px;
+            background-color: rgb(70, 13, 116);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        ">
+        Retour à l'accueil
+        </a>
+    </div>
+        </section>
+    </div>
+
+
+</div>
 {% endblock %}
