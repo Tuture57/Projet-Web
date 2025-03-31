@@ -126,11 +126,21 @@ class EntrepriseController extends AbstractController
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
                 
                 try {
+                    // Supprimer l'ancien logo s'il existe
+                    if ($company->getLogoName()) {
+                        $oldFilePath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
+                        if (file_exists($oldFilePath)) {
+                            unlink($oldFilePath);
+                        }
+                    }
+                    
+                    // Déplacer le nouveau logo
                     $logoFile->move(
                         $this->getParameter('company_logos_directory'),
                         $newFilename
                     );
                     
+                    // Mettre à jour le nom du logo dans la base de données
                     $company->setLogoName($newFilename);
                 } catch (FileException $e) {
                     // Gérer l'exception
@@ -192,15 +202,24 @@ class EntrepriseController extends AbstractController
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
                 
                 try {
+                    // Supprimer l'ancien logo s'il existe
+                    if ($company->getLogoName()) {
+                        $oldFilePath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
+                        if (file_exists($oldFilePath)) {
+                            unlink($oldFilePath);
+                        }
+                    }
+                    
+                    // Déplacer le nouveau logo
                     $logoFile->move(
                         $this->getParameter('company_logos_directory'),
                         $newFilename
                     );
                     
-                    // Update the logo name in the database
+                    // Mettre à jour le nom du logo dans la base de données
                     $company->setLogoName($newFilename);
                 } catch (FileException $e) {
-                    // Handle exception
+                    // Gérer l'exception
                 }
             }
             
@@ -222,6 +241,14 @@ class EntrepriseController extends AbstractController
         // Vérification du token CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
             try {
+                // Supprimer le logo associé à l'entreprise
+                if ($company->getLogoName()) {
+                    $logoPath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
+                    if (file_exists($logoPath)) {
+                        unlink($logoPath);
+                    }
+                }
+
                 // Remove associated offers
                 foreach ($company->getOffers() as $offer) {
                     // Remove associated applications
