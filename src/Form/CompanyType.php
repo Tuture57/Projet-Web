@@ -6,6 +6,7 @@ use App\Entity\Company;
 use App\Entity\Address;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,9 +41,15 @@ class CompanyType extends AbstractType
             ->add('address', AddressType::class, [
                 'label' => false,
                 'required' => true,
+            ])
+            ->add('logoFile', FileType::class, [
+                'label' => 'Logo de l\'entreprise',
+                'required' => false,
+                'attr' => [
+                    'accept' => 'image/jpeg,image/png',
+                    'class' => 'custom-file-input'
+                ],
             ]);
-            
-            // Le champ numberOfInterns n'est pas ajouté au formulaire
     }
 
     public function configureOptions(OptionsResolver $resolver): void

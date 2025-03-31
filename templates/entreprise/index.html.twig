@@ -136,9 +136,15 @@
     <div class="item-list">
         {% for item in companies %}
             <a href="{{ path('entreprise_show', {'id': item.id}) }}" class="item">
-                <img src="" alt="{{ item.name }} logo" class="item-logo">
+                {% if item.logoName %}
+                    <img src="{{ asset('uploads/company/' ~ item.logoName) }}" alt="{{ item.name }} logo" class="item-logo">
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        {{ item.name|first|upper }}
+                    </div>
+                {% endif %}
                 <div class="item-details">
-                <h2>{{ item.name }}</h2>
+                    <h2>{{ item.name }}</h2>
                 </div>
                 <div class="item-rating">
                 {% if item.averageRating is defined and item.averageRating is not null and item.averageRating > 0 %}

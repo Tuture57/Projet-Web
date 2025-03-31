@@ -37,6 +37,14 @@
                 {{ form_widget(form.description) }}
                 {{ form_errors(form.description) }}
             </div>
+
+            <!-- Ajout du champ d'upload pour le logo -->
+            <div class="form-group image-upload-container">
+                {{ form_label(form.logoFile) }}
+                {{ form_widget(form.logoFile) }}
+                <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+                {{ form_errors(form.logoFile) }}
+            </div>
         </div>
         
         {% if form.address is defined %}

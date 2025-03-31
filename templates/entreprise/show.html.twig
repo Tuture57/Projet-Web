@@ -10,9 +10,13 @@
     
     <div class="company-profile">
         <div class="company-logo-container">
-            <div class="company-logo-placeholder">
-                {{ company.name|first|upper }}
-            </div>
+            {% if company.logoName %}
+                <img src="{{ asset('uploads/company/' ~ company.logoName) }}" alt="{{ company.name }} logo" class="company-logo">
+            {% else %}
+                <div class="company-logo-placeholder">
+                    {{ company.name|first|upper }}
+                </div>
+            {% endif %}
         </div>
         
         <div class="company-info">

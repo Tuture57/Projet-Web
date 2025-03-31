@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
@@ -49,6 +51,22 @@ class Company
      */
     #[ORM\OneToMany(targetEntity: rating::class, mappedBy: 'company')]
     private Collection $ratings;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $logoName = null;
+
+    /**
+     * @var File|null
+     * @Assert\Image(
+     *     maxSize = "2M",
+     *     mimeTypes = {"image/jpeg", "image/png"},
+     *     mimeTypesMessage = "Veuillez télécharger une image valide (JPG ou PNG)"
+     * )
+     */
+    private ?File $logoFile = null;
+
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
@@ -201,6 +219,34 @@ class Company
             }
         }
 
+        return $this;
+    }
+
+    public function getLogoName(): ?string
+    {
+        return $this->logoName;
+    }
+
+    public function setLogoName(?string $logoName): self
+    {
+        $this->logoName = $logoName;
+        return $this;
+    }
+
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
+
+    public function setLogoFile(?File $logoFile): self
+    {
+        $this->logoFile = $logoFile;
+        
+        if ($logoFile) {
+            // Pour forcer Doctrine à détecter le changement
+            $this->updatedAt = new \DateTime();
+        }
+        
         return $this;
     }
 }

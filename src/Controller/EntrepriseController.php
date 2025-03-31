@@ -13,10 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Company;
 use App\Entity\Address;
 use App\Form\CompanyType;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Entity\Offer;
-use App\Entity\Rating;
-use App\Entity\Application;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class EntrepriseController extends AbstractController
 {
@@ -105,7 +102,7 @@ class EntrepriseController extends AbstractController
 
     // Les routes statiques doivent être AVANT les routes avec paramètres
     #[Route('/entreprises/new', name: 'entreprise_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $company = new Company();
         
@@ -120,6 +117,26 @@ class EntrepriseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $logoFile */
+            $logoFile = $form->get('logoFile')->getData();
+            
+            if ($logoFile) {
+                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
+                
+                try {
+                    $logoFile->move(
+                        $this->getParameter('company_logos_directory'),
+                        $newFilename
+                    );
+                    
+                    $company->setLogoName($newFilename);
+                } catch (FileException $e) {
+                    // Gérer l'exception
+                }
+            }
+            
             $entityManager->persist($company);
             $entityManager->flush();
 
@@ -160,12 +177,33 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}/edit', name: 'entreprise_edit')]
-    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {   
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $logoFile */
+            $logoFile = $form->get('logoFile')->getData();
+            
+            if ($logoFile) {
+                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
+                
+                try {
+                    $logoFile->move(
+                        $this->getParameter('company_logos_directory'),
+                        $newFilename
+                    );
+                    
+                    // Update the logo name in the database
+                    $company->setLogoName($newFilename);
+                } catch (FileException $e) {
+                    // Handle exception
+                }
+            }
+            
             $entityManager->flush();
 
             $this->addFlash('success', 'L\'entreprise a été modifiée avec succès.');
