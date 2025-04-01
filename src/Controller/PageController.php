@@ -22,10 +22,4 @@ class PageController extends AbstractController
     {
         return $this->render('page/aide.html.twig');
     }
-
-    #[Route('/parametres', name: 'parametres')]
-    public function parametres(): Response
-    {
-        return $this->render('page/parametres.html.twig');
-    }
 }

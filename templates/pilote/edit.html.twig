@@ -1,0 +1,16 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\pilote\edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ pilot.firstName }} {{ pilot.lastName }}{% endblock %}
+
+{% block body %}
+<div class="form-page">
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_pilot_form.html.twig' with {
+            'form': form,
+            'pilot': pilot,
+            'button_label': 'Mettre à jour'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

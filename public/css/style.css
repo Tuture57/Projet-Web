@@ -754,6 +754,29 @@ img, canvas {
     background-color: #FF3814;  /* Orange encore plus vif au survol */
 }
 
+/* Style pour le bouton toggle (activer/désactiver) */
+.btn-toggle {
+    display: inline-flex;
+    align-items: center;
+    background-color: #FF9800;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-toggle:hover {
+    background-color: #F57C00;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-toggle i {
+    margin-right: 6px;
+}
+
 /* Modification de la structure de l'en-tête de la page détail */
 .company-info {
     flex: 1;
@@ -1337,6 +1360,7 @@ label {
 input[type="text"],
 input[type="email"],
 input[type="tel"],
+input[type="password"],
 select,
 textarea {
     width: 100%;
@@ -2010,4 +2034,63 @@ textarea {
     background: none;
     border: none;
     color: inherit;
+}
+
+/* Styles pour la section entreprise dans les offres */
+.company-profile-compact {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    align-items: flex-start;
+}
+
+.company-profile-left {
+    flex: 0 0 100px;
+}
+
+.company-profile-left img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.company-profile-right {
+    flex: 1;
+}
+
+.company-name {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.company-meta {
+    margin-bottom: 12px;
+}
+
+.company-meta-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.company-meta-item i {
+    width: 20px;
+    margin-right: 8px;
+    color: #666;
+}
+
+.company-excerpt {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    color: #555;
+    font-size: 14px;
+}
+
+.company-action {
+    margin-top: 10px;
 }

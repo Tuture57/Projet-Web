@@ -1,0 +1,252 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\offre\show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ offer.title }} - Offre de stage{% endblock %}
+
+{% block body %}
+<div class="company-header">
+    <div class="back-button">
+        <a href="{{ path('offre') }}"><i class="fas fa-arrow-left"></i> Retour aux offres</a>
+    </div>
+    
+    <div class="company-profile">
+        <div class="company-logo-container">
+            {% if offer.company %}
+                {% include 'partials/_image_display.html.twig' with {
+                    'entity': offer.company,
+                    'upload_path': 'uploads/company',
+                    'alt': offer.company.name,
+                    'image_class': 'company-logo',
+                    'placeholder_class': 'company-logo-placeholder'
+                } %}
+            {% else %}
+                <div class="company-logo-placeholder">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="company-info">
+            <h1>{{ offer.title }}</h1>
+            
+            {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT') and app.user.company and app.user.company.id == offer.company.id) %}
+                <div class="admin-actions">
+                    <a href="{{ path('offre_edit', {'id': offer.id}) }}" class="btn-edit">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    <a href="{{ path('offre_toggle', {'id': offer.id}) }}" class="btn-toggle">
+                        <i class="fas {{ offer.isActive ? 'fa-times-circle' : 'fa-check-circle' }}"></i>
+                        {{ offer.isActive ? 'Désactiver' : 'Activer' }}
+                    </a>
+                    
+                    <a href="#" class="btn-delete" onclick="confirmDelete({{ offer.id }})">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </div>
+                
+                <form id="delete-form-{{ offer.id }}" action="{{ path('offre_delete', {'id': offer.id}) }}" method="post" style="display: none;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offer.id) }}">
+                </form>
+            {% endif %}
+            
+            <div class="company-rating">
+                <span class="status-badge {{ offer.isActive ? 'status-accepted' : 'status-rejected' }}">
+                    {{ offer.isActive ? 'Active' : 'Inactive' }}
+                </span>
+                <span class="offer-creation-date">
+                    <i class="fas fa-calendar-plus"></i> Publiée le {{ offer.creationDate|date('d/m/Y') }}
+                </span>
+            </div>
+            
+            <div class="company-details">
+                <div class="detail-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>{{ offer.remuneration|number_format(2, ',', ' ') }} € / mois</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Du {{ offer.startDate|date('d/m/Y') }} au {{ offer.endDate|date('d/m/Y') }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Durée: {{ offer.startDate.diff(offer.endDate).days }} jours</span>
+                </div>
+                
+                {% if offer.company %}
+                    <div class="detail-item">
+                        <i class="fas fa-building"></i>
+                        <span>
+                            <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}">{{ offer.company.name }}</a>
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if is_granted('ROLE_STUDENT') %}
+<div class="card">
+    <div class="application-actions">
+        {% if hasApplied %}
+            <div class="application-status status-{{ applicationStatus|lower|replace({' ': '-'}) }}">
+                <i class="fas fa-info-circle"></i>
+                <span>Statut de votre candidature: <strong>{{ applicationStatus }}</strong></span>
+            </div>
+        {% else %}
+            {% if offer.isActive %}
+                <a href="{{ path('application_new', {'id': offer.id}) }}" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Postuler à cette offre
+                </a>
+            {% else %}
+                <button class="btn-disabled" disabled>
+                    <i class="fas fa-ban"></i> Cette offre n'est plus disponible
+                </button>
+            {% endif %}
+        {% endif %}
+        
+        <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
+            <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
+            <button type="submit" class="btn-wishlist {{ isInWishlist ? 'in-wishlist' : '' }}">
+                <i class="{{ isInWishlist ? 'fas fa-heart' : 'far fa-heart' }}"></i>
+                {{ isInWishlist ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="company-description card">
+    <h2>Description du poste</h2>
+    <div class="description-content">
+        {{ offer.description|nl2br }}
+    </div>
+</div>
+
+{% if offer.skills|length > 0 %}
+<div class="company-description card">
+    <h2>Compétences requises</h2>
+    <div class="description-content">
+        {% for skill in offer.skills %}
+            <span class="skill-tag">{{ skill.name }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if offer.company and offer.company.address %}
+<div class="company-description card">
+    <h2>Lieu du stage</h2>
+    <div class="description-content">
+        <p>
+            {% if offer.company.address.street is defined %}{{ offer.company.address.street }}{% endif %}
+            {% if offer.company.address.city is defined %}, {{ offer.company.address.city }}{% endif %}
+            {% if offer.company.address.country is defined %} {{ offer.company.address.country }}{% endif %}
+        </p>
+    </div>
+</div>
+{% endif %}
+
+{% if offer.company %}
+<div class="company-description card">
+    <h2>À propos de l'entreprise</h2>
+    <div class="company-profile-compact">
+        <div class="company-profile-left">
+            {% include 'partials/_image_display.html.twig' with {
+                'entity': offer.company,
+                'upload_path': 'uploads/company',
+                'alt': offer.company.name,
+                'image_class': 'company-logo-medium',
+                'placeholder_class': 'company-logo-placeholder'
+            } %}
+        </div>
+        <div class="company-profile-right">
+            <h3 class="company-name">{{ offer.company.name }}</h3>
+            
+            <div class="company-meta">
+                {% if offer.company.activity is defined and offer.company.activity %}
+                    <div class="company-meta-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>{{ offer.company.activity }}</span>
+                    </div>
+                {% endif %}
+                
+                {% if offer.company.address %}
+                    <div class="company-meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>
+                            {% if offer.company.address.city is defined %}{{ offer.company.address.city }}{% endif %}
+                            {% if offer.company.address.country is defined %}, {{ offer.company.address.country }}{% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+                
+                {% if offer.company.website is defined and offer.company.website %}
+                    <div class="company-meta-item">
+                        <i class="fas fa-globe"></i>
+                        <span><a href="{{ offer.company.website }}" target="_blank">Site web</a></span>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if offer.company.description is defined and offer.company.description %}
+                <div class="company-excerpt">
+                    {{ offer.company.description|striptags|slice(0, 100) }}{% if offer.company.description|length > 100 %}...{% endif %}
+                </div>
+            {% endif %}
+            
+            <div class="company-action">
+                <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}" class="btn-secondary">
+                    <i class="fas fa-building"></i> Voir le profil complet
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT') and app.user.company and app.user.company.id == offer.company.id) %}
+    {% if offer.applications|length > 0 %}
+        <div class="company-offers card">
+            <h2>Candidatures reçues ({{ offer.applications|length }})</h2>
+            <div class="offer-list">
+                {% for application in offer.applications %}
+                    <div class="offer-item">
+                        <div class="offer-header">
+                            <h3>{{ application.user.firstName }} {{ application.user.lastName }}</h3>
+                            <span class="offer-type status-badge {{ application.status|lower|replace({' ': '-'}) }}">
+                                {{ application.status }}
+                            </span>
+                        </div>
+                        <div class="offer-location">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Candidature envoyée le {{ application.applicationDate|date('d/m/Y') }}</span>
+                        </div>
+                        <div class="offer-footer">
+                            <a href="{{ path('application_show', {'id': application.id}) }}" class="btn-view-offer">
+                                Voir la candidature <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="no-offers card">
+            <i class="fas fa-folder-open"></i>
+            <p>Aucune candidature n'a encore été reçue pour cette offre.</p>
+        </div>
+    {% endif %}
+{% endif %}
+
+<script>
+function confirmDelete(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
+        document.getElementById('delete-form-' + id).submit();
+    }
+}
+</script>
+{% endblock %}

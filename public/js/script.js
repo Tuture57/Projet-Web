@@ -182,4 +182,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialiser l'affichage des filtres
     displayActiveFilters();
+
+    // Soumettre automatiquement le formulaire lors du changement de filtre
+    const filterSelects = document.querySelectorAll('.filter-select');
+    if (filterSelects.length > 0) {
+        filterSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const filterForm = document.getElementById('filters-form');
+                if (filterForm) {
+                    filterForm.submit();
+                }
+            });
+        });
+    }
+
+    // Ajouter les filtres spécifiques aux offres
+    function addSpecificFilters() {
+        // Si nous sommes sur la page des offres avec un filtre d'entreprise
+        if (document.getElementById('company') && document.getElementById('activeFilters')) {
+            const filterLabels = {
+                'company': 'Entreprise',
+                'skill': 'Compétence',
+                // Ajouter à la liste existante
+                ...filterLabels
+            };
+
+            // Le reste de la logique pour afficher les filtres est déjà géré
+            // par la fonction displayActiveFilters()
+        }
+    }
+
+    // Appeler cette fonction après displayActiveFilters()
+    addSpecificFilters();
 });

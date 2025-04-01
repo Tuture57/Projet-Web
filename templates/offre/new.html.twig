@@ -1,0 +1,82 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\offre\new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une offre de stage{% endblock %}
+
+{% block body %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>Créer une offre de stage</h1>
+        <a href="{{ path('offre') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+    
+    <div class="card">
+        {{ form_start(form, {'attr': {'class': 'entity-form'}}) }}
+            <div class="form-row">
+                {{ form_row(form.title) }}
+            </div>
+            
+            <div class="form-row">
+                {{ form_row(form.description) }}
+            </div>
+            
+            <div class="form-row row-50-50">
+                <div class="form-col">
+                    {{ form_row(form.remuneration) }}
+                </div>
+                <div class="form-col">
+                    {% if form.company is defined %}
+                        {{ form_row(form.company) }}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row row-50-50">
+                <div class="form-col">
+                    {{ form_row(form.startDate) }}
+                </div>
+                <div class="form-col">
+                    {{ form_row(form.endDate) }}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                {{ form_row(form.skills) }}
+            </div>
+            
+            <div class="form-row">
+                <div class="form-check">
+                    {{ form_widget(form.isActive) }}
+                    {{ form_label(form.isActive) }}
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <a href="{{ path('offre') }}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiser Select2 pour les listes déroulantes
+        if (typeof $('.select2').select2 === 'function') {
+            $('.select2').select2({
+                placeholder: 'Sélectionnez des compétences',
+                allowClear: true
+            });
+        }
+    });
+</script>
+{% endblock %}

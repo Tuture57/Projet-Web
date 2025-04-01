@@ -1,20 +1,129 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\offre\index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello OffreController!{% endblock %}
+{% block title %}Offres de stage{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{# Barre de recherche #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'offre',
+    'placeholder': 'Rechercher par titre, entreprise ou description',
+    'active_filters': {
+        'company': app.request.query.get('company'),
+        'skill': app.request.query.get('skill'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{# Panneau de filtres #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'offre',
+    'filters': [
+        {
+            'name': 'company',
+            'label': 'Entreprise',
+            'placeholder': 'Toutes les entreprises',
+            'options': companies
+        },
+        {
+            'name': 'skill',
+            'label': 'Compétence',
+            'placeholder': 'Toutes les compétences',
+            'options': skills
+        }
+    ],
+    'sort_options': [
+        {'value': 'creation_desc', 'label': 'Date (plus récent)'},
+        {'value': 'creation_asc', 'label': 'Date (plus ancien)'},
+        {'value': 'title_asc', 'label': 'Titre (A-Z)'},
+        {'value': 'title_desc', 'label': 'Titre (Z-A)'},
+        {'value': 'company_asc', 'label': 'Entreprise (A-Z)'},
+        {'value': 'company_desc', 'label': 'Entreprise (Z-A)'},
+        {'value': 'remuneration_desc', 'label': 'Rémunération (décroissant)'},
+        {'value': 'remuneration_asc', 'label': 'Rémunération (croissant)'}
+    ]
+} %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/wamp64/www/Projet-Web/stagesympho/src/Controller/OffreController.php</code></li>
-        <li>Your template at <code>C:/wamp64/www/Projet-Web/stagesympho/templates/offre/index.html.twig</code></li>
-    </ul>
-</div>
+{# En-tête des résultats #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Offres de stage',
+    'items': offers,
+    'route_name': 'offre',
+    'entity_name_plural': 'offres',
+    'action_button': is_granted('ROLE_PILOT') ? {
+        'route': 'offre_new',
+        'icon': 'fas fa-plus',
+        'label': 'Publier une offre'
+    } : null
+} %}
+
+{% if offers|length > 0 %}
+    <div class="item-list">
+        {% for offer in offers %}
+            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="item">
+                {# Logo de l'entreprise ou placeholder #}
+                {% if offer.company %}
+                    {% include 'partials/_image_display.html.twig' with {
+                        'entity': offer.company,
+                        'upload_path': 'uploads/company',
+                        'alt': offer.company.name,
+                        'image_class': 'item-logo',
+                        'placeholder_class': 'item-logo-placeholder'
+                    } %}
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="item-details">
+                    <h2>{{ offer.title }}</h2>
+                    
+                    <div class="item-meta">
+                        {% if offer.company %}
+                            <div class="item-location">
+                                <i class="fas fa-building"></i> {{ offer.company.name }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="item-date">
+                            <i class="fas fa-calendar-alt"></i> 
+                            Du {{ offer.startDate|date('d/m/Y') }} au {{ offer.endDate|date('d/m/Y') }}
+                        </div>
+                        
+                        <div class="item-salary">
+                            <i class="fas fa-money-bill-wave"></i> 
+                            {{ offer.remuneration|number_format(2, ',', ' ') }} € / mois
+                        </div>
+                    </div>
+                    
+                    {% if offer.skills|length > 0 %}
+                        <div class="skill-tags">
+                            {% for skill in offer.skills %}
+                                <span class="skill-tag">{{ skill.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="item-rating">
+                    <span class="status-badge {{ offer.isActive ? 'status-accepted' : 'status-rejected' }}">
+                        {{ offer.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                    
+                    <div class="applications-count">
+                        <i class="fas fa-users"></i> {{ offer.applications|length }} candidature(s)
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(offers, 'pagination/pagination.html.twig') }}
+{% else %}
+    <div class="no-results">
+        <p>Aucune offre trouvée.</p>
+    </div>
+{% endif %}
 {% endblock %}

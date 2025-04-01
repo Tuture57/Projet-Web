@@ -1,20 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PiloteController!{% endblock %}
+{% block title %}Pilotes{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{# Barre de recherche #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'pilote',
+    'placeholder': 'Rechercher par nom, prénom ou email',
+    'active_filters': {
+        'school': app.request.query.get('school'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{# Panneau de filtres #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'pilote',
+    'filters': [
+        {
+            'name': 'school',
+            'label': 'École',
+            'placeholder': 'Tous les établissements',
+            'options': schools
+        }
+    ],
+    'sort_options': [
+        {'value': 'lastName_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'lastName_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'firstName_asc', 'label': 'Prénom (A-Z)'},
+        {'value': 'firstName_desc', 'label': 'Prénom (Z-A)'},
+        {'value': 'school_asc', 'label': 'Établissement (A-Z)'},
+        {'value': 'school_desc', 'label': 'Établissement (Z-A)'}
+    ]
+} %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/wamp64/www/Projet-Web/stagesympho/src/Controller/PiloteController.php</code></li>
-        <li>Your template at <code>C:/wamp64/www/Projet-Web/stagesympho/templates/pilote/index.html.twig</code></li>
-    </ul>
-</div>
+{# En-tête des résultats #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Pilotes',
+    'items': pilots,
+    'route_name': 'pilote',
+    'entity_name_plural': 'pilotes',
+    'action_button': is_granted('ROLE_ADMIN') ? {
+        'route': 'pilote_new',
+        'icon': 'fas fa-plus',
+        'label': 'Ajouter un pilote'
+    } : null
+} %}
+
+{% if pilots|length > 0 %}
+    <div class="item-list">
+        {% for item in pilots %}
+            <a href="{{ path('pilote_show', {'id': item.id}) }}" class="item">
+                {% if item.imageName %}
+                    <img src="{{ asset('uploads/pilots/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        {{ item.firstName|first|upper }}{{ item.lastName|first|upper }}
+                    </div>
+                {% endif %}
+                
+                <div class="item-details">
+                    <h2>{{ item.firstName }} {{ item.lastName }}</h2>
+                    
+                    {% if item.school %}
+                        <div class="item-location">
+                            <i class="fas fa-university"></i> {{ item.school }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="item-rating">
+                    <span class="no-rating">Pilote</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(pilots, 'pagination/pagination.html.twig') }}
+{% else %}
+    <div class="no-results">
+        <p>Aucun pilote trouvé.</p>
+    </div>
+{% endif %}
 {% endblock %}

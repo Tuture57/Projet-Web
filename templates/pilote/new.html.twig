@@ -1,0 +1,16 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\pilote\new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau pilote{% endblock %}
+
+{% block body %}
+<div class="form-page">
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_pilot_form.html.twig' with {
+            'form': form,
+            'pilot': pilot,
+            'button_label': 'Créer'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}
