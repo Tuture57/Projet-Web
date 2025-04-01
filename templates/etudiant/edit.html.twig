@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ student.firstName }} {{ student.lastName }}{% endblock %}
+
+{% block body %}
+<div class="form-page">
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_student_form.html.twig' with {
+            'form': form,
+            'student': student,
+            'button_label': 'Mettre à jour'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

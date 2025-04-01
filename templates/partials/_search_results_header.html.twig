@@ -1,0 +1,25 @@
+<div class="header-with-actions">
+    <div>
+        <h1>
+            {{ title }}
+            {% if app.request.query.get('search') %}
+                <span class="search-term">- Résultats pour "{{ app.request.query.get('search') }}"</span>
+            {% endif %}
+        </h1>
+        <div class="active-filters" id="activeFilters">
+            {# Les filtres actifs seront ajoutés ici dynamiquement par JavaScript #}
+        </div>
+    </div>
+    {% if action_button is defined and action_button is not null %}
+        <a href="{{ path(action_button.route) }}" class="btn-primary">
+            <i class="{{ action_button.icon }}"></i> {{ action_button.label }}
+        </a>
+    {% endif %}
+</div>
+
+{% if items|length == 0 and app.request.query.get('search') %}
+    <div class="no-results">
+        <p>Aucun résultat trouvé pour "{{ app.request.query.get('search') }}"</p>
+        <a href="{{ path(route_name) }}" class="btn-secondary">Voir tous les {{ entity_name_plural }}</a>
+    </div>
+{% endif %}

@@ -4,86 +4,12 @@
 
 {% block body %}
 <div class="form-page">
-    <div class="back-button">
-        <a href="{{ path('entreprise_show', {'id': company.id}) }}"><i class="fas fa-arrow-left"></i> Retour à l'entreprise</a>
-    </div>
-    
-    <h1>Modifier l'entreprise</h1>
-    
-    {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
-        <div class="form-section">
-            <h2>Informations générales</h2>
-            
-            <div class="form-group">
-                {{ form_label(form.name) }}
-                {{ form_widget(form.name) }}
-                {{ form_errors(form.name) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.email) }}
-                {{ form_widget(form.email) }}
-                {{ form_errors(form.email) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.phone) }}
-                {{ form_widget(form.phone) }}
-                {{ form_errors(form.phone) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.description) }}
-                {{ form_widget(form.description) }}
-                {{ form_errors(form.description) }}
-            </div>
-            
-            <div class="form-group image-upload-container">
-                {{ form_label(form.logoFile) }}
-                
-                {% if company.logoName %}
-                    <div class="image-preview">
-                        <img src="{{ asset('uploads/company/' ~ company.logoName) }}" alt="Logo actuel" class="current-logo">
-                    </div>
-                {% endif %}
-                
-                {{ form_widget(form.logoFile) }}
-                <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
-                {{ form_errors(form.logoFile) }}
-            </div>
-        </div>
-        
-        {% if form.address is defined %}
-        <div class="form-section">
-            <h2>Adresse</h2>
-            <div class="address-item">
-                <div class="form-group">
-                    {{ form_label(form.address.street) }}
-                    {{ form_widget(form.address.street) }}
-                    {{ form_errors(form.address.street) }}
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form_label(form.address.city) }}
-                        {{ form_widget(form.address.city) }}
-                        {{ form_errors(form.address.city) }}
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    {{ form_label(form.address.country) }}
-                    {{ form_widget(form.address.country) }}
-                    {{ form_errors(form.address.country) }}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="form-actions">
-            <a href="{{ path('entreprise_show', {'id': company.id}) }}" class="btn-cancel">Annuler</a>
-            <button type="submit" class="btn-submit">Enregistrer les modifications</button>
-        </div>
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        {% include 'partials/form/_company_form.html.twig' with {
+            'form': form,
+            'company': company,
+            'button_label': 'Mettre à jour'
+        } %}
     {{ form_end(form) }}
 </div>
 {% endblock %}

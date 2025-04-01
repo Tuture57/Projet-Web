@@ -44,100 +44,105 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const filterBtn = document.querySelector('.filter-btn');
-    const filterPanel = document.getElementById('filterPanel');
-    const closeFilterPanel = document.getElementById('closeFilterPanel');
-
-    filterBtn.addEventListener('click', function() {
-        filterPanel.style.display = 'block';
-    });
-
-    closeFilterPanel.addEventListener('click', function() {
-        filterPanel.style.display = 'none';
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+    // Éléments du DOM
     const filterBtn = document.querySelector('.filter-btn');
     const filterPanel = document.getElementById('filterPanel');
     const closeFilterBtn = document.getElementById('closeFilterBtn');
     const filterOverlay = document.getElementById('filterOverlay');
     const activeFilters = document.getElementById('activeFilters');
     
-    // Fonction pour ouvrir le panneau
+    // Quitter si les éléments requis n'existent pas
+    if (!filterBtn || !filterPanel || !closeFilterBtn || !filterOverlay) {
+        console.error("Éléments manquants pour les filtres:", {
+            filterBtn: !!filterBtn, 
+            filterPanel: !!filterPanel, 
+            closeFilterBtn: !!closeFilterBtn, 
+            filterOverlay: !!filterOverlay
+        });
+        return;
+    }
+    
+    // Fonction pour ouvrir le panneau de filtres
     function openFilterPanel() {
-        filterPanel.classList.add('active');
-        filterOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        filterPanel.classList.add('open');
+        filterOverlay.style.display = 'block';
+        setTimeout(() => {
+            filterOverlay.style.opacity = '1';
+        }, 10);
     }
     
-    // Fonction pour fermer le panneau
+    // Fonction pour fermer le panneau de filtres
     function closeFilterPanel() {
-        filterPanel.classList.remove('active');
-        filterOverlay.classList.remove('active');
-        document.body.style.overflow = 'auto';
+        filterPanel.classList.remove('open');
+        filterOverlay.style.opacity = '0';
+        setTimeout(() => {
+            filterOverlay.style.display = 'none';
+        }, 300);
     }
     
-    // Ouvrir le panneau lorsqu'on clique sur le bouton de filtre
-    if (filterBtn) {
-        filterBtn.addEventListener('click', function() {
-            openFilterPanel();
-        });
-    }
+    // Ouvrir le panneau de filtres
+    filterBtn.addEventListener('click', openFilterPanel);
     
-    // Fermer le panneau lorsqu'on clique sur le bouton de fermeture
-    if (closeFilterBtn) {
-        closeFilterBtn.addEventListener('click', function() {
-            closeFilterPanel();
-        });
-    }
+    // Fermer le panneau de filtres
+    closeFilterBtn.addEventListener('click', closeFilterPanel);
+    filterOverlay.addEventListener('click', closeFilterPanel);
     
-    // Fermer le panneau lorsqu'on clique sur l'overlay
-    if (filterOverlay) {
-        filterOverlay.addEventListener('click', function() {
-            closeFilterPanel();
-        });
-    }
-    
-    // Afficher les filtres actifs sous forme de tags
+    // Afficher les filtres actifs
     function displayActiveFilters() {
         if (!activeFilters) return;
         
-        // Vider le conteneur
         activeFilters.innerHTML = '';
         
         // Récupérer les paramètres de l'URL
         const urlParams = new URLSearchParams(window.location.search);
+        
+        // Définir les labels pour les filtres (à personnaliser selon les entités)
         const filterLabels = {
+            // Entreprises
             'country': 'Pays',
             'city': 'Ville',
             'minRating': 'Note min.',
+            
+            // Étudiants
+            'promotion': 'Promotion',
+            'campus': 'Campus',
+            
+            // Pilotes
+            'department': 'Département',
+            
+            // Commun
             'sortBy': 'Tri'
         };
         
         const sortValues = {
+            // Entreprises
             'name_asc': 'Nom (A-Z)',
             'name_desc': 'Nom (Z-A)',
             'rating_desc': 'Meilleure note',
-            'rating_asc': 'Note la plus basse'
+            'rating_asc': 'Note la plus basse',
+            
+            // Étudiants
+            'lastName_asc': 'Nom (A-Z)',
+            'lastName_desc': 'Nom (Z-A)',
+            'promotion_asc': 'Promotion (croissant)',
+            'promotion_desc': 'Promotion (décroissant)',
+            
+            // Pilotes
+            'department_asc': 'Département (A-Z)',
+            'department_desc': 'Département (Z-A)'
         };
         
-        // Liste des paramètres à ignorer (non considérés comme filtres)
-        const ignoredParams = ['search', '_page', 'page', 'p', 'per_page', 'limit', 'offset'];
+        // Paramètres à ignorer
+        const ignoredParams = ['search', 'page', '_page', 'limit', 'per_page', 'offset'];
         
         // Créer un tag pour chaque filtre actif
         for (const [key, value] of urlParams.entries()) {
-            // Vérifier si le paramètre n'est pas à ignorer et a une valeur
             if (value && !ignoredParams.includes(key)) {
                 let displayValue = value;
                 
                 // Format spécifique pour certains filtres
                 if (key === 'minRating') {
-                    let stars = '';
-                    for (let i = 0; i < parseInt(value); i++) {
-                        stars += '★';
-                    }
-                    displayValue = stars;
+                    displayValue = '★'.repeat(parseInt(value));
                 } else if (key === 'sortBy') {
                     displayValue = sortValues[value] || value;
                 }
@@ -148,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tagElement = document.createElement('div');
                 tagElement.className = 'filter-tag';
                 tagElement.innerHTML = `
-                    ${filterLabel}: ${displayValue}
+                    <span class="filter-name">${filterLabel}:</span>
+                    <span class="filter-value">${displayValue}</span>
                     <span class="remove-filter" data-filter="${key}">
                         <i class="fas fa-times"></i>
                     </span>
@@ -158,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Ajouter des event listeners pour supprimer les filtres
+        // Ajouter les événements pour supprimer les filtres
         document.querySelectorAll('.remove-filter').forEach(button => {
             button.addEventListener('click', function() {
                 const filterToRemove = this.getAttribute('data-filter');
@@ -167,13 +173,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Fonction pour supprimer un filtre et recharger la page
+    // Fonction pour supprimer un filtre
     function removeFilter(filterName) {
         const url = new URL(window.location.href);
         url.searchParams.delete(filterName);
         window.location.href = url.toString();
     }
     
-    // Initialiser l'affichage des filtres actifs au chargement
+    // Initialiser l'affichage des filtres
     displayActiveFilters();
 });

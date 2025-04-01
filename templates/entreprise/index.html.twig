@@ -3,173 +3,80 @@
 {% block title %}Entreprises{% endblock %}
 
 {% block body %}
-<div class="filter-overlay" id="filterOverlay"></div>
+{# Barre de recherche #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'entreprise',
+    'placeholder': 'Chercher par entreprise',
+    'active_filters': {
+        'country': app.request.query.get('country'),
+        'city': app.request.query.get('city'),
+        'minRating': app.request.query.get('minRating'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
 
-<div class="search-bar">
-    <form action="{{ path('entreprise') }}" method="get" class="search-form">
-        <div class="search-input-container">
-            <button type="submit" class="search-submit-btn">
-                <i class="fas fa-search search-icon"></i>
-            </button>
-            <input type="text" name="search" placeholder="Chercher par entreprise" class="integrated-input" value="{{ app.request.query.get('search') }}">
-        </div>
-        
-        {# Préserver les filtres actifs lors d'une recherche #}
-        {% if app.request.query.get('country') %}
-            <input type="hidden" name="country" value="{{ app.request.query.get('country') }}">
-        {% endif %}
-        
-        {% if app.request.query.get('city') %}
-            <input type="hidden" name="city" value="{{ app.request.query.get('city') }}">
-        {% endif %}
-        
-        {% if app.request.query.get('minRating') %}
-            <input type="hidden" name="minRating" value="{{ app.request.query.get('minRating') }}">
-        {% endif %}
-        
-        {% if app.request.query.get('sortBy') %}
-            <input type="hidden" name="sortBy" value="{{ app.request.query.get('sortBy') }}">
-        {% endif %}
-        
-        <button type="button" class="filter-btn">
-            <i class="fa fa-filter"></i>
-        </button>
-    </form>
-</div>
+{# Panneau de filtres #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'entreprise',
+    'filters': [
+        {
+            'name': 'country',
+            'label': 'Pays',
+            'placeholder': 'Tous les pays',
+            'options': countries|map(c => {'value': c.country, 'label': c.country})
+        },
+        {
+            'name': 'city',
+            'label': 'Ville',
+            'placeholder': 'Toutes les villes',
+            'options': cities|map(c => {'value': c.city, 'label': c.city})
+        },
+        {
+            'name': 'minRating',
+            'label': 'Note minimale',
+            'placeholder': 'Toutes les notes',
+            'options': [
+                {'value': '1', 'label': '★ et plus'},
+                {'value': '2', 'label': '★★ et plus'},
+                {'value': '3', 'label': '★★★ et plus'},
+                {'value': '4', 'label': '★★★★ et plus'},
+                {'value': '5', 'label': '★★★★★'}
+            ]
+        }
+    ],
+    'sort_options': [
+        {'value': 'name_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'name_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'rating_desc', 'label': 'Meilleure note'},
+        {'value': 'rating_asc', 'label': 'Note la plus basse'}
+    ]
+} %}
 
-<div class="filter-panel" id="filterPanel">
-    <div class="filter-panel-header">
-        <h3 class="filter-panel-title">Filtres</h3>
-        <button type="button" class="close-filter-btn" id="closeFilterBtn">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    
-    <form action="{{ path('entreprise') }}" method="get" class="filter-form" id="filterForm">
-        <!-- Conserver la recherche -->
-        {% if app.request.query.get('search') %}
-            <input type="hidden" name="search" value="{{ app.request.query.get('search') }}">
-        {% endif %}
-        
-        <h3 class="filter-heading">Filtrer par</h3>
-        
-        <div class="form-group">
-            <label for="country">Pays</label>
-            <select name="country" id="country" class="form-control">
-                <option value="">Tous les pays</option>
-                {% for country in countries %}
-                    <option value="{{ country.country }}" {% if app.request.query.get('country') == country.country %}selected{% endif %}>
-                        {{ country.country }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="city">Ville</label>
-            <select name="city" id="city" class="form-control">
-                <option value="">Toutes les villes</option>
-                {% for city in cities %}
-                    <option value="{{ city.city }}" {% if app.request.query.get('city') == city.city %}selected{% endif %}>
-                        {{ city.city }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="minRating">Note minimale</label>
-            <select name="minRating" id="minRating" class="form-control">
-                <option value="">Toutes les notes</option>
-                <option value="1" {% if app.request.query.get('minRating') == '1' %}selected{% endif %}>★ et plus</option>
-                <option value="2" {% if app.request.query.get('minRating') == '2' %}selected{% endif %}>★★ et plus</option>
-                <option value="3" {% if app.request.query.get('minRating') == '3' %}selected{% endif %}>★★★ et plus</option>
-                <option value="4" {% if app.request.query.get('minRating') == '4' %}selected{% endif %}>★★★★ et plus</option>
-            </select>
-        </div>
-        
-        <h3 class="filter-heading">Trier par</h3>
-        
-        <div class="form-group">
-            <select name="sortBy" id="sortBy" class="form-control">
-                <option value="name_asc" {% if app.request.query.get('sortBy') == 'name_asc' %}selected{% endif %}>Nom (A-Z)</option>
-                <option value="name_desc" {% if app.request.query.get('sortBy') == 'name_desc' %}selected{% endif %}>Nom (Z-A)</option>
-                <option value="rating_desc" {% if app.request.query.get('sortBy') == 'rating_desc' %}selected{% endif %}>Meilleure note</option>
-                <option value="rating_asc" {% if app.request.query.get('sortBy') == 'rating_asc' %}selected{% endif %}>Note la plus basse</option>
-            </select>
-        </div>
-        
-        <div class="filter-actions">
-            <button type="submit" class="btn-primary">Appliquer</button>
-            <a href="{{ path('entreprise') }}" class="btn-secondary">Réinitialiser</a>
-        </div>
-    </form>
-</div>
-
-<div class="header-with-actions">
-    <div>
-        <h1>
-            Entreprises
-            {% if app.request.query.get('search') %}
-                <span class="search-term">- Résultats pour "{{ app.request.query.get('search') }}"</span>
-            {% endif %}
-        </h1>
-        <div class="active-filters" id="activeFilters">
-            {# Les filtres actifs seront ajoutés ici dynamiquement #}
-        </div>
-    </div>
-    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
-        <a href="{{ path('entreprise_new') }}" class="btn-primary">
-            <i class="fas fa-plus"></i> Créer une entreprise
-        </a>
-    {% endif %}
-</div>
-
-{% if companies|length == 0 and app.request.query.get('search') %}
-    <div class="no-results">
-        <p>Aucune entreprise trouvée pour "{{ app.request.query.get('search') }}"</p>
-        <a href="{{ path('entreprise') }}" class="btn-secondary">Voir toutes les entreprises</a>
-    </div>
-{% endif %}
+{# En-tête des résultats #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Entreprises',
+    'items': companies,
+    'route_name': 'entreprise',
+    'entity_name_plural': 'entreprises',
+    'action_button': is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') ? {
+        'route': 'entreprise_new',
+        'icon': 'fas fa-plus',
+        'label': 'Créer une entreprise'
+    } : null
+} %}
 
 {% if companies|length > 0 %}
     <div class="item-list">
         {% for item in companies %}
-            <a href="{{ path('entreprise_show', {'id': item.id}) }}" class="item">
-                {% if item.logoName %}
-                    <img src="{{ asset('uploads/company/' ~ item.logoName) }}" alt="{{ item.name }} logo" class="item-logo">
-                {% else %}
-                    <div class="item-logo-placeholder">
-                        {{ item.name|first|upper }}
-                    </div>
-                {% endif %}
-                <div class="item-details">
-                    <h2>{{ item.name }}</h2>
-                </div>
-                <div class="item-rating">
-                {% if item.averageRating is defined and item.averageRating is not null and item.averageRating > 0 %}
-                    <div class="stars">
-                    {% for i in 1..5 %}
-                        {% if i <= item.averageRating|round(0, 'floor') %}
-                        <i class="fas fa-star"></i>
-                        {% elseif i - 0.5 <= item.averageRating %}
-                        <i class="fas fa-star-half-alt"></i>
-                        {% else %}
-                        <i class="far fa-star"></i>
-                        {% endif %}
-                    {% endfor %}
-                    </div>
-                    <span class="rating-value">{{ item.averageRating|number_format(1) }}</span>
-                {% else %}
-                    <span class="no-rating">Non évalué</span>
-                {% endif %}
-                </div>
-            </a>
+            {% include 'partials/_list_item.html.twig' with {
+                'item': item,
+                'route': 'entreprise',
+                'upload_path': 'uploads/company'
+            } %}
         {% endfor %}
     </div>
-
-    <div class="pagination">
-        {{ knp_pagination_render(pagination, "pagination/pagination.html.twig") }}
-    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(companies, 'pagination/pagination.html.twig') }}
 {% endif %}
 {% endblock %}

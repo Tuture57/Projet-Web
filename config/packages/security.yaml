@@ -29,9 +29,9 @@ security:
 
     access_control:
         # Routes publiques (accessibles sans authentification)
-        - { path: ^/$, roles: PUBLIC_ACCESS }                  # Page d'accueil
-        - { path: ^/login, roles: PUBLIC_ACCESS }              # Page de login
-        - { path: ^/logout, roles: PUBLIC_ACCESS }             # Page de logout
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
 
         # Routes réservées aux admins et pilotes
         - { path: ^/entreprises/new, roles: [ROLE_ADMIN, ROLE_PILOT] }

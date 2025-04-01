@@ -31,8 +31,8 @@
         <li class="{{ app.request.attributes.get('_route') == 'wishlist' ? 'active' : '' }}">
             <a href="{{ path('wishlist') }}"><i class="fas fa-heart"></i> Wish-list</a>
         </li>
-        <li class="{{ app.request.attributes.get('_route') == 'candidature' ? 'active' : '' }}">
-            <a href="{{ path('candidature') }}"><i class="fas fa-file-alt"></i> Mes candidatures</a>
+        <li class="{{ app.request.attributes.get('_route') == 'candidature_index' ? 'active' : '' }}">
+            <a href="{{ path('candidature_index') }}"><i class="fas fa-file-alt"></i> Mes candidatures</a>
         </li>
         {% endif %}
         <li class="separator"></li>

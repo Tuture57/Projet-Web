@@ -1,0 +1,77 @@
+{# Informations personnelles #}
+<div class="form-section">
+    <h2>Informations personnelles</h2>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {{ form_label(form.firstName) }}
+            {{ form_widget(form.firstName) }}
+            {{ form_errors(form.firstName) }}
+        </div>
+        
+        <div class="form-group col-md-6">
+            {{ form_label(form.lastName) }}
+            {{ form_widget(form.lastName) }}
+            {{ form_errors(form.lastName) }}
+        </div>
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.school) }}
+        {{ form_widget(form.school) }}
+        {{ form_errors(form.school) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.searchStatus) }}
+        {{ form_widget(form.searchStatus) }}
+        {{ form_errors(form.searchStatus) }}
+    </div>
+    
+    {# Upload d'image - Même structure que pour les entreprises #}
+    <div class="form-group image-upload-container">
+        {{ form_label(form.imageFile) }}
+        
+        {% if student.imageName %}
+            <div class="image-preview">
+                <img src="{{ asset('uploads/students/' ~ student.imageName) }}" alt="{{ student.firstName }} {{ student.lastName }}" class="thumbnail-image">
+            </div>
+        {% endif %}
+        
+        {{ form_widget(form.imageFile) }}
+        <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+        {{ form_errors(form.imageFile) }}
+    </div>
+</div>
+
+{# Mot de passe - Spécifique aux étudiants #}
+<div class="form-section">
+    <h2>Mot de passe</h2>
+    {% if student.id is not null %}
+    <p class="help-text">Laissez vide pour conserver le mot de passe actuel.</p>
+    {% endif %}
+    
+    <div class="form-group">
+        {{ form_label(form.plainPassword.first) }}
+        {{ form_widget(form.plainPassword.first) }}
+        {{ form_errors(form.plainPassword.first) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.plainPassword.second) }}
+        {{ form_widget(form.plainPassword.second) }}
+        {{ form_errors(form.plainPassword.second) }}
+    </div>
+</div>
+
+{# Boutons d'action - Identique à l'entreprise #}
+<div class="form-actions">
+    <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    <a href="{{ path('etudiant') }}" class="btn-secondary">Annuler</a>
+</div>

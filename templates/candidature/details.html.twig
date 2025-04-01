@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la candidature{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="back-button">
+        <a href="{{ path('candidature_index') }}"><i class="fas fa-arrow-left"></i> Retour à mes candidatures</a>
+    </div>
+    <h1>Détails de la candidature</h1>
+</div>
+
+<div class="application-details card">
+    <div class="application-status">
+        <h2>Statut : 
+            <span class="status-badge 
+                {% if application.status == 'Accepted' %}status-accepted{% endif %}
+                {% if application.status == 'Pending' %}status-pending{% endif %}
+                {% if application.status == 'Rejected' %}status-rejected{% endif %}
+            ">
+                {% if application.status == 'Accepted' %}Acceptée{% endif %}
+                {% if application.status == 'Pending' %}En attente{% endif %}
+                {% if application.status == 'Rejected' %}Refusée{% endif %}
+            </span>
+        </h2>
+        <p>Candidature envoyée le {{ application.applicationDate|date('d/m/Y à H:i') }}</p>
+    </div>
+    
+    <div class="offer-details">
+        <h3>Offre : {{ application.offer.title }}</h3>
+        
+        <div class="detail-group">
+            <span class="detail-label">Entreprise :</span>
+            <span class="detail-value">{{ application.offer.company.name }}</span>
+        </div>
+        
+        <div class="detail-group">
+            <span class="detail-label">Période :</span>
+            <span class="detail-value">
+                {% if application.offer.startDate and application.offer.endDate %}
+                    Du {{ application.offer.startDate|date('d/m/Y') }} au {{ application.offer.endDate|date('d/m/Y') }}
+                {% else %}
+                    Dates non spécifiées
+                {% endif %}
+            </span>
+        </div>
+        
+        <div class="detail-group">
+            <span class="detail-label">Description :</span>
+            <div class="detail-text">{{ application.offer.description|raw }}</div>
+        </div>
+    </div>
+    
+    <div class="application-actions">
+        <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn-primary">
+            <i class="fas fa-eye"></i> Voir l'offre complète
+        </a>
+        
+        {% if application.status == 'Pending' %}
+            <a href="{{ path('candidature_annuler', {'id': application.id}) }}" class="btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette candidature ?')">
+                <i class="fas fa-times"></i> Annuler la candidature
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

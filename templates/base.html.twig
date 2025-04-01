@@ -13,6 +13,16 @@
             {% include 'partials/_sidebar.html.twig' %}
             
             <div class="main-content">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible">
+                            {{ message }}
+                            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}   
                 {% block body %}{% endblock %}
             </div>
         </div>

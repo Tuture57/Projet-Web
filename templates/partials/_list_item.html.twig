@@ -1,0 +1,44 @@
+{# partials/_list_item.html.twig #}
+<a href="{{ path(route ~ '_show', {'id': item.id}) }}" class="item">
+    {# Affichage de l'image #}
+    {% if item.imageName %}
+        <img src="{{ asset(upload_path ~ '/' ~ item.imageName) }}" alt="{{ item.name }} logo" class="item-logo">
+    {% else %}
+        <div class="item-logo-placeholder">
+            {{ item.name|first|upper }}
+        </div>
+    {% endif %}
+    
+    {# Détails de l'élément - Simplifié, sans email ni téléphone #}
+    <div class="item-details">
+        <h2>{{ item.name }}</h2>
+        
+        {# Adresse uniquement #}
+        {% if item.address is defined and item.address %}
+            <div class="item-location">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ item.address.city }}{% if item.address.country %}, {{ item.address.country }}{% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    {# Affichage de la note #}
+    <div class="item-rating">
+    {% if item.averageRating is defined and item.averageRating is not null and item.averageRating > 0 %}
+        <div class="stars">
+        {% for i in 1..5 %}
+            {% if i <= item.averageRating|round(0, 'floor') %}
+            <i class="fas fa-star"></i>
+            {% elseif i - 0.5 <= item.averageRating %}
+            <i class="fas fa-star-half-alt"></i>
+            {% else %}
+            <i class="far fa-star"></i>
+            {% endif %}
+        {% endfor %}
+        </div>
+        <span class="rating-value">{{ item.averageRating|number_format(1) }}</span>
+    {% else %}
+        <span class="no-rating">Non évalué</span>
+    {% endif %}
+    </div>
+</a>

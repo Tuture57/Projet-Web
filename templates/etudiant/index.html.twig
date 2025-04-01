@@ -1,20 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello EtudiantController!{% endblock %}
+{% block title %}Étudiants{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{# Barre de recherche #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'etudiant',
+    'placeholder': 'Rechercher par nom, prénom ou email',
+    'active_filters': {
+        'school': app.request.query.get('school'),
+        'status': app.request.query.get('status'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{# Panneau de filtres #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'etudiant',
+    'filters': [
+        {
+            'name': 'school',
+            'label': 'École',
+            'placeholder': 'Toutes les écoles',
+            'options': schools
+        },
+        {
+            'name': 'status',
+            'label': 'Statut de recherche',
+            'placeholder': 'Tous les statuts',
+            'options': statuses
+        }
+    ],
+    'sort_options': [
+        {'value': 'lastName_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'lastName_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'firstName_asc', 'label': 'Prénom (A-Z)'},
+        {'value': 'firstName_desc', 'label': 'Prénom (Z-A)'},
+        {'value': 'school_asc', 'label': 'École (A-Z)'},
+        {'value': 'school_desc', 'label': 'École (Z-A)'}
+    ]
+} %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/wamp64/www/Projet-Web/stagesympho/src/Controller/EtudiantController.php</code></li>
-        <li>Your template at <code>C:/wamp64/www/Projet-Web/stagesympho/templates/etudiant/index.html.twig</code></li>
-    </ul>
-</div>
+{# En-tête des résultats #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Étudiants',
+    'items': students,
+    'route_name': 'etudiant',
+    'entity_name_plural': 'étudiants',
+    'action_button': is_granted('ROLE_ADMIN') ? {
+        'route': 'etudiant_new',
+        'icon': 'fas fa-plus',
+        'label': 'Ajouter un étudiant'
+    } : null
+} %}
+
+{% if students|length > 0 %}
+    <div class="item-list">
+        {% for item in students %}
+            <a href="{{ path('etudiant_show', {'id': item.id}) }}" class="item">
+                {# Utiliser la même structure de classes CSS que pour les entreprises #}
+                {% if item.imageName %}
+                    <img src="{{ asset('uploads/students/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        {{ item.firstName|first|upper }}{{ item.lastName|first|upper }}
+                    </div>
+                {% endif %}
+                
+                <div class="item-details">
+                    <h2>{{ item.firstName }} {{ item.lastName }}</h2>
+                    
+                    {% if item.school %}
+                        <div class="item-location">
+                            <i class="fas fa-university"></i> {{ item.school }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="item-rating">
+                    {% if item.searchStatus %}
+                        <span class="no-rating">{{ item.searchStatus }}</span>
+                    {% else %}
+                        <span class="no-rating">Statut non défini</span>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(students, 'pagination/pagination.html.twig') }}
+{% else %}
+    <div class="no-results">
+        <p>Aucun étudiant trouvé.</p>
+    </div>
+{% endif %}
 {% endblock %}

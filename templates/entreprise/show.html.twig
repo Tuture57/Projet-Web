@@ -10,13 +10,13 @@
     
     <div class="company-profile">
         <div class="company-logo-container">
-            {% if company.logoName %}
-                <img src="{{ asset('uploads/company/' ~ company.logoName) }}" alt="{{ company.name }} logo" class="company-logo">
-            {% else %}
-                <div class="company-logo-placeholder">
-                    {{ company.name|first|upper }}
-                </div>
-            {% endif %}
+            {% include 'partials/_image_display.html.twig' with {
+                'entity': company,
+                'upload_path': 'uploads/company',
+                'alt': company.name ~ ' logo',
+                'image_class': 'company-logo',
+                'placeholder_class': 'company-logo-placeholder'
+            } %}
         </div>
         
         <div class="company-info">

@@ -1,0 +1,90 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\partials\form\_company_form.html.twig #}
+{# Informations générales #}
+<div class="form-section">
+    <h2>Informations générales</h2>
+    
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+    </div>
+    
+    {# Email et téléphone #}
+    <div class="form-group">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.phone) }}
+        {{ form_widget(form.phone) }}
+        {{ form_errors(form.phone) }}
+    </div>
+    
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+        {{ form_errors(form.description) }}
+    </div>
+    
+    {# Upload d'image - Taille thumbnail #}
+    <div class="form-group image-upload-container">
+        {{ form_label(form.imageFile) }}
+        
+        {% if company.imageName %}
+            <div class="image-preview">
+                <img src="{{ asset('uploads/company/' ~ company.imageName) }}" alt="{{ company.name }} logo" class="thumbnail-image">
+            </div>
+        {% endif %}
+        
+        {{ form_widget(form.imageFile) }}
+        <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+        {{ form_errors(form.imageFile) }}
+    </div>
+</div>
+
+{# Adresse #}
+{% if form.address is defined %}
+<div class="form-section">
+    <h2>Adresse</h2>
+    <div class="address-item">
+        <div class="form-group">
+            {{ form_label(form.address.street) }}
+            {{ form_widget(form.address.street) }}
+            {{ form_errors(form.address.street) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.address.city) }}
+            {{ form_widget(form.address.city) }}
+            {{ form_errors(form.address.city) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.address.country) }}
+            {{ form_widget(form.address.country) }}
+            {{ form_errors(form.address.country) }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Autres champs spécifiques #}
+{% if form.numberOfInterns is defined %}
+<div class="form-section">
+    <h2>Informations supplémentaires</h2>
+    
+    <div class="form-group">
+        {{ form_label(form.numberOfInterns) }}
+        {{ form_widget(form.numberOfInterns) }}
+        {{ form_errors(form.numberOfInterns) }}
+    </div>
+</div>
+{% endif %}
+
+{# Boutons d'action #}
+<div class="form-actions">
+    <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    <a href="{{ path('entreprise') }}" class="btn-secondary">Annuler</a>
+</div>

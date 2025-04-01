@@ -14,10 +14,11 @@ use App\Entity\Company;
 use App\Entity\Address;
 use App\Form\CompanyType;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Service\ImageUploadService;
 
 class EntrepriseController extends AbstractController
 {
-    #[Route('/entreprise', name: 'entreprise')]
+    #[Route('/entreprises', name: 'entreprise')]
     public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
         // Récupérer le terme de recherche et les paramètres de filtre
@@ -102,14 +103,9 @@ class EntrepriseController extends AbstractController
 
     // Les routes statiques doivent être AVANT les routes avec paramètres
     #[Route('/entreprises/new', name: 'entreprise_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
         $company = new Company();
-        
-        // Définir une valeur par défaut pour numberOfInterns
-        $company->setNumberOfInterns(0);
-        
-        // Créer une adresse vide
         $address = new Address();
         $company->setAddress($address);
         
@@ -117,31 +113,21 @@ class EntrepriseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $logoFile */
-            $logoFile = $form->get('logoFile')->getData();
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('imageFile')->getData();
             
-            if ($logoFile) {
-                $newFilename = 'logo_'.bin2hex(random_bytes(8)).'.'.$logoFile->guessExtension();
-                
+            if ($imageFile) {
                 try {
-                    // Supprimer l'ancien logo s'il existe
-                    if ($company->getLogoName()) {
-                        $oldFilePath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
-                        if (file_exists($oldFilePath)) {
-                            unlink($oldFilePath);
-                        }
-                    }
-                    
-                    // Déplacer le nouveau logo
-                    $logoFile->move(
-                        $this->getParameter('company_logos_directory'),
-                        $newFilename
+                    // Utiliser le service d'upload
+                    $newFilename = $imageService->uploadImage(
+                        $imageFile,
+                        'company',
+                        $this->getParameter('company_logos_directory')
                     );
                     
-                    // Mettre à jour le nom du logo dans la base de données
-                    $company->setLogoName($newFilename);
-                } catch (FileException $e) {
-                    // Gérer l'exception
+                    $company->setImageName($newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image.');
                 }
             }
             
@@ -185,42 +171,40 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}/edit', name: 'entreprise_edit')]
-    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {   
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $logoFile */
-            $logoFile = $form->get('logoFile')->getData();
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->get('imageFile')->getData();
             
-            if ($logoFile) {
-                $newFilename = 'logo_'.bin2hex(random_bytes(8)).'.'.$logoFile->guessExtension();
-                
+            if ($imageFile) {
                 try {
-                    // Supprimer l'ancien logo s'il existe
-                    if ($company->getLogoName()) {
-                        $oldFilePath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
-                        if (file_exists($oldFilePath)) {
-                            unlink($oldFilePath);
-                        }
+                    // Supprimer l'ancienne image s'il y en a une
+                    if ($company->getImageName()) {
+                        $imageService->removeImage(
+                            $company->getImageName(),
+                            $this->getParameter('company_logos_directory')
+                        );
                     }
                     
-                    // Déplacer le nouveau logo
-                    $logoFile->move(
-                        $this->getParameter('company_logos_directory'),
-                        $newFilename
+                    // Uploader la nouvelle image
+                    $newFilename = $imageService->uploadImage(
+                        $imageFile,
+                        'company',
+                        $this->getParameter('company_logos_directory')
                     );
                     
-                    // Mettre à jour le nom du logo dans la base de données
-                    $company->setLogoName($newFilename);
-                } catch (FileException $e) {
-                    // Gérer l'exception
+                    $company->setImageName($newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image.');
                 }
             }
             
             $entityManager->flush();
-
+            
             $this->addFlash('success', 'L\'entreprise a été modifiée avec succès.');
             return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
         }
@@ -232,17 +216,17 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}/delete', name: 'entreprise_delete', methods: ['POST'])]
-    public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Company $company, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
         // Vérification du token CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
             try {
-                // Supprimer le logo associé à l'entreprise
-                if ($company->getLogoName()) {
-                    $logoPath = $this->getParameter('company_logos_directory').'/'.$company->getLogoName();
-                    if (file_exists($logoPath)) {
-                        unlink($logoPath);
-                    }
+                // Supprimer l'image associée
+                if ($company->getImageName()) {
+                    $imageService->removeImage(
+                        $company->getImageName(), 
+                        $this->getParameter('company_logos_directory')
+                    );
                 }
 
                 // Remove associated offers
@@ -270,7 +254,7 @@ class EntrepriseController extends AbstractController
                 
                 $this->addFlash('success', 'L\'entreprise a été supprimée avec succès.');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Impossible de supprimer cette entreprise: ' . $e->getMessage());
+                $this->addFlash('error', 'Une erreur est survenue lors de la suppression.');
             }
         } else {
             $this->addFlash('error', 'Token CSRF invalide.');

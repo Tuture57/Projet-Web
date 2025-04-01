@@ -42,7 +42,7 @@ class CompanyType extends AbstractType
                 'label' => false,
                 'required' => true,
             ])
-            ->add('logoFile', FileType::class, [
+            ->add('imageFile', FileType::class, [
                 'label' => 'Logo de l\'entreprise',
                 'required' => false,
                 'attr' => [

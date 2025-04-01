@@ -1,83 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une entreprise{% endblock %}
+{% block title %}Nouvelle entreprise{% endblock %}
 
 {% block body %}
 <div class="form-page">
-    <div class="back-button">
-        <a href="{{ path('entreprise') }}"><i class="fas fa-arrow-left"></i> Retour aux entreprises</a>
-    </div>
-    
-    <h1>Créer une nouvelle entreprise</h1>
-    
-    {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
-        <div class="form-section">
-            <h2>Informations générales</h2>
-            
-            <div class="form-group">
-                {{ form_label(form.name) }}
-                {{ form_widget(form.name) }}
-                {{ form_errors(form.name) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.email) }}
-                {{ form_widget(form.email) }}
-                {{ form_errors(form.email) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.phone) }}
-                {{ form_widget(form.phone) }}
-                {{ form_errors(form.phone) }}
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.description) }}
-                {{ form_widget(form.description) }}
-                {{ form_errors(form.description) }}
-            </div>
-
-            <!-- Ajout du champ d'upload pour le logo -->
-            <div class="form-group image-upload-container">
-                {{ form_label(form.logoFile) }}
-                {{ form_widget(form.logoFile) }}
-                <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
-                {{ form_errors(form.logoFile) }}
-            </div>
-        </div>
-        
-        {% if form.address is defined %}
-        <div class="form-section">
-            <h2>Adresse</h2>
-            <div class="address-item">
-                <div class="form-group">
-                    {{ form_label(form.address.street) }}
-                    {{ form_widget(form.address.street) }}
-                    {{ form_errors(form.address.street) }}
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        {{ form_label(form.address.city) }}
-                        {{ form_widget(form.address.city) }}
-                        {{ form_errors(form.address.city) }}
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    {{ form_label(form.address.country) }}
-                    {{ form_widget(form.address.country) }}
-                    {{ form_errors(form.address.country) }}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="form-actions">
-            <a href="{{ path('entreprise') }}" class="btn-cancel">Annuler</a>
-            <button type="submit" class="btn-submit">Créer l'entreprise</button>
-        </div>
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        {% include 'partials/form/_company_form.html.twig' with {
+            'form': form,
+            'company': company,
+            'button_label': 'Créer'
+        } %}
     {{ form_end(form) }}
 </div>
 {% endblock %}

@@ -1,0 +1,49 @@
+<div class="filter-panel" id="filterPanel">
+    <div class="filter-panel-header">
+        <h3 class="filter-panel-title">Filtres</h3>
+        <button type="button" class="close-filter-btn" id="closeFilterBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <form action="{{ path(route_name) }}" method="get" class="filter-form" id="filterForm">
+        <!-- Conserver la recherche -->
+        {% if app.request.query.get('search') %}
+            <input type="hidden" name="search" value="{{ app.request.query.get('search') }}">
+        {% endif %}
+        
+        <h3 class="filter-heading">Filtrer par</h3>
+        
+        {% for filter in filters %}
+            <div class="form-group">
+                <label for="{{ filter.name }}">{{ filter.label }}</label>
+                <select name="{{ filter.name }}" id="{{ filter.name }}" class="form-control">
+                    <option value="">{{ filter.placeholder|default('Tous') }}</option>
+                    {% for option in filter.options %}
+                        <option value="{{ option.value }}" {% if app.request.query.get(filter.name) == option.value %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endfor %}
+        
+        {% if sort_options is defined and sort_options|length > 0 %}
+        <div class="form-group">
+            <label for="sortBy">Trier par</label>
+            <select name="sortBy" id="sortBy" class="form-control">
+                {% for option in sort_options %}
+                    <option value="{{ option.value }}" {% if app.request.query.get('sortBy') == option.value %}selected{% endif %}>
+                        {{ option.label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        
+        <div class="filter-actions">
+            <button type="submit" class="btn-primary">Appliquer</button>
+            <a href="{{ path(route_name) }}" class="btn-secondary">Réinitialiser</a>
+        </div>
+    </form>
+</div>

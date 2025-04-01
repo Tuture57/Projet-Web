@@ -1,9 +1,96 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Aide{% endblock %}
+{% block title %}Foire Aux Questions (FAQ){% endblock %}
 
 {% block body %}
-<h1>Aide</h1>
-<p>Bienvenue sur la page d'aide. Vous pouvez trouver des informations utiles ici.</p>
-<a href="{{ path('home') }}">Retour à l'accueil</a>
+<div class="page-header">
+    <div class="header-with-actions">
+        <h1>Foire Aux Questions (FAQ)</h1>
+    </div>
+    <p>Retrouvez ici les réponses aux questions les plus fréquemment posées.</p>
+</div>
+
+<div class="faq-section card">
+    <h2>Questions générales</h2>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-question-circle"></i> Qu'est-ce que ALT?</h3>
+        <p>ALT est une plateforme de mise en relation entre étudiants et entreprises pour des stages. Notre mission est de faciliter la recherche de stages pour les étudiants et d'aider les entreprises à trouver les meilleurs talents.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-question-circle"></i> Comment créer un compte?</h3>
+        <p>Pour créer un compte, cliquez sur "S'inscrire" dans la barre de navigation. Vous pourrez choisir entre un compte étudiant ou entreprise et remplir le formulaire d'inscription avec vos informations.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-question-circle"></i> L'utilisation de la plateforme est-elle gratuite?</h3>
+        <p>Oui, l'utilisation de base de la plateforme est entièrement gratuite pour les étudiants comme pour les entreprises.</p>
+    </div>
+</div>
+
+<div class="faq-section card">
+    <h2>Pour les étudiants</h2>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-user-graduate"></i> Comment puis-je postuler à une offre de stage?</h3>
+        <p>Pour postuler à une offre de stage, consultez d'abord la liste des offres disponibles. Une fois que vous avez trouvé une offre qui vous intéresse, cliquez sur celle-ci pour voir les détails complets, puis cliquez sur le bouton "Postuler".</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-user-graduate"></i> Comment puis-je suivre mes candidatures?</h3>
+        <p>Vous pouvez suivre toutes vos candidatures dans la section "Mes candidatures" de votre tableau de bord. Vous y verrez leur statut (en attente, acceptée ou refusée) et pourrez accéder aux détails de chaque candidature.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-user-graduate"></i> Comment mettre à jour mon profil?</h3>
+        <p>Pour mettre à jour votre profil, accédez à votre compte et cliquez sur "Mon profil". Vous pourrez alors modifier vos informations personnelles, votre CV, vos compétences et vos préférences de recherche.</p>
+    </div>
+</div>
+
+<div class="faq-section card">
+    <h2>Pour les entreprises</h2>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-building"></i> Comment publier une offre de stage?</h3>
+        <p>Pour publier une offre de stage, connectez-vous à votre compte entreprise et cliquez sur "Publier une offre" dans votre tableau de bord. Remplissez ensuite le formulaire avec les détails du stage que vous proposez.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-building"></i> Comment gérer les candidatures reçues?</h3>
+        <p>Toutes les candidatures reçues sont accessibles dans la section "Candidatures" de votre tableau de bord. Vous pouvez les filtrer par offre ou par statut, les examiner individuellement et les accepter ou les refuser.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-building"></i> Comment modifier ou supprimer une offre de stage?</h3>
+        <p>Vous pouvez gérer vos offres de stage dans la section "Mes offres" de votre tableau de bord. Pour chaque offre, vous avez la possibilité de la modifier, de la désactiver temporairement ou de la supprimer définitivement.</p>
+    </div>
+</div>
+
+<div class="faq-section card">
+    <h2>Sécurité et confidentialité</h2>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-shield-alt"></i> Comment mes données sont-elles protégées?</h3>
+        <p>Nous prenons la protection de vos données très au sérieux. Toutes les informations que vous nous confiez sont stockées de manière sécurisée et ne sont jamais partagées avec des tiers sans votre consentement explicite.</p>
+    </div>
+    
+    <div class="list-item faq-item">
+        <h3><i class="fas fa-shield-alt"></i> Qui peut voir mon profil?</h3>
+        <p>Pour les étudiants, votre profil complet n'est visible que par les entreprises auxquelles vous avez postulé. Pour les entreprises, votre profil est visible par tous les utilisateurs de la plateforme.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="description-content" style="text-align: center;">
+        <h3><i class="fas fa-envelope"></i> Besoin d'aide supplémentaire?</h3>
+        <p>Si vous n'avez pas trouvé la réponse à votre question, n'hésitez pas à nous contacter :</p>
+        <p><a href="mailto:support@alt.com" class="contact-email" style="color: #6B5B95; font-weight: bold;">support@alt.com</a></p>
+        <p style="margin-top: 1rem;">Notre équipe vous répondra dans les plus brefs délais.</p>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{{ path('home') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+</div>
 {% endblock %}
