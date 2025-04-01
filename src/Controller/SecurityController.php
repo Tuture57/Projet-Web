@@ -9,9 +9,13 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'login')]
+    #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->getUser()) {
+            // Si l'utilisateur est déjà connecté, le rediriger vers la page d'accueil
+            return $this->redirectToRoute('home');
+        }
         $error = $authenticationUtils->getLastAuthenticationError();
 
         $lastUsername = $authenticationUtils->getLastUsername();
@@ -26,5 +30,11 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         // Symfony gère automatiquement la déconnexion
+    }
+
+    #[Route('/access-denied', name: 'access_denied')]
+    public function accessDenied(): Response
+    {
+        return $this->redirectToRoute('home');
     }
 }
