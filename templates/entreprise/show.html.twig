@@ -38,7 +38,7 @@
                 </form>
             {% endif %}
             
-            {% if company.averageRating is not null %}
+            {% if company.averageRating is not null and company.averageRating > 0 %}
                 <div class="company-rating">
                     <div class="stars">
                         {% for i in 1..5 %}
@@ -52,6 +52,9 @@
                         {% endfor %}
                     </div>
                     <span class="rating-value">{{ company.averageRating|number_format(1) }}</span>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+                        <span class="rating-details">({{ company.ratings|length }} avis)</span>
+                    {% endif %}
                 </div>
             {% else %}
                 <span class="no-rating">Non évalué</span>
@@ -89,6 +92,53 @@
     <h2>À propos de {{ company.name }}</h2>
     <div class="description-content">
         {{ company.description|length > 150 ? company.description|slice(0, 150) ~ '...' : company.description }}
+    </div>
+</div>
+{% endif %}
+
+<!-- Formulaire de notation -->
+{% if app.user %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h2>Noter cette entreprise</h2>
+    </div>
+    <div class="card-body">
+        <form action="{{ path('entreprise_rate', {'id': company.id}) }}" method="post" id="rating-form">
+            <div class="rating-selector">
+                <p>Choisissez une note :</p>
+                <div class="star-rating">
+                    {% set userRating = null %}
+                    {% if app.user.ratings is defined %}
+                        {% for rating in app.user.ratings %}
+                            {% if rating.company and rating.company.id == company.id %}
+                                {% set userRating = rating.score %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% for i in 5..1 %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if userRating == i %}checked{% endif %} />
+                        <label for="star{{ i }}"><i class="{% if userRating >= i %}fas{% else %}far{% endif %} fa-star"></i></label>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Soumettre</button>
+        </form>
+        
+        {% if userRating %}
+        <form action="{{ path('entreprise_remove_rating', {'id': company.id}) }}" method="post" id="remove-rating-form" class="mt-3">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre avis ?')">
+                Supprimer mon avis
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="card mt-4">
+    <div class="card-body">
+        <p>Connectez-vous pour noter cette entreprise.</p>
+        <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
     </div>
 </div>
 {% endif %}

@@ -460,6 +460,13 @@ body {
     font-style: italic;
 }
 
+.rating-details {
+    margin-left: 5px;
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+}
+
 /* Pagination */
 .pagination {
     display: flex;
@@ -2093,4 +2100,120 @@ textarea {
 
 .company-action {
     margin-top: 10px;
+}
+
+/* Utilise les styles existants et ajoute uniquement ce qui est nécessaire */
+.custom-select {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 15px;
+}
+
+/* Style pour la sélection multiple qui utilise les couleurs du thème */
+select[multiple] option {
+    padding: 8px;
+    margin-bottom: 2px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+/* Utiliser la couleur primaire du thème pour les éléments sélectionnés */
+select[multiple] option:checked {
+    background-color: #6B5B95;
+    color: white;
+}
+
+/* Utiliser la couleur secondaire du thème pour le survol */
+select[multiple] option:hover {
+    background-color: #E8EAF6;
+}
+
+/* Customisation du bouton toggle pour qu'il corresponde au thème */
+.toggle-select {
+    background-color: #6B5B95;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.toggle-select:hover {
+    background-color: #5a4d7e;
+}
+
+/* Star Rating System */
+.rating-selector {
+    margin-bottom: 20px;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    font-size: 24px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #ddd;
+    cursor: pointer;
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.star-rating label i {
+    transition: color 0.2s ease;
+}
+
+/* Fix pour que les étoiles cochées soient jaunes même sans survol */
+.star-rating input:checked ~ label i {
+    color: #FFD700;
+}
+
+.star-rating input:checked + label i {
+    color: #FFD700;
+}
+
+.star-rating label:hover i,
+.star-rating input:checked + label:hover i,
+.star-rating label:hover ~ label i {
+    color: #FFD700;
+}
+
+.star-rating input:checked ~ label:hover ~ label i {
+    color: #FFD700;
+}
+
+/* Styles pour les actions de notation */
+.rating-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#remove-rating-form {
+    display: inline-block;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
 }

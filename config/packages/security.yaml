@@ -27,19 +27,32 @@ security:
                 path: app_logout
                 target: home
 
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_PILOT]
+        ROLE_PILOT: [ROLE_STUDENT]
+
     access_control:
-        # Routes publiques (accessibles sans authentification)
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/logout, roles: PUBLIC_ACCESS }
 
-        # Routes réservées aux admins et pilotes
         - { path: ^/entreprises/new, roles: [ROLE_ADMIN, ROLE_PILOT] }
         - { path: ^/entreprises/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
-        - { path: ^/company/create, roles: [ROLE_ADMIN, ROLE_PILOT] }
-        - { path: ^/company/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/entreprises/\d+/delete, roles: [ROLE_ADMIN, ROLE_PILOT] }
 
-        # Toutes les autres routes nécessitent une authentification
+        - { path: ^/offres/new, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/offres/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/offres/\d+/delete, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/offres/\d+/toggle, roles: [ROLE_ADMIN, ROLE_PILOT] }
+
+        - { path: ^/pilotes/new, roles: [ROLE_ADMIN] }
+        - { path: ^/pilotes/\d+/edit, roles: [ROLE_ADMIN] }
+        - { path: ^/pilotes/\d+/delete, roles: [ROLE_ADMIN] }
+
+        - { path: ^/etudiants/new, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/etudiants/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/etudiants/\d+/delete, roles: [ROLE_ADMIN, ROLE_PILOT] }
+
+
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

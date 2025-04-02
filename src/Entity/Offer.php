@@ -35,7 +35,7 @@ class Offer
     private ?\DateTimeInterface $creationDate = null;
 
     #[ORM\Column]
-    private ?int $numberOfApplicants = null;
+    private ?int $numberOfApplicants = 0;
 
     /**
      * @var Collection<int, User>

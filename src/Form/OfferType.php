@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class OfferType extends AbstractType
@@ -55,7 +56,26 @@ class OfferType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ]
-            ])
+            ]);
+
+        // Si l'utilisateur est administrateur OU pilote, ajouter le champ de sélection d'entreprise
+        if ($options['is_admin'] || $options['is_pilot']) {
+            // Définir des options spécifiques selon le rôle
+            $companyOptions = [
+                'class' => Company::class,
+                'choice_label' => 'name',
+                'label' => 'Entreprise',
+                'placeholder' => 'Sélectionnez une entreprise',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ];
+            
+            $builder->add('company', EntityType::class, $companyOptions);
+        }
+
+        $builder
             ->add('skills', EntityType::class, [
                 'class' => Skill::class,
                 'choice_label' => 'name',
@@ -73,26 +93,15 @@ class OfferType extends AbstractType
                     'class' => 'form-check-input'
                 ]
             ]);
-        
-        // Si l'option is_admin est passée, ajouter le champ company
-        if ($options['is_admin']) {
-            $builder->add('company', EntityType::class, [
-                'class' => Company::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Sélectionnez une entreprise',
-                'attr' => [
-                    'class' => 'form-control'
-                ],
-                'label' => 'Entreprise'
-            ]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Offer::class,
-            'is_admin' => false, // Option par défaut pour contrôler l'affichage du champ company
+            'is_admin' => false,     // Option pour les administrateurs
+            'is_pilot' => false,     // Option pour les pilotes
+            'pilot_company' => null, // Entreprise du pilote
         ]);
     }
 }

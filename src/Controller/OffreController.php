@@ -14,10 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class OffreController extends AbstractController
 {
     #[Route('/offres', name: 'offre')]
+    #[IsGranted('ROLE_STUDENT')]
     public function index(
         Request $request, 
         OfferRepository $offerRepository, 
@@ -133,8 +135,60 @@ final class OffreController extends AbstractController
             'sortBy' => $sortBy
         ]);
     }
-
+    
+    #[Route('/offres/new', name: 'offre_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_PILOT')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $offer = new Offer();
+        
+        // Date de création par défaut
+        $offer->setCreationDate(new \DateTime());
+        $offer->setIsActive(true);
+        
+        // Déterminer les rôles
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isPilot = $this->isGranted('ROLE_PILOT');
+        
+        // Récupérer l'entreprise du pilote si applicable
+        $pilotCompany = null;
+        if ($isPilot && $this->getUser() && method_exists($this->getUser(), 'getCompany')) {
+            $pilotCompany = $this->getUser()->getCompany();
+            $offer->setCompany($pilotCompany);
+        }
+        
+        $form = $this->createForm(OfferType::class, $offer, [
+            'is_admin' => $isAdmin,
+            'is_pilot' => $isPilot,
+            'pilot_company' => $pilotCompany,
+        ]);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Pour un pilote qui n'est pas admin, on s'assure que l'offre est associée à son entreprise
+            if ($isPilot && !$isAdmin && $pilotCompany) {
+                $offer->setCompany($pilotCompany);
+            }
+            
+            $entityManager->persist($offer);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'L\'offre a été créée avec succès.');
+            
+            return $this->redirectToRoute('offre_show', [
+                'id' => $offer->getId(),
+            ]);
+        }
+        
+        return $this->render('offre/new.html.twig', [
+            'offer' => $offer,
+            'form' => $form->createView(),
+        ]);
+    }
+    
     #[Route('/offres/{id}', name: 'offre_show', methods: ['GET'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function show(Offer $offre): Response
     {
         $hasApplied = false;
@@ -164,51 +218,32 @@ final class OffreController extends AbstractController
             'isInWishlist' => $isInWishlist
         ]);
     }
-    
-    #[Route('/offres/new', name: 'offre_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $offer = new Offer();
-        
-        // Si l'utilisateur est une entreprise, associer automatiquement
-        if ($this->isGranted('ROLE_PILOT') && $this->getUser()->getCompany()) {
-            $offer->setCompany($this->getUser()->getCompany());
-        }
-        
-        // Date de création par défaut
-        $offer->setCreationDate(new \DateTime());
-        $offer->setIsActive(true);
-        
-        $form = $this->createForm(OfferType::class, $offer);
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($offer);
-            $entityManager->flush();
-            
-            $this->addFlash('success', 'L\'offre a été créée avec succès.');
-            
-            return $this->redirectToRoute('offre_show', [
-                'id' => $offer->getId(),
-            ]);
-        }
-        
-        return $this->render('offre/new.html.twig', [
-            'offer' => $offer,
-            'form' => $form->createView(),
-        ]);
-    }
-    
+
     #[Route('/offres/{id}/edit', name: 'offre_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_PILOT')]
     public function edit(Request $request, Offer $offer, EntityManagerInterface $entityManager): Response
     {
+        // Déterminer les rôles
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isPilot = $this->isGranted('ROLE_PILOT');
+        
         // Vérifier que l'utilisateur peut modifier cette offre
-        if (!$this->isGranted('ROLE_ADMIN') && 
-            (!$this->isGranted('ROLE_PILOT') || $this->getUser()->getCompany()->getId() !== $offer->getCompany()->getId())) {
+        if (!$isAdmin && !$isPilot) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette offre.');
         }
         
-        $form = $this->createForm(OfferType::class, $offer);
+        // Récupérer l'entreprise du pilote si applicable
+        $pilotCompany = null;
+        if ($isPilot && $this->getUser() && method_exists($this->getUser(), 'getCompany')) {
+            $pilotCompany = $this->getUser()->getCompany();
+        }
+        
+        $form = $this->createForm(OfferType::class, $offer, [
+            'is_admin' => $isAdmin,
+            'is_pilot' => $isPilot,
+            'pilot_company' => $pilotCompany,
+        ]);
+        
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
@@ -228,11 +263,11 @@ final class OffreController extends AbstractController
     }
     
     #[Route('/offres/{id}/delete', name: 'offre_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_PILOT')]
     public function delete(Request $request, Offer $offer, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur peut supprimer cette offre
-        if (!$this->isGranted('ROLE_ADMIN') && 
-            (!$this->isGranted('ROLE_PILOT') || $this->getUser()->getCompany()->getId() !== $offer->getCompany()->getId())) {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cette offre.');
         }
         
@@ -248,11 +283,11 @@ final class OffreController extends AbstractController
     }
     
     #[Route('/offres/{id}/toggle', name: 'offre_toggle', methods: ['GET'])]
+    #[IsGranted('ROLE_PILOT')]
     public function toggle(Offer $offer, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur peut modifier cette offre
-        if (!$this->isGranted('ROLE_ADMIN') && 
-            (!$this->isGranted('ROLE_PILOT') || $this->getUser()->getCompany()->getId() !== $offer->getCompany()->getId())) {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette offre.');
         }
         
@@ -269,6 +304,7 @@ final class OffreController extends AbstractController
     }
     
     #[Route('/offres/{id}/toggle-wishlist', name: 'offre_toggle_wishlist', methods: ['POST'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function toggleWishlist(Offer $offer, Request $request, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur est un étudiant
@@ -303,8 +339,7 @@ final class OffreController extends AbstractController
     public function applications(Offer $offer): Response
     {
         // Vérifier que l'utilisateur peut voir les candidatures de cette offre
-        if (!$this->isGranted('ROLE_ADMIN') && 
-            (!$this->isGranted('ROLE_PILOT') || $this->getUser()->getCompany()->getId() !== $offer->getCompany()->getId())) {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à voir les candidatures de cette offre.');
         }
         

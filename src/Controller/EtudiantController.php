@@ -17,10 +17,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use App\Repository\ApplicationRepository;
 use App\Repository\RatingRepository;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class EtudiantController extends AbstractController
 {
     #[Route('/etudiants', name: 'etudiant')]
+    #[IsGranted('ROLE_PILOT')]
     public function index(
         Request $request, 
         UserRepository $userRepository, 
@@ -126,6 +128,7 @@ final class EtudiantController extends AbstractController
     }
 
     #[Route('/etudiants/new', name: 'etudiant_new')]
+    #[IsGranted('ROLE_PILOT')]
     public function new(
         Request $request, 
         EntityManagerInterface $entityManager,
@@ -192,6 +195,7 @@ final class EtudiantController extends AbstractController
     }
 
     #[Route('/etudiants/{id}', name: 'etudiant_show')]
+    #[IsGranted('ROLE_PILOT')]
     public function show(
         User $user, 
         RoleRepository $roleRepository,
@@ -219,6 +223,7 @@ final class EtudiantController extends AbstractController
     }
 
     #[Route('/etudiants/{id}/edit', name: 'etudiant_edit')]
+    #[IsGranted('ROLE_PILOT')]
     public function edit(
         Request $request,
         User $user,
@@ -290,6 +295,7 @@ final class EtudiantController extends AbstractController
     }
 
     #[Route('/etudiants/{id}/delete', name: 'etudiant_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_PILOT')]
     public function delete(
         Request $request,
         User $user,

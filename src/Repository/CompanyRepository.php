@@ -43,6 +43,8 @@ class CompanyRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    // Suppression de calculateAverageRating qui est maintenant dans RatingRepository
+
     //    /**
     //     * @return Company[] Returns an array of Company objects
     //     */

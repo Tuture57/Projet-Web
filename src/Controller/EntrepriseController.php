@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Repository\CompanyRepository;
 use App\Repository\OfferRepository;
+use App\Repository\RatingRepository;
+use App\Entity\Rating; // Ajout de l'import manquant
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,12 +15,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Company;
 use App\Entity\Address;
 use App\Form\CompanyType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Service\ImageUploadService;
 
 class EntrepriseController extends AbstractController
 {
     #[Route('/entreprises', name: 'entreprise')]
+    #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
         // Récupérer le terme de recherche et les paramètres de filtre
@@ -103,6 +107,7 @@ class EntrepriseController extends AbstractController
 
     // Les routes statiques doivent être AVANT les routes avec paramètres
     #[Route('/entreprises/new', name: 'entreprise_new')]
+    #[IsGranted('ROLE_PILOT')]
     public function new(Request $request, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
         $company = new Company();
@@ -144,14 +149,9 @@ class EntrepriseController extends AbstractController
         ]);
     }
 
-    #[Route('/entreprises/stats', name: 'entreprise_stats')]
-    public function stats(): Response
-    {
-        return $this->render('entreprise/stats.html.twig');
-    }
-
     // Les routes avec paramètres doivent être APRÈS les routes statiques
     #[Route('/entreprises/{id}', name: 'entreprise_show')]
+    #[IsGranted('ROLE_STUDENT')]
     public function show(int $id, CompanyRepository $companyRepository, OfferRepository $offerRepository): Response
     {
         // Récupérer l'entreprise
@@ -171,6 +171,7 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}/edit', name: 'entreprise_edit')]
+    #[IsGranted('ROLE_PILOT')]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {   
         $form = $this->createForm(CompanyType::class, $company);
@@ -216,6 +217,7 @@ class EntrepriseController extends AbstractController
     }
 
     #[Route('/entreprises/{id}/delete', name: 'entreprise_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_PILOT')]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
         // Vérification du token CSRF pour la sécurité
@@ -262,4 +264,126 @@ class EntrepriseController extends AbstractController
 
         return $this->redirectToRoute('entreprise');
     }
+
+    #[Route('/{id}/rate', name: 'entreprise_rate', methods: ['POST'])]
+    #[IsGranted('ROLE_STUDENT')]
+    public function rateCompany(
+        Request $request, 
+        Company $company, 
+        EntityManagerInterface $entityManager,
+        RatingRepository $ratingRepository
+    ): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Vous devez être connecté pour noter une entreprise.');
+            return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+        }
+
+        // S'assurer que score est correctement récupéré
+        $score = (int) $request->request->get('rating');
+        if ($score < 1 || $score > 5) {
+            $this->addFlash('error', 'La note doit être comprise entre 1 et 5.');
+            return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+        }
+
+        // Vérifier si l'utilisateur a déjà noté cette entreprise
+        $existingRating = $ratingRepository->findOneBy([
+            'user' => $user,
+            'company' => $company
+        ]);
+
+        if ($existingRating) {
+            // Mettre à jour la note existante
+            $existingRating->setScore($score);
+            $this->addFlash('success', 'Votre note a été mise à jour.');
+        } else {
+            // Créer une nouvelle note
+            $rating = new Rating();
+            $rating->setUser($user);
+            $rating->setCompany($company);
+            $rating->setScore($score);
+            $entityManager->persist($rating);
+            $this->addFlash('success', 'Votre note a été enregistrée.');
+        }
+        
+        // Enregistrer immédiatement les changements pour que les calculs suivants les prennent en compte
+        $entityManager->flush();
+
+        // Maintenant, calculer la moyenne avec les données mises à jour
+        $allRatings = $ratingRepository->findAllScoresByCompany($company);
+        $totalRatings = count($allRatings);
+        $sum = array_sum(array_column($allRatings, 'score'));
+        $manualAverage = $totalRatings > 0 ? round($sum / $totalRatings, 1) : 0;
+        
+        // Recalculer la note moyenne de l'entreprise
+        $averageRating = $ratingRepository->calculateAverageRating($company);
+        
+        // Si l'algorithme de calcul donne un résultat incorrect, utiliser le calcul manuel
+        if (abs($averageRating - $manualAverage) > 0.1) {
+            $averageRating = $manualAverage;
+            // Ajouter un message de debug
+            $this->addFlash('info', "Correction de la moyenne : $manualAverage ($totalRatings notes, somme: $sum)");
+        }
+        
+        $company->setAverageRating($averageRating);
+        
+        // Faire un second flush pour enregistrer la moyenne
+        $entityManager->flush();
+
+        return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+    }
+
+    #[Route('/{id}/remove-rating', name: 'entreprise_remove_rating', methods: ['POST'])]
+    #[IsGranted('ROLE_STUDENT')]
+    public function removeRating(
+        Company $company, 
+        EntityManagerInterface $entityManager,
+        RatingRepository $ratingRepository
+    ): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Vous devez être connecté pour supprimer une note.');
+            return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+        }
+
+        // Vérifier si l'utilisateur a déjà noté cette entreprise
+        $existingRating = $ratingRepository->findOneBy([
+            'user' => $user,
+            'company' => $company
+        ]);
+
+        if ($existingRating) {
+            try {
+                // 1. Supprimer la note de la base de données
+                $entityManager->remove($existingRating);
+                $entityManager->flush();
+                
+                // 2. Recalculer la note moyenne de l'entreprise
+                $allRatings = $ratingRepository->findAllScoresByCompany($company);
+                $totalRatings = count($allRatings);
+                
+                if ($totalRatings > 0) {
+                    $sum = array_sum(array_column($allRatings, 'score'));
+                    $averageRating = round($sum / $totalRatings, 1);
+                } else {
+                    $averageRating = 0; // Aucune note, donc moyenne de 0
+                }
+                
+                // 3. Mettre à jour l'entreprise
+                $company->setAverageRating($averageRating);
+                $entityManager->flush();
+                
+                $this->addFlash('success', 'Votre note a été supprimée avec succès.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue: ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('error', 'Vous n\'avez pas encore noté cette entreprise.');
+        }
+
+        return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
+    }
+    
 }

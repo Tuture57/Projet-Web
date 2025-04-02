@@ -29,7 +29,7 @@
         <div class="company-info">
             <h1>{{ offer.title }}</h1>
             
-            {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT') and app.user.company and app.user.company.id == offer.company.id) %}
+            {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT'))%}
                 <div class="admin-actions">
                     <a href="{{ path('offre_edit', {'id': offer.id}) }}" class="btn-edit">
                         <i class="fas fa-edit"></i> Modifier
@@ -108,13 +108,13 @@
             {% endif %}
         {% endif %}
         
-        <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
+        {# <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
             <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
             <button type="submit" class="btn-wishlist {{ isInWishlist ? 'in-wishlist' : '' }}">
                 <i class="{{ isInWishlist ? 'fas fa-heart' : 'far fa-heart' }}"></i>
                 {{ isInWishlist ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
             </button>
-        </form>
+        </form> #}
     </div>
 </div>
 {% endif %}
@@ -208,7 +208,7 @@
 </div>
 {% endif %}
 
-{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT') and app.user.company and app.user.company.id == offer.company.id) %}
+{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT')) %}
     {% if offer.applications|length > 0 %}
         <div class="company-offers card">
             <h2>Candidatures reçues ({{ offer.applications|length }})</h2>

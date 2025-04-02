@@ -47,7 +47,7 @@
     'items': students,
     'route_name': 'etudiant',
     'entity_name_plural': 'étudiants',
-    'action_button': is_granted('ROLE_ADMIN') ? {
+    'action_button': (is_granted('ROLE_PILOT') or is_granted('ROLE_ADMIN')) ? {
         'route': 'etudiant_new',
         'icon': 'fas fa-plus',
         'label': 'Ajouter un étudiant'

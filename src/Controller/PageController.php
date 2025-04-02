@@ -4,6 +4,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class PageController extends AbstractController
 {
@@ -18,6 +19,7 @@ class PageController extends AbstractController
     }
 
     #[Route('/aide', name: 'aide')]
+    #[IsGranted('ROLE_STUDENT')]
     public function aide(): Response
     {
         return $this->render('page/aide.html.twig');

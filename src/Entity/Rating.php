@@ -8,13 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
 class Rating
 {
-
-
     #[ORM\Column]
     private ?int $score = null;
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'ratings')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?User $user = null;
 
@@ -22,7 +20,6 @@ class Rating
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'ratings')]
     #[ORM\JoinColumn(name: 'company_id', referencedColumnName: 'id', nullable: false)]
     private ?Company $company = null;
-
 
     public function getScore(): ?int
     {

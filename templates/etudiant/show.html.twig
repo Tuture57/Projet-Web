@@ -23,7 +23,7 @@
         <div class="company-info">
             <h1>{{ student.firstName }} {{ student.lastName }}</h1>
             
-            {% if is_granted('ROLE_ADMIN') %}
+            {% if is_granted('ROLE_PILOT') %}
                 <div class="admin-actions">
                     <a href="{{ path('etudiant_edit', {'id': student.id}) }}" class="btn-edit">
                         <i class="fas fa-edit"></i> Modifier

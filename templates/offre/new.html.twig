@@ -4,65 +4,90 @@
 {% block title %}Créer une offre de stage{% endblock %}
 
 {% block body %}
-<div class="form-container">
-    <div class="form-header">
-        <h1>Créer une offre de stage</h1>
-        <a href="{{ path('offre') }}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Retour à la liste
-        </a>
-    </div>
-    
-    <div class="card">
-        {{ form_start(form, {'attr': {'class': 'entity-form'}}) }}
+<div class="form-page">
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        <div class="form-header">
+            <h1>Créer une offre de stage</h1>
+            <a href="{{ path('offre') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="form-section">
+            <h2>Informations générales</h2>
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Détails du stage</h2>
             <div class="form-row">
-                {{ form_row(form.title) }}
+                <div class="form-group">
+                    {{ form_label(form.startDate) }}
+                    {{ form_widget(form.startDate) }}
+                    {{ form_errors(form.startDate) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.endDate) }}
+                    {{ form_widget(form.endDate) }}
+                    {{ form_errors(form.endDate) }}
+                </div>
             </div>
-            
+
             <div class="form-row">
-                {{ form_row(form.description) }}
-            </div>
-            
-            <div class="form-row row-50-50">
-                <div class="form-col">
-                    {{ form_row(form.remuneration) }}
+                <div class="form-group">
+                    {{ form_label(form.remuneration) }}
+                    {{ form_widget(form.remuneration) }}
+                    {{ form_errors(form.remuneration) }}
                 </div>
-                <div class="form-col">
-                    {% if form.company is defined %}
-                        {{ form_row(form.company) }}
-                    {% endif %}
+
+                {% if form.company is defined %}
+                <div class="form-group">
+                    {{ form_label(form.company) }}
+                    {{ form_widget(form.company) }}
+                    {{ form_errors(form.company) }}
                 </div>
+                {% endif %}
             </div>
-            
-            <div class="form-row row-50-50">
-                <div class="form-col">
-                    {{ form_row(form.startDate) }}
-                </div>
-                <div class="form-col">
-                    {{ form_row(form.endDate) }}
-                </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Compétences requises</h2>
+            <div class="form-group">
+                {{ form_label(form.skills) }}
+                {{ form_widget(form.skills) }}
+                {{ form_errors(form.skills) }}
             </div>
-            
-            <div class="form-row">
-                {{ form_row(form.skills) }}
+        </div>
+
+        <div class="form-section">
+            <h2>Statut de l'offre</h2>
+            <div class="form-checkbox">
+                {{ form_widget(form.isActive) }}
+                {{ form_label(form.isActive) }}
+                {{ form_errors(form.isActive) }}
             </div>
-            
-            <div class="form-row">
-                <div class="form-check">
-                    {{ form_widget(form.isActive) }}
-                    {{ form_label(form.isActive) }}
-                </div>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-save"></i> Enregistrer
-                </button>
-                <a href="{{ path('offre') }}" class="btn-secondary">
-                    <i class="fas fa-times"></i> Annuler
-                </a>
-            </div>
-        {{ form_end(form) }}
-    </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+            <a href="{{ path('offre') }}" class="btn-secondary">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    {{ form_end(form) }}
 </div>
 {% endblock %}
 
@@ -70,11 +95,77 @@
 {{ parent() }}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialiser Select2 pour les listes déroulantes
-        if (typeof $('.select2').select2 === 'function') {
-            $('.select2').select2({
-                placeholder: 'Sélectionnez des compétences',
-                allowClear: true
+        // Récupérer le select des compétences
+        const skillsSelect = document.getElementById('{{ form.skills.vars.id }}');
+        
+        if (skillsSelect) {
+            // Configurer comme select multiple avec les styles existants
+            skillsSelect.setAttribute('multiple', 'multiple');
+            skillsSelect.style.height = '200px';
+            skillsSelect.style.width = '100%';
+            skillsSelect.classList.add('custom-select'); // Utiliser les classes existantes
+            
+            // Créer la barre de recherche
+            const searchContainer = document.createElement('div');
+            searchContainer.style.marginBottom = '10px';
+            
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Rechercher une compétence...';
+            searchInput.style.width = '100%';
+            searchInput.style.padding = '8px';
+            searchInput.style.borderRadius = '4px';
+            searchInput.style.border = '1px solid #ddd';
+            searchInput.classList.add('form-control');
+            
+            searchContainer.appendChild(searchInput);
+            
+            // Insérer la barre de recherche avant le select
+            skillsSelect.parentNode.insertBefore(searchContainer, skillsSelect);
+            
+            // Fonction pour filtrer les options
+            function filterOptions() {
+                const searchTerm = searchInput.value.toLowerCase();
+                Array.from(skillsSelect.options).forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    option.style.display = optionText.includes(searchTerm) ? '' : 'none';
+                });
+            }
+            
+            // Écouter les événements de recherche
+            searchInput.addEventListener('input', filterOptions);
+            
+            // Appliquer le style pour les options sélectionnées
+            const style = document.createElement('style');
+            style.textContent = `
+                #{{ form.skills.vars.id }} option:checked {
+                    background-color: #6B5B95 !important; /* Couleur du thème principale */
+                    color: white !important;
+                }
+                #{{ form.skills.vars.id }} option:hover {
+                    background-color: #E8EAF6 !important; /* Couleur secondaire du thème */
+                }
+                .form-control:focus {
+                    border-color: #6B5B95;
+                    box-shadow: 0 0 0 0.2rem rgba(107, 91, 149, 0.25);
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Empêcher le comportement par défaut qui désélectionne tout
+            skillsSelect.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                
+                const option = e.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected;
+                    
+                    // Déclencher un événement change pour que les formulaires détectent les modifications
+                    const event = new Event('change');
+                    this.dispatchEvent(event);
+                }
+                
+                return false;
             });
         }
     });

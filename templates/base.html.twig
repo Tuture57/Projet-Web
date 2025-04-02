@@ -29,5 +29,8 @@
         
         {% block javascripts %}{% endblock %}
         <script src="{{ asset('js/script.js') }}"></script>
+        {% if app.request.get('_route') starts with 'entreprise_show' %}
+        <script src="{{ asset('js/rating.js') }}"></script>
+        {% endif %}
     </body>
 </html>

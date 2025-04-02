@@ -16,10 +16,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class PiloteController extends AbstractController
 {
     #[Route('/pilotes', name: 'pilote')]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(
         Request $request,
         UserRepository $userRepository,
@@ -108,6 +110,7 @@ final class PiloteController extends AbstractController
     }
 
     #[Route('/pilotes/new', name: 'pilote_new')]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(
         Request $request, 
         EntityManagerInterface $entityManager,
@@ -176,6 +179,7 @@ final class PiloteController extends AbstractController
     }
 
     #[Route('/pilotes/{id}', name: 'pilote_show')]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(
         User $user, 
         RoleRepository $roleRepository
@@ -194,6 +198,7 @@ final class PiloteController extends AbstractController
     }
 
     #[Route('/pilotes/{id}/edit', name: 'pilote_edit')]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(
         Request $request,
         User $user,
@@ -269,6 +274,7 @@ final class PiloteController extends AbstractController
     }
 
     #[Route('/pilotes/{id}/delete', name: 'pilote_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(
         Request $request,
         User $user,

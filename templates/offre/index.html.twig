@@ -50,7 +50,7 @@
     'items': offers,
     'route_name': 'offre',
     'entity_name_plural': 'offres',
-    'action_button': is_granted('ROLE_PILOT') ? {
+    'action_button': (is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT')) ? {
         'route': 'offre_new',
         'icon': 'fas fa-plus',
         'label': 'Publier une offre'
@@ -86,12 +86,12 @@
                             </div>
                         {% endif %}
                         
-                        <div class="item-date">
-                            <i class="fas fa-calendar-alt"></i> 
+                        <div class="item-location">
+                            <i class="fas fa-calendar-alt"></i>
                             Du {{ offer.startDate|date('d/m/Y') }} au {{ offer.endDate|date('d/m/Y') }}
                         </div>
                         
-                        <div class="item-salary">
+                        <div class="item-location">
                             <i class="fas fa-money-bill-wave"></i> 
                             {{ offer.remuneration|number_format(2, ',', ' ') }} € / mois
                         </div>

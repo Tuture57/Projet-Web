@@ -7,12 +7,10 @@
 <div class="form-page">
     {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
         <div class="form-header">
-            <div class="back-link">
-                <a href="{{ path('offre_show', {'id': offer.id}) }}">
-                    <i class="fas fa-arrow-left"></i> Retour à l'offre
-                </a>
-            </div>
             <h1>Modifier l'offre de stage</h1>
+            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Retour à l'offre
+            </a>
         </div>
 
         <div class="form-section">
@@ -97,11 +95,77 @@
 {{ parent() }}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialiser Select2 pour les listes déroulantes
-        if (typeof $('.select2').select2 === 'function') {
-            $('.select2').select2({
-                placeholder: 'Sélectionnez des compétences',
-                allowClear: true
+        // Récupérer le select des compétences
+        const skillsSelect = document.getElementById('{{ form.skills.vars.id }}');
+        
+        if (skillsSelect) {
+            // Configurer comme select multiple avec les styles existants
+            skillsSelect.setAttribute('multiple', 'multiple');
+            skillsSelect.style.height = '200px';
+            skillsSelect.style.width = '100%';
+            skillsSelect.classList.add('custom-select'); // Utiliser les classes existantes
+            
+            // Créer la barre de recherche
+            const searchContainer = document.createElement('div');
+            searchContainer.style.marginBottom = '10px';
+            
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Rechercher une compétence...';
+            searchInput.style.width = '100%';
+            searchInput.style.padding = '8px';
+            searchInput.style.borderRadius = '4px';
+            searchInput.style.border = '1px solid #ddd';
+            searchInput.classList.add('form-control');
+            
+            searchContainer.appendChild(searchInput);
+            
+            // Insérer la barre de recherche avant le select
+            skillsSelect.parentNode.insertBefore(searchContainer, skillsSelect);
+            
+            // Fonction pour filtrer les options
+            function filterOptions() {
+                const searchTerm = searchInput.value.toLowerCase();
+                Array.from(skillsSelect.options).forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    option.style.display = optionText.includes(searchTerm) ? '' : 'none';
+                });
+            }
+            
+            // Écouter les événements de recherche
+            searchInput.addEventListener('input', filterOptions);
+            
+            // Appliquer le style pour les options sélectionnées
+            const style = document.createElement('style');
+            style.textContent = `
+                #{{ form.skills.vars.id }} option:checked {
+                    background-color: #6B5B95 !important; /* Couleur du thème principale */
+                    color: white !important;
+                }
+                #{{ form.skills.vars.id }} option:hover {
+                    background-color: #E8EAF6 !important; /* Couleur secondaire du thème */
+                }
+                .form-control:focus {
+                    border-color: #6B5B95;
+                    box-shadow: 0 0 0 0.2rem rgba(107, 91, 149, 0.25);
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Empêcher le comportement par défaut qui désélectionne tout
+            skillsSelect.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                
+                const option = e.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected;
+                    
+                    // Déclencher un événement change pour que les formulaires détectent les modifications
+                    const event = new Event('change');
+                    this.dispatchEvent(event);
+                }
+                
+                return false;
             });
         }
     });
