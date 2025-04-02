@@ -43,6 +43,7 @@ security:
         - { path: ^/offres/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
         - { path: ^/offres/\d+/delete, roles: [ROLE_ADMIN, ROLE_PILOT] }
         - { path: ^/offres/\d+/toggle, roles: [ROLE_ADMIN, ROLE_PILOT] }
+        - { path: ^/offres/\d+/toggle-wishlist, roles: [ROLE_ADMIN, ROLE_STUDENT] }
 
         - { path: ^/pilotes/new, roles: [ROLE_ADMIN] }
         - { path: ^/pilotes/\d+/edit, roles: [ROLE_ADMIN] }
@@ -51,6 +52,9 @@ security:
         - { path: ^/etudiants/new, roles: [ROLE_ADMIN, ROLE_PILOT] }
         - { path: ^/etudiants/\d+/edit, roles: [ROLE_ADMIN, ROLE_PILOT] }
         - { path: ^/etudiants/\d+/delete, roles: [ROLE_ADMIN, ROLE_PILOT] }
+
+        - { path: ^/wishlist, roles: [ROLE_ADMIN, ROLE_STUDENT] }
+
 
 
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

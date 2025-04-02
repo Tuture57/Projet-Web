@@ -306,10 +306,7 @@ final class OffreController extends AbstractController
     #[Route('/offres/{id}/toggle-wishlist', name: 'offre_toggle_wishlist', methods: ['POST'])]
     #[IsGranted('ROLE_STUDENT')]
     public function toggleWishlist(Offer $offer, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // Vérifier que l'utilisateur est un étudiant
-        $this->denyAccessUnlessGranted('ROLE_STUDENT', null, 'Seuls les étudiants peuvent ajouter des offres en favoris.');
-        
+    {        
         // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('toggle-wishlist', $request->request->get('token'))) {
             throw $this->createAccessDeniedException('Token CSRF invalide.');
@@ -334,18 +331,38 @@ final class OffreController extends AbstractController
         $referer = $request->headers->get('referer');
         return $this->redirect($referer ?: $this->generateUrl('offre_show', ['id' => $offer->getId()]));
     }
-    
-    #[Route('/offres/{id}/applications', name: 'offre_applications', methods: ['GET'])]
-    public function applications(Offer $offer): Response
+
+    #[Route('/offres/{id}/apply', name: 'offre_apply', methods: ['POST'])]
+    #[IsGranted('ROLE_STUDENT')]
+    public function apply(Offer $offer, EntityManagerInterface $entityManager, ApplicationRepository $applicationRepository): Response
     {
-        // Vérifier que l'utilisateur peut voir les candidatures de cette offre
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
-            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à voir les candidatures de cette offre.');
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        // Vérifier si l'utilisateur a déjà postulé à cette offre
+        $existingApplication = $applicationRepository->findOneBy([
+            'user' => $user,
+            'offer' => $offer
+        ]);
+        
+        if ($existingApplication) {
+            $this->addFlash('error', 'Vous avez déjà postulé à cette offre.');
+            return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
         }
         
-        return $this->render('offre/applications.html.twig', [
-            'offer' => $offer,
-            'applications' => $offer->getApplications()
-        ]);
+        // Créer une nouvelle candidature
+        $application = new Application();
+        $application->setUser($user);
+        $application->setOffer($offer);
+        $application->setStatus('Pending');
+        $application->setApplicationDate(new \DateTime());
+        
+        $entityManager->persist($application);
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'Votre candidature a été envoyée avec succès.');
+        
+        return $this->redirectToRoute('candidature_index');
     }
+    
 }

@@ -52,9 +52,7 @@
                         {% endfor %}
                     </div>
                     <span class="rating-value">{{ company.averageRating|number_format(1) }}</span>
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
-                        <span class="rating-details">({{ company.ratings|length }} avis)</span>
-                    {% endif %}
+                    <span class="rating-details">({{ company.ratings|length }} avis)</span>
                 </div>
             {% else %}
                 <span class="no-rating">Non évalué</span>

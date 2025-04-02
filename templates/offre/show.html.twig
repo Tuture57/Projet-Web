@@ -98,7 +98,7 @@
             </div>
         {% else %}
             {% if offer.isActive %}
-                <a href="{{ path('application_new', {'id': offer.id}) }}" class="btn-primary">
+                <a href="{{ path('offre_apply', {'id': offer.id}) }}" class="btn-primary">
                     <i class="fas fa-paper-plane"></i> Postuler à cette offre
                 </a>
             {% else %}
@@ -108,13 +108,13 @@
             {% endif %}
         {% endif %}
         
-        {# <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
+        <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
             <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
             <button type="submit" class="btn-wishlist {{ isInWishlist ? 'in-wishlist' : '' }}">
                 <i class="{{ isInWishlist ? 'fas fa-heart' : 'far fa-heart' }}"></i>
                 {{ isInWishlist ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
             </button>
-        </form> #}
+        </form>
     </div>
 </div>
 {% endif %}

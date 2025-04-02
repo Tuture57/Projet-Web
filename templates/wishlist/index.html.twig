@@ -1,0 +1,73 @@
+{# filepath: c:\wamp64\www\Projet-Web\templates\wishlist\index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes offres favorites{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>Mes offres favorites</h1>
+</div>
+
+<div class="wishlist-container">
+    {% if offers|length > 0 %}
+        <div class="offer-list">
+            {% for offer in offers %}
+                <div class="offer-item">
+                    <div class="offer-header">
+                        <h3>{{ offer.title }}</h3>
+                        <span class="offer-type">Stage</span>
+                    </div>
+                    
+                    {% if offer.company and offer.company.address %}
+                    <div class="offer-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ offer.company.address.city }}, {{ offer.company.address.country }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="offer-duration">
+                        <i class="far fa-clock"></i>
+                        <span>{{ offer.startDate|date('d/m/Y') }} - {{ offer.endDate|date('d/m/Y') }}</span>
+                    </div>
+                    
+                    <div class="offer-description">
+                        {{ offer.description|length > 150 ? offer.description|slice(0, 150) ~ '...' : offer.description }}
+                    </div>
+                    
+                    <div class="offer-footer">
+                        <div class="company-name">
+                            {% if offer.company %}
+                                <i class="fas fa-building"></i> {{ offer.company.name }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="offer-actions">
+                            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> Voir l'offre
+                            </a>
+                            
+                            <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-heart-broken"></i> Retirer des favoris
+                                </button>
+                            </form>
+                            
+                            <a href="{{ path('offre_apply', {'id': offer.id}) }}" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Postuler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-offers">
+            <i class="far fa-heart"></i>
+            <p>Vous n'avez pas encore ajouté d'offres à vos favoris.</p>
+            <a href="{{ path('offre') }}" class="btn btn-primary mt-3">
+                Parcourir les offres disponibles
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
