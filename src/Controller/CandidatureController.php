@@ -137,9 +137,11 @@ class CandidatureController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        $isPilot = $this->isGranted('ROLE_PILOT');
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
         
-        // Vérifier que la candidature appartient bien à l'utilisateur
-        if ($application->getUser() !== $user && $this->isGranted('ROLE_STUDENT')) {
+        // Only allow the student who made the application or pilots/admins to view
+        if (!$isAdmin && !$isPilot && $user !== $application->getUser()) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à voir cette candidature.');
         }
         
