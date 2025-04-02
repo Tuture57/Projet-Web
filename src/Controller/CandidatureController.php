@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Application;
 use App\Entity\Offer;
 use App\Entity\User;
+use App\Form\ApplicationType;
 use App\Repository\ApplicationRepository;
 use App\Repository\OfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/candidatures')]
 class CandidatureController extends AbstractController
@@ -37,6 +39,7 @@ class CandidatureController extends AbstractController
     #[Route('/postuler/{id}', name: 'candidature_postuler')]
     public function postuler(
         Offer $offer,
+        Request $request,
         EntityManagerInterface $entityManager,
         ApplicationRepository $applicationRepository
     ): Response {
@@ -61,12 +64,45 @@ class CandidatureController extends AbstractController
         $application->setStatus('Pending');
         $application->setApplicationDate(new \DateTime());
         
-        $entityManager->persist($application);
-        $entityManager->flush();
+        // Créer le formulaire
+        $form = $this->createForm(ApplicationType::class, $application);
+        $form->handleRequest($request);
         
-        $this->addFlash('success', 'Votre candidature a été envoyée avec succès.');
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gérer l'upload du CV
+            $cvFile = $form->get('cvFile')->getData();
+            
+            if ($cvFile) {
+                $originalFilename = pathinfo($cvFile->getClientOriginalName(), PATHINFO_FILENAME);
+                // Sécuriser le nom du fichier
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$cvFile->guessExtension();
+                
+                // Déplacer le fichier dans le répertoire où sont stockés les CVs
+                try {
+                    $cvFile->move(
+                        $this->getParameter('cv_directory'),
+                        $newFilename
+                    );
+                    $application->setCv($newFilename);
+                } catch (FileException $e) {
+                    // Gérer l'exception
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload du CV.');
+                }
+            }
+            
+            $entityManager->persist($application);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Votre candidature a été envoyée avec succès.');
+            
+            return $this->redirectToRoute('candidature_index');
+        }
         
-        return $this->redirectToRoute('candidature_index');
+        return $this->render('candidature/postuler.html.twig', [
+            'offer' => $offer,
+            'form' => $form->createView()
+        ]);
     }
     
     #[Route('/annuler/{id}', name: 'candidature_annuler')]

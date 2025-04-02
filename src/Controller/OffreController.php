@@ -193,6 +193,7 @@ final class OffreController extends AbstractController
     {
         $hasApplied = false;
         $applicationStatus = null;
+        $applicationId = null; // Ajout de l'ID de candidature
         $isInWishlist = false;
         
         // Vérifier si l'utilisateur connecté a déjà postulé
@@ -201,6 +202,7 @@ final class OffreController extends AbstractController
                 if ($application->getUser() === $this->getUser()) {
                     $hasApplied = true;
                     $applicationStatus = $application->getStatus();
+                    $applicationId = $application->getId(); // Récupération de l'ID
                     break;
                 }
             }
@@ -215,6 +217,7 @@ final class OffreController extends AbstractController
             'offer' => $offre,
             'hasApplied' => $hasApplied,
             'applicationStatus' => $applicationStatus,
+            'applicationId' => $applicationId, // Ajout de l'ID à la vue
             'isInWishlist' => $isInWishlist
         ]);
     }
@@ -332,9 +335,19 @@ final class OffreController extends AbstractController
         return $this->redirect($referer ?: $this->generateUrl('offre_show', ['id' => $offer->getId()]));
     }
 
+    #[Route('/offres/{id}/apply', name: 'offre_apply', methods: ['GET'])]
+    #[IsGranted('ROLE_STUDENT')]
+    public function apply(Offer $offer): Response
+    {
+        // Rediriger vers la méthode postuler du CandidatureController
+        return $this->redirectToRoute('candidature_postuler', [
+            'id' => $offer->getId(),
+        ]);
+    }
+
     #[Route('/offres/{id}/apply', name: 'offre_apply', methods: ['POST'])]
     #[IsGranted('ROLE_STUDENT')]
-    public function apply(Offer $offer, EntityManagerInterface $entityManager, ApplicationRepository $applicationRepository): Response
+    public function applyPost(Offer $offer, EntityManagerInterface $entityManager, ApplicationRepository $applicationRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();

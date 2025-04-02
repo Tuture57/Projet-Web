@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ApplicationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 class Application
@@ -17,8 +18,13 @@ class Application
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $applicationDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $cv = null;
+
+    /**
+     * @var UploadedFile|null
+     */
+    private $cvFile;
 
     #[ORM\Column(length: 255)]
     private ?string $coverLetter = null;
@@ -54,10 +60,21 @@ class Application
         return $this->cv;
     }
 
-    public function setCv(string $cv): static
+    public function setCv(?string $cv): static
     {
         $this->cv = $cv;
 
+        return $this;
+    }
+
+    public function getCvFile(): ?UploadedFile
+    {
+        return $this->cvFile;
+    }
+
+    public function setCvFile(?UploadedFile $cvFile): self
+    {
+        $this->cvFile = $cvFile;
         return $this;
     }
 
