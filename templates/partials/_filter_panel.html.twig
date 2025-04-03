@@ -7,13 +7,14 @@
     </div>
     
     <form action="{{ path(route_name) }}" method="get" class="filter-form" id="filterForm">
-        <!-- Conserver la recherche -->
+        {# Conservation de la recherche actuelle #}
         {% if app.request.query.get('search') %}
             <input type="hidden" name="search" value="{{ app.request.query.get('search') }}">
         {% endif %}
         
         <h3 class="filter-heading mb-md">Filtrer par</h3>
         
+        {# Génération des filtres #}
         {% for filter in filters %}
             <div class="form-group mb-md">
                 <label for="{{ filter.name }}" class="mb-sm">{{ filter.label }}</label>
@@ -28,6 +29,7 @@
             </div>
         {% endfor %}
         
+        {# Options de tri #}
         {% if sort_options is defined and sort_options|length > 0 %}
         <div class="form-group mb-md">
             <label for="sortBy" class="mb-sm">Trier par</label>
@@ -41,6 +43,7 @@
         </div>
         {% endif %}
         
+        {# Boutons d'action #}
         <div class="filter-actions d-flex flex-column gap-sm mt-lg">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-check"></i> Appliquer

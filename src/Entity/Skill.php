@@ -18,9 +18,7 @@ class Skill
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Offer>
-     */
+    // Collection d'offres associées à cette compétence
     #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'skills')]
     private Collection $offers;
 
@@ -46,14 +44,13 @@ class Skill
         return $this;
     }
 
-    /**
-     * @return Collection<int, Offer>
-     */
+    // Retourne toutes les offres associées à cette compétence
     public function getOffers(): Collection
     {
         return $this->offers;
     }
 
+    // Ajoute une offre à la collection et met à jour la relation bidirectionnelle
     public function addOffer(Offer $offer): static
     {
         if (!$this->offers->contains($offer)) {
@@ -64,6 +61,7 @@ class Skill
         return $this;
     }
 
+    // Supprime une offre de la collection et met à jour la relation bidirectionnelle
     public function removeOffer(Offer $offer): static
     {
         if ($this->offers->removeElement($offer)) {

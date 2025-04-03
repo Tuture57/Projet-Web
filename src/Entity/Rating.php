@@ -8,14 +8,17 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
 class Rating
 {
+    // Score donné à l'entreprise
     #[ORM\Column]
     private ?int $score = null;
 
+    // Utilisateur qui a donné la note (partie de la clé primaire)
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'ratings')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?User $user = null;
 
+    // Entreprise qui est notée (partie de la clé primaire)
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'ratings')]
     #[ORM\JoinColumn(name: 'company_id', referencedColumnName: 'id', nullable: false)]

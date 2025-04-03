@@ -1,4 +1,3 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\pilote\edit.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Modifier {{ pilot.firstName }} {{ pilot.lastName }}{% endblock %}
@@ -12,6 +11,7 @@
         </a>
     </div>
     
+    {# Formulaire de modification du pilote #}
     {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
         {% include 'partials/form/_pilot_form.html.twig' with {
             'form': form,

@@ -20,6 +20,7 @@ class OfferType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Construction du formulaire avec les champs principaux de l'offre
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Titre de l\'offre',
@@ -58,9 +59,8 @@ class OfferType extends AbstractType
                 ]
             ]);
 
-        // Si l'utilisateur est administrateur OU pilote, ajouter le champ de sélection d'entreprise
+        // Champ entreprise conditionnel selon le rôle
         if ($options['is_admin'] || $options['is_pilot']) {
-            // Définir des options spécifiques selon le rôle
             $companyOptions = [
                 'class' => Company::class,
                 'choice_label' => 'name',
@@ -75,6 +75,7 @@ class OfferType extends AbstractType
             $builder->add('company', EntityType::class, $companyOptions);
         }
 
+        // Ajout des compétences et statut de l'offre
         $builder
             ->add('skills', EntityType::class, [
                 'class' => Skill::class,
@@ -97,6 +98,7 @@ class OfferType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // Configuration des options du formulaire
         $resolver->setDefaults([
             'data_class' => Offer::class,
             'is_admin' => false,     // Option pour les administrateurs

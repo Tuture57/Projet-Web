@@ -2,14 +2,16 @@
     <div class="flex-1">
         <h1 class="m-0">
             {{ title }}
+            {# Affiche le terme de recherche s'il existe #}
             {% if app.request.query.get('search') %}
                 <span class="search-term text-muted ml-xs">- Résultats pour "{{ app.request.query.get('search') }}"</span>
             {% endif %}
         </h1>
+        {# Conteneur pour les filtres actifs #}
         <div class="active-filters d-flex gap-sm flex-wrap mt-xs" id="activeFilters">
-            {# Les filtres actifs seront ajoutés ici dynamiquement par JavaScript #}
         </div>
     </div>
+    {# Bouton d'action optionnel #}
     {% if action_button is defined and action_button is not null %}
         <a href="{{ path(action_button.route) }}" class="btn btn-primary">
             <i class="{{ action_button.icon }}"></i> {{ action_button.label }}
@@ -17,6 +19,7 @@
     {% endif %}
 </div>
 
+{# Message si aucun résultat n'est trouvé pour la recherche #}
 {% if items|length == 0 and app.request.query.get('search') %}
     <div class="no-results bg-light p-xl rounded-lg text-center mb-lg">
         <p class="mb-md">Aucun résultat trouvé pour "{{ app.request.query.get('search') }}"</p>

@@ -1,5 +1,4 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\partials\form\_company_form.html.twig #}
-{# Informations générales #}
+{# Section des informations générales #}
 <div class="form-section mb-lg">
     <h2 class="mb-md">Informations générales</h2>
     
@@ -31,6 +30,7 @@
     <div class="form-group">
         {{ form_label(form.imageFile) }}
         
+        {# Aperçu de l'image actuelle #}
         {% if company.imageName %}
             <div class="image-preview">
                 <img src="{{ asset('uploads/company/' ~ company.imageName) }}" alt="{{ company.name }} logo" class="rounded-md shadow-sm">
@@ -45,7 +45,7 @@
     </div>
 </div>
 
-{# Adresse #}
+{# Section de l'adresse #}
 {% if form.address is defined %}
 <div class="form-section mb-lg">
     <h2 class="mb-md">Adresse</h2>
@@ -71,7 +71,7 @@
 </div>
 {% endif %}
 
-{# Autres champs spécifiques #}
+{# Section des informations supplémentaires #}
 {% if form.numberOfInterns is defined %}
 <div class="form-section mb-lg">
     <h2 class="mb-md">Informations supplémentaires</h2>

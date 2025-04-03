@@ -4,6 +4,7 @@
 
 {% block body %}
 <div class="form-page card">
+    {# En-tête avec titre et bouton de retour #}
     <div class="header-with-actions mb-lg d-flex justify-between align-center">
         <h1 class="m-0">Modifier {{ admin.firstName }} {{ admin.lastName }}</h1>
         <a href="{{ path('admin_show', {'id': admin.id}) }}" class="btn btn-secondary btn-sm">
@@ -11,6 +12,7 @@
         </a>
     </div>
     
+    {# Formulaire de modification d'administrateur #}
     {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
         {% include 'partials/form/_admin_form.html.twig' with {
             'form': form,

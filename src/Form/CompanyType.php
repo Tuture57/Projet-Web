@@ -15,33 +15,42 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CompanyType extends AbstractType
 {
+    /**
+     * Configuration du formulaire pour les entreprises
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Champ nom de l'entreprise
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'entreprise',
                 'attr' => ['placeholder' => 'Ex: Acme Inc.'],
                 'required' => true
             ])
+            // Champ email de l'entreprise
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => ['placeholder' => 'contact@entreprise.com'],
                 'required' => true
             ])
+            // Champ téléphone
             ->add('phone', TelType::class, [
                 'label' => 'Téléphone',
                 'attr' => ['placeholder' => '+33 1 23 45 67 89'],
                 'required' => true
             ])
+            // Champ description
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'attr' => ['rows' => 5, 'placeholder' => 'Description de l\'entreprise...'],
                 'required' => true
             ])
+            // Formulaire imbriqué pour l'adresse
             ->add('address', AddressType::class, [
                 'label' => false,
                 'required' => true,
             ])
+            // Champ pour l'upload du logo
             ->add('imageFile', FileType::class, [
                 'label' => 'Logo de l\'entreprise',
                 'required' => false,
@@ -52,6 +61,9 @@ class CompanyType extends AbstractType
             ]);
     }
 
+    /**
+     * Configuration des options par défaut du formulaire
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

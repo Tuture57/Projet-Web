@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
     
-    // Vérification des éléments
     if (!sidebarToggle) {
         console.error("L'élément avec l'ID 'sidebar-toggle' n'a pas été trouvé!");
         return;
@@ -13,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Restaure l'état de la barre latérale à partir du stockage local
     const sidebarState = localStorage.getItem('sidebarCollapsed');
     if (sidebarState === 'true') {
         sidebar.classList.add('collapsed');
@@ -44,14 +44,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Éléments du DOM
+    // Récupération des éléments du DOM
     const filterBtn = document.querySelector('.filter-btn');
     const filterPanel = document.getElementById('filterPanel');
     const closeFilterBtn = document.getElementById('closeFilterBtn');
     const filterOverlay = document.getElementById('filterOverlay');
     const activeFilters = document.getElementById('activeFilters');
     
-    // Quitter si les éléments requis n'existent pas
     if (!filterBtn || !filterPanel || !closeFilterBtn || !filterOverlay) {
         console.error("Éléments manquants pour les filtres:", {
             filterBtn: !!filterBtn, 
@@ -62,51 +61,44 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Fonction pour ouvrir le panneau de filtres
+    // Ouvre le panneau de filtres
     function openFilterPanel() {
         filterPanel.classList.add('open');
         filterOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Empêcher le défilement du body
+        document.body.style.overflow = 'hidden'; // Empêche le défilement
     }
     
-    // Fonction pour fermer le panneau de filtres
+    // Ferme le panneau de filtres
     function closeFilterPanel() {
         filterPanel.classList.remove('open');
         filterOverlay.classList.remove('active');
-        document.body.style.overflow = ''; // Restaurer le défilement du body
+        document.body.style.overflow = ''; // Restaure le défilement
     }
     
-    // Ouvrir le panneau de filtres - uniquement sur clic du bouton
     filterBtn.addEventListener('click', openFilterPanel);
-    
-    // Fermer le panneau de filtres
     closeFilterBtn.addEventListener('click', closeFilterPanel);
     
-    // S'assurer que le clic sur l'overlay ferme le panneau
     filterOverlay.addEventListener('click', function(event) {
-        // S'assurer que le clic est bien sur l'overlay et pas un élément enfant
         if (event.target === filterOverlay) {
             closeFilterPanel();
         }
     });
     
-    // Ajuster la fermeture du panneau lors du redimensionnement de l'écran
     window.addEventListener('resize', function() {
         if (window.innerWidth > 767 && filterPanel.classList.contains('open')) {
             closeFilterPanel();
         }
     });
     
-    // Afficher les filtres actifs
+    // Affiche les filtres actifs dans l'interface
     function displayActiveFilters() {
         if (!activeFilters) return;
         
         activeFilters.innerHTML = '';
         
-        // Récupérer les paramètres de l'URL
         const urlParams = new URLSearchParams(window.location.search);
         
-        // Définir les labels pour les filtres (à personnaliser selon les entités)
+        // Labels pour les différents filtres
         const filterLabels = {
             // Entreprises
             'country': 'Pays',
@@ -124,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'sortBy': 'Tri'
         };
         
+        // Valeurs de tri pour l'affichage
         const sortValues = {
             // Entreprises
             'name_asc': 'Nom (A-Z)',
@@ -142,15 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
             'department_desc': 'Département (Z-A)'
         };
         
-        // Paramètres à ignorer
+        // Paramètres à ne pas afficher comme filtres
         const ignoredParams = ['search', 'page', '_page', 'limit', 'per_page', 'offset'];
         
-        // Créer un tag pour chaque filtre actif
+        // Création des tags pour chaque filtre actif
         for (const [key, value] of urlParams.entries()) {
             if (value && !ignoredParams.includes(key)) {
                 let displayValue = value;
                 
-                // Format spécifique pour certains filtres
                 if (key === 'minRating') {
                     displayValue = '★'.repeat(parseInt(value));
                 } else if (key === 'sortBy') {
@@ -159,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const filterLabel = filterLabels[key] || key;
                 
-                // Créer le tag
                 const tagElement = document.createElement('div');
                 tagElement.className = 'filter-tag';
                 tagElement.innerHTML = `
@@ -174,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Ajouter les événements pour supprimer les filtres
+        // Ajout d'événements pour pouvoir supprimer les filtres
         document.querySelectorAll('.remove-filter').forEach(button => {
             button.addEventListener('click', function() {
                 const filterToRemove = this.getAttribute('data-filter');
@@ -183,17 +174,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Fonction pour supprimer un filtre
+    // Supprime un filtre et recharge la page
     function removeFilter(filterName) {
         const url = new URL(window.location.href);
         url.searchParams.delete(filterName);
         window.location.href = url.toString();
     }
     
-    // Initialiser l'affichage des filtres
     displayActiveFilters();
 
-    // Soumettre automatiquement le formulaire lors du changement de filtre
+    // Configuration de la soumission automatique du formulaire
     const filterSelects = document.querySelectorAll('.filter-select');
     if (filterSelects.length > 0) {
         filterSelects.forEach(select => {
@@ -206,22 +196,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Ajouter les filtres spécifiques aux offres
+    // Ajout des filtres spécifiques aux offres
     function addSpecificFilters() {
-        // Si nous sommes sur la page des offres avec un filtre d'entreprise
         if (document.getElementById('company') && document.getElementById('activeFilters')) {
             const filterLabels = {
                 'company': 'Entreprise',
                 'skill': 'Compétence',
-                // Ajouter à la liste existante
                 ...filterLabels
             };
-
-            // Le reste de la logique pour afficher les filtres est déjà géré
-            // par la fonction displayActiveFilters()
         }
     }
 
-    // Appeler cette fonction après displayActiveFilters()
     addSpecificFilters();
 });

@@ -1,6 +1,6 @@
 {# partials/_list_item.html.twig #}
 <a href="{{ path(route ~ '_show', {'id': item.id}) }}" class="item d-flex align-center">
-    {# Affichage de l'image #}
+    {# Affichage de l'image ou placeholder si absente #}
     {% if item.imageName %}
         <img src="{{ asset(upload_path ~ '/' ~ item.imageName) }}" alt="{{ item.name }} logo" class="item-logo">
     {% else %}
@@ -9,11 +9,11 @@
         </div>
     {% endif %}
     
-    {# Détails de l'élément #}
+    {# Informations principales de l'élément #}
     <div class="item-details flex-1">
         <h2 class="m-0 mb-xs">{{ item.name }}</h2>
         
-        {# Adresse #}
+        {# Affichage de l'adresse si disponible #}
         {% if item.address is defined and item.address %}
             <div class="item-location">
                 <i class="fas fa-map-marker-alt"></i>
@@ -22,7 +22,7 @@
         {% endif %}
     </div>
     
-    {# Affichage de la note #}
+    {# Système d'évaluation par étoiles #}
     <div class="item-rating">
         {% if item.averageRating is defined and item.averageRating is not null and item.averageRating > 0 %}
             <div class="stars">

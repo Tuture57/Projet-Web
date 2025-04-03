@@ -16,6 +16,7 @@ class ApplicationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Champ pour la lettre de motivation
             ->add('coverLetter', TextareaType::class, [
                 'label' => 'Lettre de motivation',
                 'required' => true, // Champ obligatoire
@@ -29,6 +30,7 @@ class ApplicationType extends AbstractType
                     'rows' => 8
                 ]
             ])
+            // Champ pour le CV avec validation du format
             ->add('cvFile', FileType::class, [
                 'label' => 'CV (PDF recommandé)',
                 'mapped' => false,
@@ -58,6 +60,7 @@ class ApplicationType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // Configuration du formulaire avec l'entité associée
         $resolver->setDefaults([
             'data_class' => Application::class,
         ]);

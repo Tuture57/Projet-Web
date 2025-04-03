@@ -29,26 +29,26 @@ class AdminController extends AbstractController
         RoleRepository $roleRepository,
         PaginatorInterface $paginator
     ): Response {
-        // Récupérer le rôle admin
+        // Récupération du rôle administrateur
         $adminRole = $roleRepository->findOneBy(['name' => 'Admin']);
         
-        // Créer le queryBuilder de base
+        // Construction de la requête de base
         $queryBuilder = $userRepository->createQueryBuilder('u')
             ->where('u.role = :role')
             ->setParameter('role', $adminRole)
             ->orderBy('u.lastName', 'ASC');
         
-        // Récupérer les paramètres de recherche
+        // Paramètres de recherche et tri
         $search = $request->query->get('search', '');
         $sortBy = $request->query->get('sortBy', 'lastName_asc');
         
-        // Appliquer le filtre de recherche textuelle
+        // Application du filtre de recherche
         if (!empty($search)) {
             $queryBuilder->andWhere('u.firstName LIKE :search OR u.lastName LIKE :search OR u.email LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
         
-        // Appliquer le tri
+        // Application du tri
         switch ($sortBy) {
             case 'firstName_asc':
                 $queryBuilder->orderBy('u.firstName', 'ASC');
@@ -64,11 +64,11 @@ class AdminController extends AbstractController
                 $queryBuilder->orderBy('u.lastName', 'ASC');
         }
         
-        // Pagination
+        // Pagination des résultats
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
-            10 // Nombre d'administrateurs par page
+            10
         );
         
         return $this->render('admin/index.html.twig', [
@@ -88,11 +88,11 @@ class AdminController extends AbstractController
     ): Response {
         $admin = new User();
         
-        // Assigner le rôle admin
+        // Attribution du rôle administrateur
         $adminRole = $roleRepository->findOneBy(['name' => 'Admin']);
         $admin->setRole($adminRole);
         
-        // Valeur par défaut pour l'école (obligatoire dans l'entité)
+        // Valeur par défaut pour le champ obligatoire
         $admin->setSchool('Administration');
         
         $form = $this->createForm(AdminType::class, $admin);
@@ -109,16 +109,14 @@ class AdminController extends AbstractController
                 $admin->setPassword($hashedPassword);
             }
             
-            // Gestion de l'upload de l'image
+            // Gestion de l'upload de photo
             $imageFile = $form->get('imageFile')->getData();
             
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // Sécuriser le nom du fichier
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
                 
-                // Déplacer le fichier dans le répertoire où sont stockées les images
                 try {
                     $imageFile->move(
                         $this->getParameter('admin_photos_directory'),
@@ -126,7 +124,6 @@ class AdminController extends AbstractController
                     );
                     $admin->setImageName($newFilename);
                 } catch (FileException $e) {
-                    // Gérer l'exception
                     $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image.');
                 }
             }
@@ -150,7 +147,7 @@ class AdminController extends AbstractController
     #[Route('/{id}', name: 'admin_show', methods: ['GET'])]
     public function show(User $admin): Response
     {
-        // Vérifier que l'utilisateur est bien un admin
+        // Vérification que l'utilisateur est un administrateur
         if (!$admin->getRole() || $admin->getRole()->getName() !== 'Admin') {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un administrateur.');
         }
@@ -168,19 +165,19 @@ class AdminController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         SluggerInterface $slugger
     ): Response {
-        // Vérifier que l'utilisateur est bien un admin
+        // Vérification que l'utilisateur est un administrateur
         if (!$admin->getRole() || $admin->getRole()->getName() !== 'Admin') {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un administrateur.');
         }
         
         $form = $this->createForm(AdminType::class, $admin, [
-            'require_password' => false, // Mot de passe non requis pour la modification
+            'require_password' => false,
         ]);
         
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hachage du mot de passe si un nouveau mot de passe est fourni
+            // Mise à jour du mot de passe si fourni
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
                 $hashedPassword = $passwordHasher->hashPassword(
@@ -190,23 +187,21 @@ class AdminController extends AbstractController
                 $admin->setPassword($hashedPassword);
             }
             
-            // Gestion de l'upload de l'image
+            // Gestion de l'upload de photo
             $imageFile = $form->get('imageFile')->getData();
             
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // Sécuriser le nom du fichier
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
                 
-                // Déplacer le fichier dans le répertoire où sont stockées les images
                 try {
                     $imageFile->move(
                         $this->getParameter('admin_photos_directory'),
                         $newFilename
                     );
                     
-                    // Supprimer l'ancienne image si elle existe
+                    // Suppression de l'ancienne image
                     $oldFilename = $admin->getImageName();
                     if ($oldFilename) {
                         $oldFilePath = $this->getParameter('admin_photos_directory').'/'.$oldFilename;
@@ -217,7 +212,6 @@ class AdminController extends AbstractController
                     
                     $admin->setImageName($newFilename);
                 } catch (FileException $e) {
-                    // Gérer l'exception
                     $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image.');
                 }
             }
@@ -243,12 +237,12 @@ class AdminController extends AbstractController
         User $admin,
         EntityManagerInterface $entityManager
     ): Response {
-        // Vérifier que l'utilisateur est bien un admin
+        // Vérification que l'utilisateur est un administrateur
         if (!$admin->getRole() || $admin->getRole()->getName() !== 'Admin') {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un administrateur.');
         }
         
-        // Vérifier le token CSRF pour la sécurité
+        // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete'.$admin->getId(), $request->request->get('_token'))) {
             $entityManager->remove($admin);
             $entityManager->flush();

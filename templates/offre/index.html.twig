@@ -1,10 +1,9 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\offre\index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Offres de stage{% endblock %}
 
 {% block body %}
-{# Barre de recherche #}
+{# Inclusion de la barre de recherche #}
 {% include 'partials/_search_bar.html.twig' with {
     'route_name': 'offre',
     'placeholder': 'Rechercher par titre, entreprise ou description',
@@ -15,7 +14,7 @@
     }
 } %}
 
-{# Panneau de filtres #}
+{# Inclusion du panneau de filtres #}
 {% include 'partials/_filter_panel.html.twig' with {
     'route_name': 'offre',
     'filters': [
@@ -44,7 +43,7 @@
     ]
 } %}
 
-{# En-tête des résultats #}
+{# En-tête des résultats de recherche #}
 {% include 'partials/_search_results_header.html.twig' with {
     'title': 'Offres de stage',
     'items': offers,
@@ -61,7 +60,7 @@
     <div class="item-list">
         {% for offer in offers %}
             <a href="{{ path('offre_show', {'id': offer.id}) }}" class="item">
-                {# Logo de l'entreprise ou placeholder #}
+                {# Logo ou placeholder de l'entreprise #}
                 {% if offer.company %}
                     {% include 'partials/_image_display.html.twig' with {
                         'entity': offer.company,
@@ -79,6 +78,7 @@
                 <div class="item-details flex-1">
                     <h2 class="mb-xs">{{ offer.title }}</h2>
                     
+                    {# Métadonnées de l'offre #}
                     <div class="item-meta d-flex flex-column gap-xs mb-sm">
                         {% if offer.company %}
                             <div class="item-location">
@@ -97,6 +97,7 @@
                         </div>
                     </div>
                     
+                    {# Affichage des compétences #}
                     {% if offer.skills|length > 0 %}
                         <div class="skill-tags d-flex flex-wrap gap-xs">
                             {% for skill in offer.skills %}

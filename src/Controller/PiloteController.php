@@ -29,34 +29,34 @@ final class PiloteController extends AbstractController
         PaginatorInterface $paginator
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Récupérer le rôle "pilot"
+        // Récupération du rôle pilote
         $pilotRole = $roleRepository->findOneBy(['name' => 'pilot']);
         
-        // Requête de base pour tous les pilotes
+        // Création du queryBuilder pour les pilotes
         $queryBuilder = $userRepository->createQueryBuilder('u')
             ->where('u.role = :role')
             ->setParameter('role', $pilotRole);
         
-        // Récupérer les filtres de recherche
+        // Récupération des filtres de recherche
         $search = $request->query->get('search', '');
         
-        // Appliquer le filtre de recherche si présent
+        // Application du filtre de recherche
         if (!empty($search)) {
             $queryBuilder->andWhere('u.firstName LIKE :search OR u.lastName LIKE :search OR u.email LIKE :search OR u.school LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
         
-        // Appliquer le filtre par école si présent
+        // Application du filtre par école
         $selectedSchool = $request->query->get('school');
         if (!empty($selectedSchool)) {
             $queryBuilder->andWhere('u.school = :selectedSchool')
                 ->setParameter('selectedSchool', $selectedSchool);
         }
         
-        // Appliquer le tri si présent
+        // Application du tri
         $sortBy = $request->query->get('sortBy', 'lastName_asc');
         switch ($sortBy) {
             case 'lastName_desc':
@@ -78,7 +78,7 @@ final class PiloteController extends AbstractController
                 $queryBuilder->orderBy('u.lastName', 'ASC');
         }
         
-        // Obtenir les écoles uniques pour les filtres
+        // Récupération des écoles pour les filtres
         $schoolsData = $userRepository->createQueryBuilder('u')
             ->select('DISTINCT u.school')
             ->where('u.role = :role')
@@ -87,7 +87,7 @@ final class PiloteController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        // Transformation en tableau avec les clés value et label
+        // Transformation en format pour le template
         $schools = [];
         foreach ($schoolsData as $data) {
             $schools[] = [
@@ -96,7 +96,7 @@ final class PiloteController extends AbstractController
             ];
         }
         
-        // Paginer les résultats
+        // Pagination des résultats
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
@@ -119,34 +119,34 @@ final class PiloteController extends AbstractController
         ImageUploadService $imageService
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Créer un nouvel utilisateur
+        // Création d'un nouvel utilisateur
         $user = new User();
         
-        // Récupérer le rôle "pilot"
+        // Récupération du rôle pilote
         $pilotRole = $roleRepository->findOneBy(['name' => 'pilot']);
         if (!$pilotRole) {
             throw $this->createNotFoundException('Le rôle "pilot" n\'existe pas.');
         }
         
-        // Définir le rôle par défaut
+        // Attribution du rôle
         $user->setRole($pilotRole);
         
-        // Créer le formulaire
+        // Création du formulaire
         $form = $this->createForm(PiloteType::class, $user);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hasher le mot de passe
+            // Hachage du mot de passe
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $form->get('plainPassword')->getData()
             );
             $user->setPassword($hashedPassword);
             
-            // Gérer l'upload d'image
+            // Gestion de l'upload d'image
             if ($form->has('imageFile') && $form->get('imageFile')->getData()) {
                 $imageFile = $form->get('imageFile')->getData();
                 
@@ -163,7 +163,7 @@ final class PiloteController extends AbstractController
                 }
             }
             
-            // Persister et flush
+            // Persistance des données
             $entityManager->persist($user);
             $entityManager->flush();
             
@@ -185,7 +185,7 @@ final class PiloteController extends AbstractController
         RoleRepository $roleRepository
     ): Response
     {
-        // Vérifier que l'utilisateur a bien le rôle pilote
+        // Vérification du rôle pilote
         $pilotRole = $roleRepository->findOneBy(['name' => 'pilot']);
         
         if ($user->getRole() !== $pilotRole) {
@@ -208,17 +208,17 @@ final class PiloteController extends AbstractController
         ImageUploadService $imageService
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Vérifier que l'utilisateur a bien le rôle pilote
+        // Vérification du rôle pilote
         $pilotRole = $roleRepository->findOneBy(['name' => 'pilot']);
         
         if ($user->getRole() !== $pilotRole) {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un pilote');
         }
         
-        // Créer le formulaire
+        // Création du formulaire
         $form = $this->createForm(PiloteType::class, $user, [
             'require_password' => false
         ]);
@@ -226,7 +226,7 @@ final class PiloteController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hasher le mot de passe si fourni
+            // Hachage du mot de passe si fourni
             if ($form->has('plainPassword') && $form->get('plainPassword')->getData()) {
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
@@ -235,12 +235,12 @@ final class PiloteController extends AbstractController
                 $user->setPassword($hashedPassword);
             }
             
-            // Gérer l'upload d'image
+            // Gestion de l'upload d'image
             if ($form->has('imageFile') && $form->get('imageFile')->getData()) {
                 $imageFile = $form->get('imageFile')->getData();
                 
                 try {
-                    // Supprimer l'ancienne image s'il y en a une
+                    // Suppression de l'ancienne image
                     if ($user->getImageName()) {
                         $imageService->removeImage(
                             $user->getImageName(),
@@ -248,7 +248,7 @@ final class PiloteController extends AbstractController
                         );
                     }
                     
-                    // Uploader la nouvelle image
+                    // Upload de la nouvelle image
                     $newFilename = $imageService->uploadImage(
                         $imageFile,
                         'pilot',
@@ -284,20 +284,20 @@ final class PiloteController extends AbstractController
         ImageUploadService $imageService
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Vérifier que l'utilisateur a bien le rôle pilote
+        // Vérification du rôle pilote
         $pilotRole = $roleRepository->findOneBy(['name' => 'pilot']);
         
         if ($user->getRole() !== $pilotRole) {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un pilote');
         }
         
-        // Vérifier le token CSRF
+        // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             try {
-                // Supprimer l'image si elle existe
+                // Suppression de l'image
                 if ($user->getImageName()) {
                     $imageService->removeImage(
                         $user->getImageName(),
@@ -305,7 +305,7 @@ final class PiloteController extends AbstractController
                     );
                 }
                 
-                // Supprimer les adresses
+                // Suppression des adresses
                 if (method_exists($user, 'getAddresses')) {
                     $addresses = $user->getAddresses()->toArray();
                     foreach ($addresses as $address) {
@@ -316,15 +316,15 @@ final class PiloteController extends AbstractController
                     }
                 }
                 
-                // Supprimer les ratings associés
+                // Suppression des évaluations
                 foreach ($user->getRatings() as $rating) {
                     $entityManager->remove($rating);
                 }
                 
-                // Effectuer un flush intermédiaire
+                // Flush intermédiaire
                 $entityManager->flush();
                 
-                // Supprimer l'utilisateur
+                // Suppression de l'utilisateur
                 $entityManager->remove($user);
                 $entityManager->flush();
                 

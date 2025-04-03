@@ -5,6 +5,7 @@
 {% block body %}
 <div class="page-header mb-lg">
     <h1>Accueil 
+        {# Affichage personnalisé selon le rôle de l'utilisateur #}
         {% set role = app.user.roles[0]|replace({'ROLE_': ''}) %}
         {% if role == 'ADMIN' %}
             administrateur
@@ -19,6 +20,7 @@
 </div>
 
 <div class="d-flex flex-wrap gap-lg mb-lg">
+    {# Bloc d'informations récentes #}
     <div class="card flex-1">
         <h2 class="mb-md text-primary">Dernières infos</h2>
         {% for info in latest_infos|default([
@@ -35,6 +37,7 @@
         {% endfor %}
     </div>
 
+    {# Bloc d'offres de stage récentes #}
     <div class="card flex-1">
         <h2 class="mb-md text-primary">Offres de stage récentes</h2>
         {% for offer in recent_offers|default([
@@ -50,6 +53,7 @@
     </div>
 </div>
 
+{# Graphique de trafic du site #}
 <div class="card p-md mb-lg">
     <h2 class="mb-md text-primary">Trafic du site</h2>
     <div class="data-visualization">

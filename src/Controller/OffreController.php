@@ -28,42 +28,42 @@ final class OffreController extends AbstractController
         PaginatorInterface $paginator
     ): Response
     {
-        // Créer le queryBuilder de base
+        // Création du queryBuilder de base
         $queryBuilder = $offerRepository->createQueryBuilder('o')
             ->leftJoin('o.company', 'c')
             ->leftJoin('o.skills', 's');
         
-        // Filtrer les offres inactives pour les étudiants qui ne sont pas admin ou pilote
+        // Filtrage des offres inactives pour les étudiants
         if ($this->isGranted('ROLE_STUDENT') && !$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             $queryBuilder->andWhere('o.isActive = :isActive')
                 ->setParameter('isActive', true);
         }
         
-        // Récupérer les paramètres de recherche
+        // Récupération des paramètres de recherche
         $search = $request->query->get('search', '');
         $selectedCompany = $request->query->get('company');
         $selectedSkill = $request->query->get('skill');
         $sortBy = $request->query->get('sortBy', 'creation_desc');
         
-        // Appliquer le filtre de recherche textuelle
+        // Filtrage par texte
         if (!empty($search)) {
             $queryBuilder->andWhere('o.title LIKE :search OR c.name LIKE :search OR o.description LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
         
-        // Appliquer le filtre par entreprise
+        // Filtrage par entreprise
         if (!empty($selectedCompany)) {
             $queryBuilder->andWhere('c.id = :companyId')
                 ->setParameter('companyId', $selectedCompany);
         }
         
-        // Appliquer le filtre par compétence
+        // Filtrage par compétence
         if (!empty($selectedSkill)) {
             $queryBuilder->andWhere('s.id = :skillId')
                 ->setParameter('skillId', $selectedSkill);
         }
         
-        // Appliquer le tri
+        // Application du tri
         switch ($sortBy) {
             case 'title_asc':
                 $queryBuilder->orderBy('o.title', 'ASC');
@@ -91,7 +91,7 @@ final class OffreController extends AbstractController
                 $queryBuilder->orderBy('o.creationDate', 'DESC');
         }
         
-        // Récupérer les entreprises pour le filtre
+        // Récupération des entreprises pour le filtre
         $companies = $entityManager->createQuery(
             'SELECT DISTINCT c.id, c.name 
              FROM App\Entity\Company c 
@@ -99,7 +99,7 @@ final class OffreController extends AbstractController
              ORDER BY c.name ASC'
         )->getResult();
         
-        // Formater pour le template
+        // Formatage pour le template
         $companiesOptions = [];
         foreach ($companies as $company) {
             $companiesOptions[] = [
@@ -108,7 +108,7 @@ final class OffreController extends AbstractController
             ];
         }
         
-        // Récupérer les compétences pour le filtre
+        // Récupération des compétences pour le filtre
         $skills = $entityManager->createQuery(
             'SELECT DISTINCT s.id, s.name 
              FROM App\Entity\Skill s 
@@ -116,7 +116,7 @@ final class OffreController extends AbstractController
              ORDER BY s.name ASC'
         )->getResult();
         
-        // Formater pour le template
+        // Formatage pour le template
         $skillsOptions = [];
         foreach ($skills as $skill) {
             $skillsOptions[] = [
@@ -149,15 +149,15 @@ final class OffreController extends AbstractController
     {
         $offer = new Offer();
         
-        // Date de création par défaut
+        // Initialisation des valeurs par défaut
         $offer->setCreationDate(new \DateTime());
         $offer->setIsActive(true);
         
-        // Déterminer les rôles
+        // Détermination des rôles
         $isAdmin = $this->isGranted('ROLE_ADMIN');
         $isPilot = $this->isGranted('ROLE_PILOT');
         
-        // Récupérer l'entreprise du pilote si applicable
+        // Récupération de l'entreprise du pilote
         $pilotCompany = null;
         if ($isPilot && $this->getUser() && method_exists($this->getUser(), 'getCompany')) {
             $pilotCompany = $this->getUser()->getCompany();
@@ -173,7 +173,7 @@ final class OffreController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Pour un pilote qui n'est pas admin, on s'assure que l'offre est associée à son entreprise
+            // Attribution de l'entreprise pour un pilote
             if ($isPilot && !$isAdmin && $pilotCompany) {
                 $offer->setCompany($pilotCompany);
             }
@@ -200,21 +200,21 @@ final class OffreController extends AbstractController
     {
         $hasApplied = false;
         $applicationStatus = null;
-        $applicationId = null; // Ajout de l'ID de candidature
+        $applicationId = null;
         $isInWishlist = false;
         
-        // Vérifier si l'utilisateur connecté a déjà postulé
+        // Vérification si l'utilisateur a déjà postulé
         if ($this->getUser() && $this->isGranted('ROLE_STUDENT')) {
             foreach ($offre->getApplications() as $application) {
                 if ($application->getUser() === $this->getUser()) {
                     $hasApplied = true;
                     $applicationStatus = $application->getStatus();
-                    $applicationId = $application->getId(); // Récupération de l'ID
+                    $applicationId = $application->getId();
                     break;
                 }
             }
             
-            // Vérifier si l'offre est dans la liste de souhaits de l'utilisateur
+            // Vérification si l'offre est dans la liste de souhaits
             if ($offre->getWishListUsers()->contains($this->getUser())) {
                 $isInWishlist = true;
             }
@@ -224,7 +224,7 @@ final class OffreController extends AbstractController
             'offer' => $offre,
             'hasApplied' => $hasApplied,
             'applicationStatus' => $applicationStatus,
-            'applicationId' => $applicationId, // Ajout de l'ID à la vue
+            'applicationId' => $applicationId,
             'isInWishlist' => $isInWishlist
         ]);
     }
@@ -233,16 +233,16 @@ final class OffreController extends AbstractController
     #[IsGranted('ROLE_PILOT')]
     public function edit(Request $request, Offer $offer, EntityManagerInterface $entityManager): Response
     {
-        // Déterminer les rôles
+        // Détermination des rôles
         $isAdmin = $this->isGranted('ROLE_ADMIN');
         $isPilot = $this->isGranted('ROLE_PILOT');
         
-        // Vérifier que l'utilisateur peut modifier cette offre
+        // Vérification des droits d'accès
         if (!$isAdmin && !$isPilot) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette offre.');
         }
         
-        // Récupérer l'entreprise du pilote si applicable
+        // Récupération de l'entreprise du pilote
         $pilotCompany = null;
         if ($isPilot && $this->getUser() && method_exists($this->getUser(), 'getCompany')) {
             $pilotCompany = $this->getUser()->getCompany();
@@ -276,12 +276,12 @@ final class OffreController extends AbstractController
     #[IsGranted('ROLE_PILOT')]
     public function delete(Request $request, Offer $offer, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier que l'utilisateur peut supprimer cette offre
+        // Vérification des droits d'accès
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cette offre.');
         }
         
-        // Vérifier le token CSRF pour la sécurité
+        // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete'.$offer->getId(), $request->request->get('_token'))) {
             $entityManager->remove($offer);
             $entityManager->flush();
@@ -296,12 +296,12 @@ final class OffreController extends AbstractController
     #[IsGranted('ROLE_PILOT')]
     public function toggle(Offer $offer, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier que l'utilisateur peut modifier cette offre
+        // Vérification des droits d'accès
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette offre.');
         }
         
-        // Inverser l'état actif/inactif
+        // Inversion de l'état actif
         $offer->setIsActive(!$offer->isActive());
         $entityManager->flush();
         
@@ -321,28 +321,28 @@ final class OffreController extends AbstractController
         EntityManagerInterface $entityManager,
         UserRepository $userRepository
     ): Response {
-        // Verify CSRF token
+        // Vérification du token CSRF
         if (!$this->isCsrfTokenValid('toggle-wishlist', $request->request->get('token'))) {
             throw $this->createAccessDeniedException('Invalid CSRF token');
         }
         
-        // Get current user
+        // Récupération de l'utilisateur courant
         /** @var User $user */
         $user = $this->getUser();
         
-        // Make sure user is a Student or Admin for wishlist functionality, but not a Pilot
+        // Vérification du rôle
         if (!$this->isGranted('ROLE_STUDENT') && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'Seuls les étudiants et administrateurs peuvent ajouter des offres à leurs favoris.');
             return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
         }
         
-        // Explicitement empêcher les pilotes d'utiliser cette fonctionnalité
+        // Restriction pour les pilotes
         if ($this->isGranted('ROLE_PILOT') && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'Les pilotes ne peuvent pas ajouter d\'offres à leurs favoris.');
             return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
         }
         
-        // Check if the offer is already in the wishlist
+        // Vérification si l'offre est déjà dans la liste de souhaits
         $isInWishlist = false;
         foreach ($user->getWishListOffers() as $wishlistOffer) {
             if ($wishlistOffer->getId() === $offer->getId()) {
@@ -351,7 +351,7 @@ final class OffreController extends AbstractController
             }
         }
         
-        // Toggle wishlist status
+        // Modification de la liste de souhaits
         if ($isInWishlist) {
             $user->removeWishListOffer($offer);
             $this->addFlash('success', 'Offre retirée de vos favoris.');
@@ -360,11 +360,11 @@ final class OffreController extends AbstractController
             $this->addFlash('success', 'Offre ajoutée à vos favoris.');
         }
         
-        // Save changes
+        // Sauvegarde des modifications
         $entityManager->persist($user);
         $entityManager->flush();
         
-        // Redirect back to offer page or wishlist
+        // Redirection
         $referrer = $request->headers->get('referer');
         if (str_contains($referrer, 'wishlist')) {
             return $this->redirectToRoute('wishlist_index');
@@ -377,7 +377,7 @@ final class OffreController extends AbstractController
     #[IsGranted('ROLE_STUDENT')]
     public function apply(Offer $offer): Response
     {
-        // Rediriger vers la méthode postuler du CandidatureController
+        // Redirection vers le contrôleur de candidature
         return $this->redirectToRoute('candidature_postuler', [
             'id' => $offer->getId(),
         ]);
@@ -390,7 +390,7 @@ final class OffreController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         
-        // Vérifier si l'utilisateur a déjà postulé à cette offre
+        // Vérification si l'utilisateur a déjà postulé
         $existingApplication = $applicationRepository->findOneBy([
             'user' => $user,
             'offer' => $offer
@@ -401,7 +401,7 @@ final class OffreController extends AbstractController
             return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
         }
         
-        // Créer une nouvelle candidature
+        // Création d'une nouvelle candidature
         $application = new Application();
         $application->setUser($user);
         $application->setOffer($offer);

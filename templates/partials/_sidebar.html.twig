@@ -48,6 +48,7 @@
     <div class="user-profile">
         <div class="profile-link d-flex align-center">
             {% if app.user %}
+                {# Définition du chemin d'upload en fonction du rôle de l'utilisateur #}
                 {% set upload_path = 'uploads/students' %}
                 {% if is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN') %}
                     {% set upload_path = 'uploads/pilots' %}

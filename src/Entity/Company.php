@@ -42,15 +42,11 @@ class Company
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
 
-    /**
-     * @var Collection<int, offer>
-     */
+    // Collection d'offres liées à cette entreprise
     #[ORM\OneToMany(targetEntity: offer::class, mappedBy: 'company', cascade: ['persist', 'remove'])]
     private Collection $offers;
 
-    /**
-     * @var Collection<int, rating>
-     */
+    // Collection d'évaluations liées à cette entreprise
     #[ORM\OneToMany(targetEntity: rating::class, mappedBy: 'company')]
     private Collection $ratings;
 
@@ -148,14 +144,13 @@ class Company
         return $this;
     }
 
-    /**
-     * @return Collection<int, offer>
-     */
+    // Retourne toutes les offres associées à l'entreprise
     public function getOffers(): Collection
     {
         return $this->offers;
     }
 
+    // Ajoute une offre à la collection et définit cette entreprise comme propriétaire
     public function addOffer(offer $offer): static
     {
         if (!$this->offers->contains($offer)) {
@@ -166,10 +161,11 @@ class Company
         return $this;
     }
 
+    // Supprime une offre de la collection
     public function removeOffer(offer $offer): static
     {
         if ($this->offers->removeElement($offer)) {
-            // set the owning side to null (unless already changed)
+            // Réinitialise l'entreprise associée si nécessaire
             if ($offer->getCompany() === $this) {
                 $offer->setCompany(null);
             }
@@ -178,14 +174,13 @@ class Company
         return $this;
     }
 
-    /**
-     * @return Collection<int, rating>
-     */
+    // Retourne toutes les évaluations associées à l'entreprise
     public function getRatings(): Collection
     {
         return $this->ratings;
     }
 
+    // Ajoute une évaluation à la collection
     public function addRating(rating $rating): static
     {
         if (!$this->ratings->contains($rating)) {
@@ -196,10 +191,11 @@ class Company
         return $this;
     }
 
+    // Supprime une évaluation de la collection
     public function removeRating(rating $rating): static
     {
         if ($this->ratings->removeElement($rating)) {
-            // set the owning side to null (unless already changed)
+            // Réinitialise l'entreprise associée si nécessaire
             if ($rating->getCompany() === $this) {
                 $rating->setCompany(null);
             }
@@ -208,6 +204,7 @@ class Company
         return $this;
     }
 
+    // Gestion du logo via le trait ImageUploadTrait
     public function getLogoName(): ?string
     {
         return $this->getImageName();

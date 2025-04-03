@@ -3,7 +3,7 @@
 {% block title %}Entreprises{% endblock %}
 
 {% block body %}
-{# Barre de recherche #}
+{# Barre de recherche pour les entreprises #}
 {% include 'partials/_search_bar.html.twig' with {
     'route_name': 'entreprise',
     'placeholder': 'Chercher par entreprise',
@@ -15,7 +15,7 @@
     }
 } %}
 
-{# Panneau de filtres #}
+{# Panneau de filtres pour affiner la recherche #}
 {% include 'partials/_filter_panel.html.twig' with {
     'route_name': 'entreprise',
     'filters': [
@@ -52,7 +52,7 @@
     ]
 } %}
 
-{# En-tête des résultats #}
+{# En-tête avec titre et bouton d'action #}
 {% include 'partials/_search_results_header.html.twig' with {
     'title': 'Entreprises',
     'items': companies,
@@ -66,6 +66,7 @@
 } %}
 
 {% if companies|length > 0 %}
+    {# Liste des entreprises #}
     <div class="item-list">
         {% for item in companies %}
             {% include 'partials/_list_item.html.twig' with {
@@ -76,7 +77,7 @@
         {% endfor %}
     </div>
     
-    {# Pagination #}
+    {# Pagination pour la liste des entreprises #}
     {{ knp_pagination_render(companies, 'pagination/pagination.html.twig') }}
 {% else %}
 

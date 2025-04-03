@@ -22,6 +22,7 @@ class AdminType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Champs pour les informations personnelles
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom',
                 'constraints' => [
@@ -53,6 +54,7 @@ class AdminType extends AbstractType
                     new Email(['message' => 'Veuillez entrer une adresse email valide'])
                 ]
             ])
+            // Champ mot de passe avec sécurité renforcée
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -71,6 +73,7 @@ class AdminType extends AbstractType
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas'
             ])
+            // Champ pour l'image de profil
             ->add('imageFile', FileType::class, [
                 'label' => 'Photo de profil',
                 'mapped' => false,
@@ -91,9 +94,10 @@ class AdminType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // Configuration des options du formulaire
         $resolver->setDefaults([
             'data_class' => User::class,
-            'require_password' => true,
+            'require_password' => true, // Option pour rendre le mot de passe obligatoire ou non
         ]);
     }
 }

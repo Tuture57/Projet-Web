@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const stars = document.querySelectorAll('.star-rating label');
     const starInputs = document.querySelectorAll('.star-rating input');
     
-    // Au chargement de la page, afficher les étoiles déjà sélectionnées en jaune
+    // Initialise l'affichage des étoiles en fonction de la note déjà sélectionnée
     function initializeRating() {
         const checkedInput = document.querySelector('.star-rating input:checked');
         if (checkedInput) {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializeRating();
     
-    // Mettre les étoiles en surbrillance lors du survol
+    // Gestion du survol des étoiles
     stars.forEach(star => {
         star.addEventListener('mouseenter', function() {
             const hoveredValue = parseInt(document.getElementById(this.getAttribute('for')).value);
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Réinitialiser l'état quand on quitte la zone
+    // Rétablissement de l'état initial quand on quitte la zone de notation
     const ratingContainer = document.querySelector('.star-rating');
     if (ratingContainer) {
         ratingContainer.addEventListener('mouseleave', function() {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // S'assurer que les bonnes étoiles sont sélectionnées au clic
+    // Gestion du clic sur une étoile
     starInputs.forEach(input => {
         input.addEventListener('click', function() {
             const selectedValue = parseInt(this.value);

@@ -22,6 +22,7 @@
         <div class="company-info">
             <h1>{{ company.name }}</h1>
             
+            {# Boutons d'administration pour les rôles admins et pilotes #}
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
                 <div class="admin-actions d-flex gap-sm">
                     <a href="{{ path('entreprise_edit', {'id': company.id}) }}" class="btn btn-edit btn-sm">
@@ -38,6 +39,7 @@
                 </form>
             {% endif %}
             
+            {# Affichage de la note moyenne de l'entreprise #}
             {% if company.averageRating is not null and company.averageRating > 0 %}
                 <div class="company-rating d-flex align-center">
                     <div class="stars">
@@ -85,6 +87,7 @@
     </div>
 </div>
 
+{# Section description de l'entreprise #}
 {% if company.description %}
 <div class="card mb-lg">
     <h2 class="mb-md">À propos de {{ company.name }}</h2>
@@ -94,7 +97,7 @@
 </div>
 {% endif %}
 
-<!-- Formulaire de notation -->
+{# Formulaire de notation pour les utilisateurs connectés #}
 {% if app.user %}
 <div class="card mb-lg">
     <div class="card-header mb-md">
@@ -123,6 +126,7 @@
             <button type="submit" class="btn btn-primary">Soumettre</button>
         </form>
         
+        {# Option de suppression de l'avis existant #}
         {% if userRating %}
         <div class="rating-actions mt-md">
             <form action="{{ path('entreprise_remove_rating', {'id': company.id}) }}" method="post" id="remove-rating-form">
@@ -145,6 +149,7 @@
 </div>
 {% endif %}
 
+{# Liste des offres de l'entreprise #}
 <div class="card mb-lg">
     <div class="d-flex justify-between align-center mb-lg">
         <h2 class="m-0">Offres actuelles <span class="badge badge-primary ml-xs">{{ offers|length }}</span></h2>
@@ -195,6 +200,7 @@
 
 {% block javascripts %}
 <script>
+    // Fonction de confirmation de suppression d'entreprise
     function confirmDelete(companyId) {
         if (confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')) {
             document.getElementById('delete-form-' + companyId).submit();

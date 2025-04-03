@@ -32,7 +32,7 @@ class HashPasswordsCommand extends Command
         $users = $userRepository->findAll();
 
         foreach ($users as $user) {
-            $plainPassword = 'password123'; // Le mot de passe en clair dans ta base
+            $plainPassword = 'password123';
             $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($hashedPassword);
             $output->writeln('Hachage du mot de passe pour : ' . $user->getEmail());

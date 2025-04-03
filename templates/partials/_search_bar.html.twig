@@ -9,7 +9,7 @@
             <input type="text" name="search" placeholder="{{ placeholder|default('Rechercher...') }}" class="integrated-input" value="{{ app.request.query.get('search') }}">
         </div>
         
-        {# Préserver les filtres actifs lors d'une recherche #}
+        {# Conservation des filtres actifs pendant la recherche #}
         {% for filter_name, filter_value in active_filters|default({}) %}
             {% if filter_value is not empty %}
                 <input type="hidden" name="{{ filter_name }}" value="{{ filter_value }}">

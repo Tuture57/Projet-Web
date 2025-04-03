@@ -4,6 +4,7 @@
 
 {% block body %}
 <div class="page-header mb-lg">
+    {# Bouton de retour adapté au rôle de l'utilisateur #}
     <div class="back-button mb-md">
         {% if is_granted('ROLE_STUDENT') %}
             <a href="{{ path('candidature_index') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour à mes candidatures</a>
@@ -14,6 +15,7 @@
     <h1>Détails de la candidature</h1>
 </div>
 
+{# En-tête avec les infos principales et les actions possibles #}
 <div class="card mb-lg">
     <div class="application-header d-flex justify-between align-center">
         <div class="application-info">
@@ -30,6 +32,7 @@
             </div>
         </div>
         
+        {# Actions pour les entreprises, admins et pilotes #}
         {% if is_granted('ROLE_COMPANY') or is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
             {% if application.status == 'Pending' %}
                 <div class="application-actions d-flex gap-sm">
@@ -43,6 +46,7 @@
             {% endif %}
         {% endif %}
         
+        {# Option d'annulation pour l'étudiant #}
         {% if is_granted('ROLE_STUDENT') and application.status == 'Pending' and app.user.id == application.user.id %}
             <div class="application-actions">
                 <a href="{{ path('candidature_annuler', {'id': application.id}) }}" class="btn btn-danger btn-sm" 
@@ -54,7 +58,9 @@
     </div>
 </div>
 
+{# Informations sur le candidat et l'offre #}
 <div class="d-flex flex-wrap gap-lg mb-lg">
+    {# Carte avec les infos du candidat #}
     <div class="flex-1">
         <div class="card h-100">
             <h3 class="mb-md"><i class="fas fa-user-graduate"></i> Informations sur le candidat</h3>
@@ -82,6 +88,7 @@
         </div>
     </div>
     
+    {# Carte avec les infos de l'offre #}
     <div class="flex-1">
         <div class="card h-100">
             <h3 class="mb-md"><i class="fas fa-briefcase"></i> Informations sur l'offre</h3>
@@ -99,6 +106,7 @@
                     <span class="info-value">{{ application.offer.remuneration|number_format(2, ',', ' ') }} € / mois</span>
                 </div>
                 
+                {# Liste des compétences requises #}
                 {% if application.offer.skills|length > 0 %}
                     <div class="info-item mt-md">
                         <span class="info-label font-weight-bold d-block mb-sm">Compétences requises:</span>
@@ -120,6 +128,7 @@
     </div>
 </div>
 
+{# Lettre de motivation #}
 {% if application.coverLetter %}
     <div class="card mb-lg">
         <h3 class="mb-md"><i class="fas fa-envelope-open-text"></i> Lettre de motivation</h3>
@@ -129,12 +138,14 @@
     </div>
 {% endif %}
 
+{# Informations supplémentaires pour les candidatures acceptées #}
 {% if application.status == 'Accepted' %}
     <div class="card alert-success border border-primary-light">
         <h3 class="mb-md text-success"><i class="fas fa-check-circle"></i> Candidature acceptée</h3>
         <div class="accepted-info">
             <p class="mb-md">Cette candidature a été acceptée. Les coordonnées de contact sont maintenant disponibles pour les deux parties.</p>
             
+            {# Affichage des coordonnées de l'entreprise pour l'étudiant #}
             {% if is_granted('ROLE_STUDENT') %}
                 <div class="contact-info p-md bg-white rounded-md shadow-sm">
                     <h4 class="mb-sm">Contact de l'entreprise:</h4>

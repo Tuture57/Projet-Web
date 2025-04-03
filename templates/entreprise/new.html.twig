@@ -8,6 +8,7 @@
         <h1 class="m-0">Nouvelle entreprise</h1>
     </div>
     
+    {# Formulaire de création d'entreprise #}
     {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
         {% include 'partials/form/_company_form.html.twig' with {
             'form': form,

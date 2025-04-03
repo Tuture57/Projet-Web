@@ -12,6 +12,7 @@
         <div class="card shadow-md" style="max-width: 400px; width: 100%;">
             <h1 class="text-center mb-lg">Connexion</h1>
 
+            {# Affichage des erreurs d'authentification #}
             {% if error %}
                 <div class="alert alert-danger mb-lg">
                     {{ error.messageKey|trans(error.messageData, 'security') }}
@@ -19,6 +20,7 @@
             {% endif %}
 
             <form method="post" class="d-flex flex-column gap-md">
+                {# Champ email #}
                 <div class="form-group">
                     <label for="email" class="mb-sm">Email</label>
                     <div class="position-relative">
@@ -27,6 +29,7 @@
                     </div>
                 </div>
 
+                {# Champ mot de passe #}
                 <div class="form-group">
                     <label for="password" class="mb-sm">Mot de passe</label>
                     <div class="position-relative">
@@ -35,6 +38,7 @@
                     </div>
                 </div>
 
+                {# Token CSRF pour sécuriser le formulaire #}
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <button type="submit" class="btn btn-primary mt-md">
@@ -42,6 +46,7 @@
                 </button>
             </form>
             
+            {# Lien de retour à l'accueil #}
             <div class="text-center mt-lg">
                 <a href="{{ path('home') }}" class="text-primary">
                     <i class="fas fa-arrow-left mr-xs"></i> Retour à l'accueil

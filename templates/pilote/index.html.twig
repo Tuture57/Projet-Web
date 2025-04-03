@@ -48,6 +48,7 @@
 } %}
 
 {% if pilots|length > 0 %}
+    {# Liste des pilotes #}
     <div class="item-list">
         {% for item in pilots %}
             <a href="{{ path('pilote_show', {'id': item.id}) }}" class="item d-flex align-center">

@@ -3,7 +3,7 @@
 {% block title %}Étudiants{% endblock %}
 
 {% block body %}
-{# Barre de recherche #}
+{# Barre de recherche pour les étudiants #}
 {% include 'partials/_search_bar.html.twig' with {
     'route_name': 'etudiant',
     'placeholder': 'Rechercher par nom, prénom ou email',
@@ -14,7 +14,7 @@
     }
 } %}
 
-{# Panneau de filtres #}
+{# Panneau de filtres pour affiner la recherche #}
 {% include 'partials/_filter_panel.html.twig' with {
     'route_name': 'etudiant',
     'filters': [
@@ -41,7 +41,7 @@
     ]
 } %}
 
-{# En-tête des résultats #}
+{# En-tête des résultats avec titre et bouton d'action #}
 {% include 'partials/_search_results_header.html.twig' with {
     'title': 'Étudiants',
     'items': students,
@@ -55,6 +55,7 @@
 } %}
 
 {% if students|length > 0 %}
+    {# Liste des étudiants #}
     <div class="item-list">
         {% for item in students %}
             <a href="{{ path('etudiant_show', {'id': item.id}) }}" class="item d-flex align-center">

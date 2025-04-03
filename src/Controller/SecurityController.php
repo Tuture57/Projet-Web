@@ -13,7 +13,7 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            // Si l'utilisateur est déjà connecté, le rediriger vers la page d'accueil
+            // Redirection vers l'accueil si déjà connecté
             return $this->redirectToRoute('home');
         }
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -29,7 +29,7 @@ class SecurityController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
-        // Symfony gère automatiquement la déconnexion
+        // La déconnexion est gérée automatiquement par Symfony
     }
 
     #[Route('/access-denied', name: 'access_denied')]

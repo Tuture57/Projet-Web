@@ -30,32 +30,32 @@ final class EtudiantController extends AbstractController
         PaginatorInterface $paginator
     ): Response
     {
-        // Trouver l'ID du rôle étudiant
+        // Recherche du rôle étudiant
         $studentRole = $roleRepository->findOneBy(['name' => 'student']);
         
         if (!$studentRole) {
             throw $this->createNotFoundException('Le rôle étudiant n\'existe pas');
         }
         
-        // Récupérer les paramètres de recherche et de filtrage
+        // Récupération des paramètres de filtrage
         $searchTerm = $request->query->get('search', '');
         $school = $request->query->get('school');
         $status = $request->query->get('status');
         $sortBy = $request->query->get('sortBy', 'lastName_asc');
         
-        // Construire la requête pour les utilisateurs ayant le rôle étudiant
+        // Construction de la requête pour les étudiants
         $queryBuilder = $userRepository->createQueryBuilder('u')
             ->leftJoin('u.role', 'r')
             ->where('u.role = :role')
             ->setParameter('role', $studentRole);
         
-        // Ajouter la recherche
+        // Ajout de la recherche textuelle
         if (!empty($searchTerm)) {
             $queryBuilder->andWhere('u.firstName LIKE :search OR u.lastName LIKE :search OR u.email LIKE :search')
                 ->setParameter('search', '%' . $searchTerm . '%');
         }
         
-        // Ajouter les filtres
+        // Application des filtres
         if (!empty($school)) {
             $queryBuilder->andWhere('u.school = :school')
                 ->setParameter('school', $school);
@@ -66,7 +66,7 @@ final class EtudiantController extends AbstractController
                 ->setParameter('status', $status);
         }
         
-        // Appliquer le tri
+        // Application du tri
         switch ($sortBy) {
             case 'lastName_desc':
                 $queryBuilder->orderBy('u.lastName', 'DESC');
@@ -88,7 +88,7 @@ final class EtudiantController extends AbstractController
                 $queryBuilder->orderBy('u.lastName', 'ASC');
         }
         
-        // Récupérer les écoles distinctes pour les filtres
+        // Récupération des écoles distinctes pour le filtre
         $schoolsQuery = $userRepository->createQueryBuilder('u')
             ->select('DISTINCT u.school')
             ->where('u.role = :role')
@@ -100,7 +100,7 @@ final class EtudiantController extends AbstractController
             return ['value' => $result['school'], 'label' => $result['school']];
         }, $schoolsQuery->getArrayResult());
         
-        // Récupérer les statuts de recherche distincts pour les filtres
+        // Récupération des statuts de recherche pour le filtre
         $statusQuery = $userRepository->createQueryBuilder('u')
             ->select('DISTINCT u.searchStatus')
             ->where('u.role = :role')
@@ -113,7 +113,7 @@ final class EtudiantController extends AbstractController
             return ['value' => $result['searchStatus'], 'label' => $result['searchStatus']];
         }, $statusQuery->getArrayResult());
         
-        // Paginer les résultats
+        // Pagination
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
@@ -137,36 +137,35 @@ final class EtudiantController extends AbstractController
         ImageUploadService $imageService
     ): Response
     {
-        // Créer un nouvel utilisateur
+        // Création d'un nouvel utilisateur
         $user = new User();
         
-        // Récupérer le rôle "student"
+        // Récupération du rôle étudiant
         $studentRole = $roleRepository->findOneBy(['name' => 'student']);
         if (!$studentRole) {
             throw $this->createNotFoundException('Le rôle "student" n\'existe pas.');
         }
         
-        // Définir le rôle par défaut
+        // Attribution du rôle
         $user->setRole($studentRole);
         
-        // Créer le formulaire
+        // Création du formulaire
         $form = $this->createForm(StudentType::class, $user);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hasher le mot de passe
+            // Hachage du mot de passe
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $form->get('plainPassword')->getData()
             );
             $user->setPassword($hashedPassword);
             
-            // Gérer l'upload d'image exactement comme dans la méthode edit()
+            // Gestion de l'upload d'image
             if ($form->has('imageFile') && $form->get('imageFile')->getData()) {
                 $imageFile = $form->get('imageFile')->getData();
                 
                 try {
-                    // Utiliser exactement les mêmes paramètres que dans edit()
                     $newFilename = $imageService->uploadImage(
                         $imageFile,
                         'student',
@@ -179,7 +178,7 @@ final class EtudiantController extends AbstractController
                 }
             }
             
-            // Persister et flush
+            // Persistance des données
             $entityManager->persist($user);
             $entityManager->flush();
             
@@ -202,19 +201,15 @@ final class EtudiantController extends AbstractController
         ApplicationRepository $applicationRepository
     ): Response
     {
-        // Vérifier que l'utilisateur a bien le rôle étudiant
+        // Vérification du rôle étudiant
         $studentRole = $roleRepository->findOneBy(['name' => 'student']);
         
         if ($user->getRole() !== $studentRole) {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un étudiant');
         }
         
-        // Récupérer les candidatures de l'étudiant
-        // Soit directement depuis l'utilisateur:
+        // Récupération des candidatures de l'étudiant
         $applications = $user->getApplications();
-        
-        // Ou alternative avec le repository pour plus de contrôle:
-        // $applications = $applicationRepository->findBy(['user' => $user], ['applicationDate' => 'DESC']);
         
         return $this->render('etudiant/show.html.twig', [
             'student' => $user,
@@ -233,10 +228,10 @@ final class EtudiantController extends AbstractController
         ImageUploadService $imageService
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Vérifier que l'utilisateur a bien le rôle étudiant
+        // Vérification du rôle étudiant
         $studentRole = $roleRepository->findOneBy(['name' => 'student']);
         
         if ($user->getRole() !== $studentRole) {
@@ -247,7 +242,7 @@ final class EtudiantController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hasher le nouveau mot de passe si fourni
+            // Hachage du mot de passe si fourni
             if ($form->has('plainPassword') && $form->get('plainPassword')->getData()) {
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
@@ -256,12 +251,12 @@ final class EtudiantController extends AbstractController
                 $user->setPassword($hashedPassword);
             }
             
-            // Gérer l'upload d'image si disponible
+            // Gestion de l'upload d'image
             $imageFile = $form->get('imageFile')->getData();
             
             if ($imageFile) {
                 try {
-                    // Supprimer l'ancienne image s'il y en a une
+                    // Suppression de l'ancienne image
                     if ($user->getImageName()) {
                         $imageService->removeImage(
                             $user->getImageName(),
@@ -269,7 +264,7 @@ final class EtudiantController extends AbstractController
                         );
                     }
                     
-                    // Uploader la nouvelle image
+                    // Upload de la nouvelle image
                     $newFilename = $imageService->uploadImage(
                         $imageFile,
                         'student',
@@ -307,49 +302,47 @@ final class EtudiantController extends AbstractController
         RatingRepository $ratingRepository
     ): Response
     {
-        // Vérifier que l'utilisateur est administrateur
+        // Vérification des droits d'accès
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Vérifier que l'utilisateur a bien le rôle étudiant
+        // Vérification du rôle étudiant
         $studentRole = $roleRepository->findOneBy(['name' => 'student']);
         
         if ($user->getRole() !== $studentRole) {
             throw $this->createNotFoundException('Cet utilisateur n\'est pas un étudiant');
         }
         
-        // Vérifier le token CSRF
+        // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             try {
-                // 1. Suppression des candidatures
+                // Suppression des candidatures
                 $applications = $applicationRepository->findBy(['user' => $user]);
                 foreach ($applications as $application) {
                     $entityManager->remove($application);
                 }
                 
-                // 2. Suppression des ratings
+                // Suppression des évaluations
                 $ratings = $ratingRepository->findBy(['user' => $user]);
                 foreach ($ratings as $rating) {
                     $entityManager->remove($rating);
                 }
                 
-                // 3. Suppression de l'image
+                // Suppression de l'image
                 if ($user->getImageName()) {
-                    // Supprimer le fichier physique
                     $imageService->removeImage(
                         $user->getImageName(),
                         $this->getParameter('student_photos_directory')
                     );
                     
-                    // Supprimer la référence dans l'entité
                     $user->setImageName(null);
                 }
                 
-                // 4. Suppression des entrées wishlist
+                // Suppression des entrées wishlist
                 foreach ($user->getWishListOffers() as $offer) {
                     $user->removeWishListOffer($offer);
                 }
                 
-                // 5. Suppression des adresses
+                // Suppression des adresses
                 if (method_exists($user, 'getAddresses')) {
                     $addresses = $user->getAddresses()->toArray();
                     foreach ($addresses as $address) {
@@ -360,16 +353,15 @@ final class EtudiantController extends AbstractController
                     }
                 }
                 
-                // Effectuer un flush intermédiaire pour enregistrer les suppressions de relations
+                // Flush intermédiaire
                 $entityManager->flush();
                 
-                // 6. Suppression de l'utilisateur
+                // Suppression de l'utilisateur
                 $entityManager->remove($user);
                 $entityManager->flush();
                 
                 $this->addFlash('success', 'L\'étudiant a été supprimé avec succès.');
             } catch (\Exception $e) {
-                // Capturer l'erreur complète pour le diagnostic
                 $this->addFlash('error', 'Erreur: ' . $e->getMessage());
                 $this->addFlash('error', 'Type d\'erreur: ' . get_class($e));
             }

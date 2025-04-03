@@ -1,4 +1,4 @@
-{# Informations personnelles #}
+{# Section des informations personnelles #}
 <div class="form-section mb-lg">
     <h2 class="mb-md">Informations personnelles</h2>
     
@@ -25,6 +25,7 @@
     <div class="form-group">
         {{ form_label(form.imageFile) }}
         
+        {# Aperçu de l'image actuelle #}
         {% if admin.imageName %}
             <div class="image-preview">
                 <img src="{{ asset('uploads/admins/' ~ admin.imageName) }}" alt="{{ admin.firstName }} {{ admin.lastName }}" class="rounded-md shadow-sm">
@@ -39,7 +40,7 @@
     </div>
 </div>
 
-{# Mot de passe #}
+{# Section du mot de passe #}
 <div class="form-section mb-lg">
     <h2 class="mb-md">Mot de passe</h2>
     {% if admin.id is not null %}

@@ -11,53 +11,57 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 class Offer
 {
+    // Identifiant unique de l'offre
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Titre de l'offre
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    // Description détaillée de l'offre
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    // Rémunération proposée
     #[ORM\Column]
     private ?float $remuneration = null;
 
+    // Date de début du stage/emploi
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $startDate = null;
 
+    // Date de fin du stage/emploi
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $endDate = null;
 
+    // Date de création de l'offre
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creationDate = null;
 
+    // Nombre de candidats ayant postulé
     #[ORM\Column]
     private ?int $numberOfApplicants = 0;
 
-    /**
-     * @var Collection<int, User>
-     */
+    // Utilisateurs ayant ajouté cette offre à leur liste de souhaits
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'wishListOffers')]
     private Collection $wishListUsers;
 
+    // Entreprise proposant l'offre
     #[ORM\ManyToOne(inversedBy: 'offers')]
     private ?Company $company = null;
 
-    /**
-     * @var Collection<int, Skill>
-     */
+    // Compétences requises pour l'offre
     #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'offers')]
     private Collection $skills;
 
-    /**
-     * @var Collection<int, Application>
-     */
+    // Candidatures associées à l'offre
     #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'offer', cascade: ['persist', 'remove'])]
     private Collection $applications;
 
+    // Indique si l'offre est active
     #[ORM\Column]
     private ?bool $isActive = null;
 

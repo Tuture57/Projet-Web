@@ -1,15 +1,16 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\etudiant\show.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ student.firstName }} {{ student.lastName }}{% endblock %}
 
 {% block body %}
 <div class="company-header mb-lg">
+    {# Bouton de retour à la liste des étudiants #}
     <div class="back-button mb-md">
         <a href="{{ path('etudiant') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux étudiants</a>
     </div>
     
     <div class="company-profile">
+        {# Photo de profil de l'étudiant #}
         <div class="company-logo-container">
             {% include 'partials/_image_display.html.twig' with {
                 'entity': student,
@@ -23,6 +24,7 @@
         <div class="company-info">
             <h1>{{ student.firstName }} {{ student.lastName }}</h1>
             
+            {# Actions administratives pour les pilotes #}
             {% if is_granted('ROLE_PILOT') %}
                 <div class="admin-actions d-flex gap-sm">
                     <a href="{{ path('etudiant_edit', {'id': student.id}) }}" class="btn btn-edit btn-sm">
@@ -39,6 +41,7 @@
                 </form>
             {% endif %}
             
+            {# Statut de recherche de l'étudiant #}
             {% if student.searchStatus %}
                 <div class="company-rating">
                     <span class="status-badge 
@@ -53,6 +56,7 @@
                 <span class="no-rating">Statut non défini</span>
             {% endif %}
             
+            {# Informations de base de l'étudiant #}
             <div class="company-details">
                 {% if student.school %}
                     <div class="detail-item">
@@ -70,6 +74,7 @@
     </div>
 </div>
 
+{# Section d'informations complémentaires #}
 <div class="card mb-lg">
     <h2 class="mb-md">Informations complémentaires</h2>
     <div class="description-content">
@@ -93,10 +98,12 @@
     </div>
 </div>
 
+{# Section des stages #}
 <div class="card">
     <div class="d-flex justify-between align-center mb-lg">
         <h2 class="m-0">Stages</h2>
         
+        {# Filtres de statut des candidatures #}
         {% if applications is defined and applications|length > 0 %}
             <div class="offer-filters">
                 <div class="filter-label mb-sm">Filtrer par statut :</div>
@@ -142,6 +149,7 @@
         {% endif %}
     </div>
     
+    {# Liste des candidatures #}
     {% if applications is defined and applications|length > 0 %}
         <div class="offer-list d-flex flex-column gap-md">
             {% set displayed_applications = false %}
@@ -200,6 +208,7 @@
                 {% endif %}
             {% endfor %}
             
+            {# Message si aucune candidature ne correspond aux filtres #}
             {% if not displayed_applications %}
                 <div class="no-offers text-center p-xl bg-light rounded-lg">
                     <i class="far fa-file-alt"></i>
@@ -218,6 +227,7 @@
 
 {% block javascripts %}
 <script>
+    // Fonction de confirmation de suppression
     function confirmDelete(id) {
         if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
             document.getElementById('delete-form-' + id).submit();

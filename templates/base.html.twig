@@ -10,9 +10,11 @@
 </head>
 <body>
     <div class="container">
+        {# Inclusion de la barre latérale #}
         {% include 'partials/_sidebar.html.twig' %}
         
         <div class="main-content overflow-auto">
+            {# Affichage des messages flash #}
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="alert alert-{{ label }} alert-dismissible mb-lg rounded-md">
@@ -36,6 +38,7 @@
             {% endfor %}   
             {% block body %}{% endblock %}
             
+            {# Pied de page du site #}
             <footer class="site-footer mt-lg p-md">
                 <div class="footer-links d-flex justify-center gap-md">
                     <a href="{{ path('mentions_legales') }}" class="text-muted">Mentions légales</a>
@@ -49,6 +52,7 @@
     {% block javascripts %}{% endblock %}
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="{{ asset('js/form-validation.js') }}"></script>
+    {# Charge le script des évaluations uniquement sur la page de détail d'entreprise #}
     {% if app.request.get('_route') starts with 'entreprise_show' %}
         <script src="{{ asset('js/rating.js') }}"></script>
     {% endif %}

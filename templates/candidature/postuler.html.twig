@@ -4,6 +4,7 @@
 
 {% block body %}
 <div class="form-page">
+    {# En-tête du formulaire avec titre et bouton de retour #}
     <div class="form-header mb-lg d-flex justify-between align-center">
         <h1 class="m-0">Postuler à l'offre : {{ offer.title }}</h1>
         <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-secondary btn-sm">
@@ -11,6 +12,7 @@
         </a>
     </div>
 
+    {# Résumé de l'offre dans une carte #}
     <div class="card mb-lg">
         <div class="offer-summary">
             <h2 class="mb-md">Résumé de l'offre</h2>
@@ -31,11 +33,13 @@
         </div>
     </div>
 
+    {# Formulaire de candidature #}
     <div class="card">
         <h2 class="mb-lg">Formulaire de candidature</h2>
         
         {{ form_start(form, {'attr': {'class': 'application-form'}}) }}
             <div class="form-section">
+                {# Champ pour la lettre de motivation #}
                 <div class="form-group">
                     {{ form_label(form.coverLetter) }} <span class="text-danger">*</span>
                     {{ form_widget(form.coverLetter, {'attr': {
@@ -51,6 +55,7 @@
                     {{ form_errors(form.coverLetter) }}
                 </div>
 
+                {# Champ pour le téléchargement du CV #}
                 <div class="form-group">
                     {{ form_label(form.cvFile) }} <span class="text-danger">*</span>
                     {{ form_widget(form.cvFile, {'attr': {'required': true, 'class': 'custom-file-input', 'accept': '.pdf,.doc,.docx'}}) }}
@@ -63,6 +68,7 @@
                 </div>
             </div>
 
+            {# Boutons d'action du formulaire #}
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Envoyer ma candidature
@@ -98,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Fonction pour mettre à jour l'affichage du compteur de caractères
     function updateCount(textarea, display, max) {
         const currentLength = textarea.value.length;
         display.textContent = `${currentLength} / ${max} caractères`;

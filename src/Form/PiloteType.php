@@ -18,17 +18,23 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PiloteType extends AbstractType
 {
+    /**
+     * Configuration du formulaire pour les pilotes
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Champ prénom
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom',
                 'attr' => ['placeholder' => 'Entrez le prénom']
             ])
+            // Champ nom
             ->add('lastName', TextType::class, [
                 'label' => 'Nom',
                 'attr' => ['placeholder' => 'Entrez le nom']
             ])
+            // Champ email avec validation
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => ['placeholder' => 'Entrez l\'email'],
@@ -37,6 +43,7 @@ class PiloteType extends AbstractType
                     new Email(['message' => 'Email invalide'])
                 ]
             ])
+            // Champ mot de passe avec confirmation
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -58,10 +65,12 @@ class PiloteType extends AbstractType
                     ]),
                 ] : [],
             ])
+            // Champ établissement
             ->add('school', TextType::class, [
                 'label' => 'Établissement',
                 'attr' => ['placeholder' => 'Entrez le nom de l\'établissement']
             ])
+            // Champ pour l'upload de photo de profil
             ->add('imageFile', FileType::class, [
                 'label' => 'Photo de profil',
                 'mapped' => false,
@@ -79,6 +88,9 @@ class PiloteType extends AbstractType
             ]);
     }
 
+    /**
+     * Configuration des options par défaut du formulaire
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

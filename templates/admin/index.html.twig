@@ -3,7 +3,7 @@
 {% block title %}Administrateurs{% endblock %}
 
 {% block body %}
-{# Barre de recherche #}
+{# Barre de recherche des administrateurs #}
 {% include 'partials/_search_bar.html.twig' with {
     'route_name': 'admin',
     'placeholder': 'Rechercher par nom, prénom ou email',
@@ -12,7 +12,7 @@
     }
 } %}
 
-{# Panneau de filtres #}
+{# Options de filtrage et tri #}
 {% include 'partials/_filter_panel.html.twig' with {
     'route_name': 'admin',
     'filters': [],
@@ -24,7 +24,7 @@
     ]
 } %}
 
-{# En-tête des résultats #}
+{# Titre et bouton d'ajout #}
 {% include 'partials/_search_results_header.html.twig' with {
     'title': 'Administrateurs',
     'items': admins,
@@ -38,6 +38,7 @@
 } %}
 
 {% if admins|length > 0 %}
+    {# Liste des administrateurs #}
     <div class="item-list">
         {% for item in admins %}
             <a href="{{ path('admin_show', {'id': item.id}) }}" class="item d-flex align-center">

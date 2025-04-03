@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Target all forms that need validation
+    // Sélection des formulaires à valider
     const forms = document.querySelectorAll('.user-form, .company-form, .application-form');
     
     forms.forEach(form => {
-        // Add validation before submit
+        // Ajout de la validation au moment de la soumission
         form.addEventListener('submit', function(event) {
             let isValid = true;
             
-            // Required fields
+            // Validation des champs obligatoires
             const requiredFields = form.querySelectorAll('[required]');
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Email validation
+            // Validation du format d'email
             const emailFields = form.querySelectorAll('[type="email"]');
             emailFields.forEach(field => {
                 if (field.value && !validateEmail(field.value)) {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Password pattern validation
+            // Validation du format de mot de passe
             const passwordFields = form.querySelectorAll('input[name*="password"]');
             passwordFields.forEach(field => {
                 if (field.value && field.hasAttribute('pattern') && !field.validity.valid) {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Check if password confirmation matches
+            // Vérification de la correspondance des mots de passe
             const passwordFirst = form.querySelector('input[name*="password"][name*="first"]');
             const passwordSecond = form.querySelector('input[name*="password"][name*="second"]');
             if (passwordFirst && passwordSecond && passwordFirst.value !== passwordSecond.value) {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isValid) {
                 event.preventDefault();
                 
-                // Scroll to first error
+                // Défilement vers la première erreur
                 const firstError = form.querySelector('.field-error');
                 if (firstError) {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -56,27 +56,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Fonction pour valider le format d'email
     function validateEmail(email) {
         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return re.test(String(email).toLowerCase());
     }
     
+    // Fonction pour mettre en évidence les champs avec erreur
     function highlightField(field, message) {
-        // Remove any existing error
         removeHighlight(field);
-        
-        // Add error class to field
         field.classList.add('is-invalid');
         
-        // Create error message element
         const errorElement = document.createElement('div');
         errorElement.className = 'field-error text-danger mt-xs';
         errorElement.textContent = message;
         
-        // Insert error message after field
         field.parentNode.insertBefore(errorElement, field.nextSibling);
     }
     
+    // Fonction pour retirer la mise en évidence des erreurs
     function removeHighlight(field) {
         field.classList.remove('is-invalid');
         const errorElement = field.parentNode.querySelector('.field-error');

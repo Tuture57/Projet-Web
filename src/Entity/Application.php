@@ -10,31 +10,36 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 class Application
 {
+    // Identifiant unique de la candidature
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Date de soumission de la candidature
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $applicationDate = null;
 
+    // Nom du fichier CV stocké
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $cv = null;
 
-    /**
-     * @var UploadedFile|null
-     */
+    // Fichier CV téléchargé (non persisté)
     private $cvFile;
 
+    // Lettre de motivation
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $coverLetter = null;
 
+    // Statut de la candidature (en attente, acceptée, refusée)
     #[ORM\Column(length: 50)]
     private ?string $status = null;
 
+    // Utilisateur qui postule
     #[ORM\ManyToOne(inversedBy: 'applications')]
     private ?User $user = null;
 
+    // Offre à laquelle l'utilisateur postule
     #[ORM\ManyToOne(inversedBy: 'applications')]
     private ?Offer $offer = null;
 

@@ -15,57 +15,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use ImageUploadTrait;
     
+    // Identifiant unique de l'utilisateur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Adresse email de l'utilisateur
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+    // Mot de passe encodé
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    // Prénom de l'utilisateur
     #[ORM\Column(length: 100)]
     private ?string $firstName = null;
 
+    // Nom de famille de l'utilisateur
     #[ORM\Column(length: 100)]
     private ?string $lastName = null;
 
+    // Établissement scolaire de l'utilisateur
     #[ORM\Column(length: 255)]
     private ?string $school = null;
 
+    // Statut de recherche d'emploi
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $searchStatus = null;
 
+    // Rôle de l'utilisateur (étudiant, admin, etc.)
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
-    /**
-     * @var Collection<int, Address>
-     */
+    // Adresses associées à l'utilisateur
     #[ORM\ManyToMany(targetEntity: Address::class, inversedBy: 'users')]
     private Collection $addresses;
 
-    /**
-     * @var Collection<int, Offer>
-     */
+    // Offres ajoutées à la liste de souhaits
     #[ORM\ManyToMany(targetEntity: Offer::class, inversedBy: 'wishListUsers')]
     private Collection $wishListOffers;
 
-    /**
-     * @var Collection<int, Application>
-     */
+    // Candidatures soumises par l'utilisateur
     #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'user')]
     private Collection $applications;
 
-    /**
-     * @var Collection<int, Rating>
-     */
+    // Évaluations faites par l'utilisateur
     #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'user')]
     private Collection $ratings;
 
+    // Initialisation des collections
     public function __construct()
     {
         $this->addresses = new ArrayCollection();
@@ -74,16 +75,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->ratings = new ArrayCollection();
     }
 
+    // Récupère l'identifiant unique de l'utilisateur
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    // Récupère l'adresse email de l'utilisateur
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    // Définit l'adresse email de l'utilisateur
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -91,11 +95,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère le mot de passe encodé
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
+    // Définit le mot de passe encodé
     public function setPassword(string $password): static
     {
         $this->password = $password;
@@ -103,11 +109,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère le prénom de l'utilisateur
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
+    // Définit le prénom de l'utilisateur
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
@@ -115,11 +123,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère le nom de famille de l'utilisateur
     public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
+    // Définit le nom de famille de l'utilisateur
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
@@ -127,11 +137,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère l'établissement scolaire de l'utilisateur
     public function getSchool(): ?string
     {
         return $this->school;
     }
 
+    // Définit l'établissement scolaire de l'utilisateur
     public function setSchool(string $school): static
     {
         $this->school = $school;
@@ -139,11 +151,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère le statut de recherche d'emploi
     public function getSearchStatus(): ?string
     {
         return $this->searchStatus;
     }
 
+    // Définit le statut de recherche d'emploi
     public function setSearchStatus(?string $searchStatus): static
     {
         $this->searchStatus = $searchStatus;
@@ -151,11 +165,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère le rôle de l'utilisateur
     public function getRole(): ?Role
     {
         return $this->role;
     }
 
+    // Définit le rôle de l'utilisateur
     public function setRole(?Role $role): static
     {
         $this->role = $role;
@@ -163,14 +179,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Address>
-     */
+    // Récupère les adresses associées à l'utilisateur
     public function getAddresses(): Collection
     {
         return $this->addresses;
     }
 
+    // Ajoute une adresse à l'utilisateur
     public function addAddress(Address $address): static
     {
         if (!$this->addresses->contains($address)) {
@@ -180,6 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Supprime une adresse de l'utilisateur
     public function removeAddress(Address $address): static
     {
         $this->addresses->removeElement($address);
@@ -187,45 +203,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Offer>
-     */
+    // Récupère les offres de la liste de souhaits
     public function getWishListOffers(): Collection
     {
-        // Initialize the collection if it's null
+        // Initialisation de la collection si elle est nulle
         if ($this->wishListOffers === null) {
             $this->wishListOffers = new ArrayCollection();
         }
         return $this->wishListOffers;
     }
 
+    // Ajoute une offre à la liste de souhaits
     public function addWishListOffer(Offer $wishListOffer): static
     {
         if (!$this->getWishListOffers()->contains($wishListOffer)) {
             $this->wishListOffers->add($wishListOffer);
-            $wishListOffer->addWishListUser($this); // Ensure both sides of the relationship are updated
+            $wishListOffer->addWishListUser($this); // Assure que les deux côtés de la relation sont mis à jour
         }
 
         return $this;
     }
 
+    // Supprime une offre de la liste de souhaits
     public function removeWishListOffer(Offer $wishListOffer): static
     {
         if ($this->wishListOffers->removeElement($wishListOffer)) {
-            $wishListOffer->removeWishListUser($this); // Ensure both sides of the relationship are updated
+            $wishListOffer->removeWishListUser($this); // Assure que les deux côtés de la relation sont mis à jour
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Application>
-     */
+    // Récupère les candidatures soumises par l'utilisateur
     public function getApplications(): Collection
     {
         return $this->applications;
     }
 
+    // Ajoute une candidature à l'utilisateur
     public function addApplication(Application $application): static
     {
         if (!$this->applications->contains($application)) {
@@ -236,10 +251,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Supprime une candidature de l'utilisateur
     public function removeApplication(Application $application): static
     {
         if ($this->applications->removeElement($application)) {
-            // set the owning side to null (unless already changed)
+            // Définit le côté propriétaire à null (sauf si déjà changé)
             if ($application->getUser() === $this) {
                 $application->setUser(null);
             }
@@ -248,14 +264,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Rating>
-     */
+    // Récupère les évaluations faites par l'utilisateur
     public function getRatings(): Collection
     {
         return $this->ratings;
     }
 
+    // Ajoute une évaluation à l'utilisateur
     public function addRating(Rating $rating): static
     {
         if (!$this->ratings->contains($rating)) {
@@ -266,10 +281,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Supprime une évaluation de l'utilisateur
     public function removeRating(Rating $rating): static
     {
         if ($this->ratings->removeElement($rating)) {
-            // set the owning side to null (unless already changed)
+            // Définit le côté propriétaire à null (sauf si déjà changé)
             if ($rating->getUser() === $this) {
                 $rating->setUser(null);
             }
@@ -278,17 +294,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Récupère les rôles de l'utilisateur pour la sécurité Symfony
     public function getRoles(): array
     {
         $roleName = $this->role->getName();
         return ['ROLE_' . strtoupper($roleName)];
     }
     
+    // Retourne l'identifiant unique pour l'authentification
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
     
+    // Méthode requise par l'interface UserInterface
     public function eraseCredentials(): void
     {
         // Rien à faire ici

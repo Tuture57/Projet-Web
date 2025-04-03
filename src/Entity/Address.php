@@ -24,15 +24,11 @@ class Address
     #[ORM\Column(length: 255)]
     private ?string $street = null;
 
-    /**
-     * @var Collection<int, User>
-     */
+    // Collection d'utilisateurs associés à cette adresse
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'addresses')]
     private Collection $users;
 
-    /**
-     * @var Collection<int, Company>
-     */
+    // Collection d'entreprises associées à cette adresse
     #[ORM\OneToMany(targetEntity: Company::class, mappedBy: 'address')]
     private Collection $companies;
 
@@ -83,14 +79,13 @@ class Address
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
+    // Retourne tous les utilisateurs associés à cette adresse
     public function getUsers(): Collection
     {
         return $this->users;
     }
 
+    // Ajoute un utilisateur à la collection et met à jour la relation bidirectionnelle
     public function addUser(User $user): static
     {
         if (!$this->users->contains($user)) {
@@ -101,6 +96,7 @@ class Address
         return $this;
     }
 
+    // Supprime un utilisateur de la collection et met à jour la relation bidirectionnelle
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user)) {
@@ -110,14 +106,13 @@ class Address
         return $this;
     }
 
-    /**
-     * @return Collection<int, Company>
-     */
+    // Retourne toutes les entreprises associées à cette adresse
     public function getCompanies(): Collection
     {
         return $this->companies;
     }
 
+    // Ajoute une entreprise à la collection et définit cette adresse comme propriétaire
     public function addCompany(Company $company): static
     {
         if (!$this->companies->contains($company)) {
@@ -127,10 +122,11 @@ class Address
         return $this;
     }
 
+    // Supprime une entreprise de la collection
     public function removeCompany(Company $company): static
     {
         if ($this->companies->removeElement($company)) {
-            // set the owning side to null (unless already changed)
+            // Réinitialise l'adresse associée si nécessaire
             if ($company->getAddress() === $this) {
                 $company->setAddress(null);
             }

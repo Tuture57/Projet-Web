@@ -1,4 +1,3 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\wishlist\index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Mes offres favorites{% endblock %}
@@ -10,6 +9,7 @@
 
 <div class="wishlist-container">
     {% if offers|length > 0 %}
+        {# Affichage des offres favorites si elles existent #}
         <div class="item-list">
             {% for offer in offers %}
                 <div class="offer-item">
@@ -31,6 +31,7 @@
                     </div>
                     
                     <div class="offer-description">
+                        {# Tronque la description si trop longue #}
                         {{ offer.description|length > 150 ? offer.description|slice(0, 150) ~ '...' : offer.description }}
                     </div>
                     
@@ -46,6 +47,7 @@
                                 <i class="fas fa-eye"></i> Voir l'offre
                             </a>
                             
+                            {# Formulaire pour retirer des favoris #}
                             <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post">
                                 <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
                                 <button type="submit" class="btn btn-danger btn-sm">
@@ -62,6 +64,7 @@
             {% endfor %}
         </div>
     {% else %}
+        {# Message si aucune offre favorite #}
         <div class="no-offers text-center p-xl">
             <i class="far fa-heart"></i>
             <p class="mt-md mb-lg">Vous n'avez pas encore ajouté d'offres à vos favoris.</p>

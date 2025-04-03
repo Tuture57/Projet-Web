@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Repository\CompanyRepository;
 use App\Repository\OfferRepository;
 use App\Repository\RatingRepository;
-use App\Entity\Rating; // Ajout de l'import manquant
+use App\Entity\Rating;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,29 +25,29 @@ class EntrepriseController extends AbstractController
     #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
-        // Récupérer le terme de recherche et les paramètres de filtre
+        // Récupération des paramètres de filtrage et recherche
         $searchTerm = $request->query->get('search', '');
         $country = $request->query->get('country');
         $city = $request->query->get('city');
         $minRating = $request->query->get('minRating');
         $sortBy = $request->query->get('sortBy', 'name_asc');
         
-        // Redirection si search est vide mais présent
+        // Redirection si recherche vide
         if ($searchTerm === '' && $request->query->has('search')) {
             return $this->redirectToRoute('entreprise');
         }
         
-        // Créer la requête de base (version optimisée)
+        // Construction de la requête de base
         $queryBuilder = $companyRepository->createQueryBuilder('c')
-            ->leftJoin('c.address', 'a'); // Jointure avec l'adresse pour filtrer
+            ->leftJoin('c.address', 'a');
             
-        // Ajouter la recherche si présente
+        // Ajout du filtre de recherche
         if (!empty($searchTerm)) {
             $queryBuilder->andWhere('c.name LIKE :search')
                 ->setParameter('search', '%' . $searchTerm . '%');
         }
         
-        // Ajouter les filtres
+        // Application des filtres géographiques
         if (!empty($country)) {
             $queryBuilder->andWhere('a.country = :country')
                 ->setParameter('country', $country);
@@ -58,12 +58,13 @@ class EntrepriseController extends AbstractController
                 ->setParameter('city', $city);
         }
         
+        // Filtre sur la note minimale
         if (!empty($minRating)) {
             $queryBuilder->andWhere('c.averageRating >= :minRating')
                 ->setParameter('minRating', $minRating);
         }
         
-        // Appliquer le tri
+        // Application du tri
         switch ($sortBy) {
             case 'name_desc':
                 $queryBuilder->orderBy('c.name', 'DESC');
@@ -79,14 +80,14 @@ class EntrepriseController extends AbstractController
                 $queryBuilder->orderBy('c.name', 'ASC');
         }
         
-        // Paginer les résultats
+        // Pagination des résultats
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
             $request->query->getInt('page', 1),
-            5 // Nombre d'éléments par page
+            5
         );
         
-        // Obtenir la liste des pays et villes pour les filtres
+        // Obtention des listes pour les filtres
         $countries = $companyRepository->findUniqueCountries();
         $cities = $companyRepository->findUniqueCities($country);
         
@@ -105,11 +106,11 @@ class EntrepriseController extends AbstractController
         ]);
     }
 
-    // Les routes statiques doivent être AVANT les routes avec paramètres
     #[Route('/entreprises/new', name: 'entreprise_new')]
     #[IsGranted('ROLE_PILOT')]
     public function new(Request $request, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
+        // Création d'une nouvelle entreprise avec adresse
         $company = new Company();
         $address = new Address();
         $company->setAddress($address);
@@ -118,12 +119,11 @@ class EntrepriseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $imageFile */
             $imageFile = $form->get('imageFile')->getData();
             
             if ($imageFile) {
                 try {
-                    // Utiliser le service d'upload
+                    // Gestion de l'upload d'image
                     $newFilename = $imageService->uploadImage(
                         $imageFile,
                         'company',
@@ -149,19 +149,18 @@ class EntrepriseController extends AbstractController
         ]);
     }
 
-    // Les routes avec paramètres doivent être APRÈS les routes statiques
     #[Route('/entreprises/{id}', name: 'entreprise_show')]
     #[IsGranted('ROLE_STUDENT')]
     public function show(int $id, CompanyRepository $companyRepository, OfferRepository $offerRepository): Response
     {
-        // Récupérer l'entreprise
+        // Récupération de l'entreprise
         $company = $companyRepository->find($id);
         
         if (!$company) {
             throw $this->createNotFoundException('Entreprise non trouvée');
         }
         
-        // Récupérer les offres actives de cette entreprise
+        // Récupération des offres actives
         $offers = $offerRepository->findActiveOffersByCompany($company);
         
         return $this->render('entreprise/show.html.twig', [
@@ -178,12 +177,11 @@ class EntrepriseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $imageFile */
             $imageFile = $form->get('imageFile')->getData();
             
             if ($imageFile) {
                 try {
-                    // Supprimer l'ancienne image s'il y en a une
+                    // Suppression de l'ancienne image
                     if ($company->getImageName()) {
                         $imageService->removeImage(
                             $company->getImageName(),
@@ -191,7 +189,7 @@ class EntrepriseController extends AbstractController
                         );
                     }
                     
-                    // Uploader la nouvelle image
+                    // Upload de la nouvelle image
                     $newFilename = $imageService->uploadImage(
                         $imageFile,
                         'company',
@@ -220,10 +218,10 @@ class EntrepriseController extends AbstractController
     #[IsGranted('ROLE_PILOT')]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager, ImageUploadService $imageService): Response
     {
-        // Vérification du token CSRF pour la sécurité
+        // Vérification du token CSRF
         if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
             try {
-                // Supprimer l'image associée
+                // Suppression de l'image associée
                 if ($company->getImageName()) {
                     $imageService->removeImage(
                         $company->getImageName(), 
@@ -231,26 +229,25 @@ class EntrepriseController extends AbstractController
                     );
                 }
 
-                // Remove associated offers
+                // Suppression des offres et candidatures associées
                 foreach ($company->getOffers() as $offer) {
-                    // Remove associated applications
                     foreach ($offer->getApplications() as $application) {
                         $entityManager->remove($application);
                     }
                     $entityManager->remove($offer);
                 }
 
-                // Remove associated ratings
+                // Suppression des évaluations associées
                 foreach ($company->getRatings() as $rating) {
                     $entityManager->remove($rating);
                 }
 
-                // Remove associated address
+                // Suppression de l'adresse associée
                 if ($company->getAddress()) {
                     $entityManager->remove($company->getAddress());
                 }
 
-                // Supprimer l'entreprise et toutes ses relations en cascade
+                // Suppression de l'entreprise
                 $entityManager->remove($company);
                 $entityManager->flush();
                 
@@ -280,25 +277,25 @@ class EntrepriseController extends AbstractController
             return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
         }
 
-        // S'assurer que score est correctement récupéré
+        // Validation de la note
         $score = (int) $request->request->get('rating');
         if ($score < 1 || $score > 5) {
             $this->addFlash('error', 'La note doit être comprise entre 1 et 5.');
             return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
         }
 
-        // Vérifier si l'utilisateur a déjà noté cette entreprise
+        // Vérification si l'utilisateur a déjà noté cette entreprise
         $existingRating = $ratingRepository->findOneBy([
             'user' => $user,
             'company' => $company
         ]);
 
         if ($existingRating) {
-            // Mettre à jour la note existante
+            // Mise à jour de la note existante
             $existingRating->setScore($score);
             $this->addFlash('success', 'Votre note a été mise à jour.');
         } else {
-            // Créer une nouvelle note
+            // Création d'une nouvelle note
             $rating = new Rating();
             $rating->setUser($user);
             $rating->setCompany($company);
@@ -307,28 +304,27 @@ class EntrepriseController extends AbstractController
             $this->addFlash('success', 'Votre note a été enregistrée.');
         }
         
-        // Enregistrer immédiatement les changements pour que les calculs suivants les prennent en compte
+        // Enregistrement des modifications
         $entityManager->flush();
 
-        // Maintenant, calculer la moyenne avec les données mises à jour
+        // Calcul de la nouvelle moyenne
         $allRatings = $ratingRepository->findAllScoresByCompany($company);
         $totalRatings = count($allRatings);
         $sum = array_sum(array_column($allRatings, 'score'));
         $manualAverage = $totalRatings > 0 ? round($sum / $totalRatings, 1) : 0;
         
-        // Recalculer la note moyenne de l'entreprise
+        // Récupération de la moyenne calculée par la méthode du repository
         $averageRating = $ratingRepository->calculateAverageRating($company);
         
-        // Si l'algorithme de calcul donne un résultat incorrect, utiliser le calcul manuel
+        // Correction si l'algorithme donne un résultat erroné
         if (abs($averageRating - $manualAverage) > 0.1) {
             $averageRating = $manualAverage;
-            // Ajouter un message de debug
             $this->addFlash('info', "Correction de la moyenne : $manualAverage ($totalRatings notes, somme: $sum)");
         }
         
         $company->setAverageRating($averageRating);
         
-        // Faire un second flush pour enregistrer la moyenne
+        // Sauvegarde de la moyenne mise à jour
         $entityManager->flush();
 
         return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
@@ -348,7 +344,7 @@ class EntrepriseController extends AbstractController
             return $this->redirectToRoute('entreprise_show', ['id' => $company->getId()]);
         }
 
-        // Vérifier si l'utilisateur a déjà noté cette entreprise
+        // Vérification si l'utilisateur a noté cette entreprise
         $existingRating = $ratingRepository->findOneBy([
             'user' => $user,
             'company' => $company
@@ -356,11 +352,11 @@ class EntrepriseController extends AbstractController
 
         if ($existingRating) {
             try {
-                // 1. Supprimer la note de la base de données
+                // Suppression de la note
                 $entityManager->remove($existingRating);
                 $entityManager->flush();
                 
-                // 2. Recalculer la note moyenne de l'entreprise
+                // Recalcul de la moyenne
                 $allRatings = $ratingRepository->findAllScoresByCompany($company);
                 $totalRatings = count($allRatings);
                 
@@ -368,10 +364,10 @@ class EntrepriseController extends AbstractController
                     $sum = array_sum(array_column($allRatings, 'score'));
                     $averageRating = round($sum / $totalRatings, 1);
                 } else {
-                    $averageRating = 0; // Aucune note, donc moyenne de 0
+                    $averageRating = 0;
                 }
                 
-                // 3. Mettre à jour l'entreprise
+                // Mise à jour de la moyenne dans l'entreprise
                 $company->setAverageRating($averageRating);
                 $entityManager->flush();
                 

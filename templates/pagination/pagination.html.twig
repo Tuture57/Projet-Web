@@ -1,17 +1,21 @@
 {% if pageCount > 1 %}
+{# Conteneur principal de pagination #}
 <div class="pagination d-flex justify-center align-center flex-wrap gap-sm mb-lg mt-lg">
+    {# Bouton pour la première page #}
     {% if first is defined and current != first %}
         <a href="{{ path(route, query|merge({(pageParameterName): first})) }}" class="page-item page-first" aria-label="First page">
             <i class="fas fa-angle-double-left"></i>
         </a>
     {% endif %}
 
+    {# Bouton pour la page précédente #}
     {% if previous is defined %}
         <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="page-item page-prev" aria-label="Previous page">
             <i class="fas fa-angle-left"></i>
         </a>
     {% endif %}
 
+    {# Liste des numéros de page à afficher #}
     {% for page in pagesInRange %}
         {% if page != current %}
             <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="page-item">
@@ -22,12 +26,14 @@
         {% endif %}
     {% endfor %}
 
+    {# Bouton pour la page suivante #}
     {% if next is defined %}
         <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="page-item page-next" aria-label="Next page">
             <i class="fas fa-angle-right"></i>
         </a>
     {% endif %}
     
+    {# Bouton pour la dernière page #}
     {% if last is defined and current != last %}
         <a href="{{ path(route, query|merge({(pageParameterName): last})) }}" class="page-item page-last" aria-label="Last page">
             <i class="fas fa-angle-double-right"></i>

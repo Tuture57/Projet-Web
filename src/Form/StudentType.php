@@ -20,6 +20,7 @@ class StudentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Construction du formulaire avec les champs de base
         $builder
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom',
@@ -56,8 +57,9 @@ class StudentType extends AbstractType
                 ],
             ]);
             
-        // Ajouter le champ mot de passe seulement si c'est un nouveau formulaire ou en mode édition mais optionnel
+        // Gestion du mot de passe selon le contexte (création ou édition)
         if (!$options['is_edit']) {
+            // Cas d'un nouveau compte
             $builder->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -79,6 +81,7 @@ class StudentType extends AbstractType
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
             ]);
         } else {
+            // Cas d'une édition de compte existant
             $builder->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -103,9 +106,10 @@ class StudentType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // Configuration des options par défaut du formulaire
         $resolver->setDefaults([
             'data_class' => User::class,
-            'is_edit' => false,
+            'is_edit' => false, // Option pour différencier mode création et édition
         ]);
     }
 }

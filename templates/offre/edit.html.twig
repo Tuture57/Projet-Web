@@ -1,4 +1,3 @@
-{# filepath: c:\wamp64\www\Projet-Web\templates\offre\edit.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Modifier {{ offer.title }}{% endblock %}
@@ -13,6 +12,7 @@
             </a>
         </div>
 
+        {# Section d'informations générales #}
         <div class="form-section mb-lg">
             <h2 class="mb-md">Informations générales</h2>
             <div class="form-group">
@@ -28,6 +28,7 @@
             </div>
         </div>
 
+        {# Section des détails du stage #}
         <div class="form-section mb-lg">
             <h2 class="mb-md">Détails du stage</h2>
             <div class="form-row mb-md">
@@ -61,6 +62,7 @@
             </div>
         </div>
 
+        {# Section des compétences requises #}
         <div class="form-section mb-lg">
             <h2 class="mb-md">Compétences requises</h2>
             <div class="form-group">
@@ -70,6 +72,7 @@
             </div>
         </div>
 
+        {# Section du statut de l'offre #}
         <div class="form-section mb-lg">
             <h2 class="mb-md">Statut de l'offre</h2>
             <div class="form-checkbox d-flex align-center gap-sm">
@@ -79,6 +82,7 @@
             </div>
         </div>
 
+        {# Boutons d'action du formulaire #}
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Enregistrer les modifications
@@ -95,17 +99,17 @@
 {{ parent() }}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Récupérer le select des compétences
+        // Récupération du sélecteur de compétences
         const skillsSelect = document.getElementById('{{ form.skills.vars.id }}');
         
         if (skillsSelect) {
-            // Configurer comme select multiple avec les styles existants
+            // Configuration du select multiple
             skillsSelect.setAttribute('multiple', 'multiple');
             skillsSelect.style.height = '200px';
             skillsSelect.style.width = '100%';
-            skillsSelect.classList.add('custom-select'); // Utiliser les classes existantes
+            skillsSelect.classList.add('custom-select');
             
-            // Créer la barre de recherche
+            // Création de la barre de recherche
             const searchContainer = document.createElement('div');
             searchContainer.style.marginBottom = '10px';
             
@@ -120,7 +124,7 @@
             
             searchContainer.appendChild(searchInput);
             
-            // Insérer la barre de recherche avant le select
+            // Insertion de la barre de recherche
             skillsSelect.parentNode.insertBefore(searchContainer, skillsSelect);
             
             // Fonction pour filtrer les options
@@ -132,18 +136,18 @@
                 });
             }
             
-            // Écouter les événements de recherche
+            // Écoute des événements de recherche
             searchInput.addEventListener('input', filterOptions);
             
-            // Appliquer le style pour les options sélectionnées
+            // Application du style pour les options sélectionnées
             const style = document.createElement('style');
             style.textContent = `
                 #{{ form.skills.vars.id }} option:checked {
-                    background-color: #6B5B95 !important; /* Couleur du thème principale */
+                    background-color: #6B5B95 !important;
                     color: white !important;
                 }
                 #{{ form.skills.vars.id }} option:hover {
-                    background-color: #E8EAF6 !important; /* Couleur secondaire du thème */
+                    background-color: #E8EAF6 !important;
                 }
                 .form-control:focus {
                     border-color: #6B5B95;
@@ -152,7 +156,7 @@
             `;
             document.head.appendChild(style);
             
-            // Empêcher le comportement par défaut qui désélectionne tout
+            // Empêcher la désélection lors du clic
             skillsSelect.addEventListener('mousedown', function(e) {
                 e.preventDefault();
                 
@@ -160,7 +164,7 @@
                 if (option.tagName === 'OPTION') {
                     option.selected = !option.selected;
                     
-                    // Déclencher un événement change pour que les formulaires détectent les modifications
+                    // Déclenchement d'un événement change
                     const event = new Event('change');
                     this.dispatchEvent(event);
                 }
