@@ -65,27 +65,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour ouvrir le panneau de filtres
     function openFilterPanel() {
         filterPanel.classList.add('open');
-        filterOverlay.style.display = 'block';
-        setTimeout(() => {
-            filterOverlay.style.opacity = '1';
-        }, 10);
+        filterOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Empêcher le défilement du body
     }
     
     // Fonction pour fermer le panneau de filtres
     function closeFilterPanel() {
         filterPanel.classList.remove('open');
-        filterOverlay.style.opacity = '0';
-        setTimeout(() => {
-            filterOverlay.style.display = 'none';
-        }, 300);
+        filterOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // Restaurer le défilement du body
     }
     
-    // Ouvrir le panneau de filtres
+    // Ouvrir le panneau de filtres - uniquement sur clic du bouton
     filterBtn.addEventListener('click', openFilterPanel);
     
     // Fermer le panneau de filtres
     closeFilterBtn.addEventListener('click', closeFilterPanel);
-    filterOverlay.addEventListener('click', closeFilterPanel);
+    
+    // S'assurer que le clic sur l'overlay ferme le panneau
+    filterOverlay.addEventListener('click', function(event) {
+        // S'assurer que le clic est bien sur l'overlay et pas un élément enfant
+        if (event.target === filterOverlay) {
+            closeFilterPanel();
+        }
+    });
+    
+    // Ajuster la fermeture du panneau lors du redimensionnement de l'écran
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 767 && filterPanel.classList.contains('open')) {
+            closeFilterPanel();
+        }
+    });
     
     // Afficher les filtres actifs
     function displayActiveFilters() {

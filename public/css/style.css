@@ -1535,70 +1535,17 @@ select[multiple] option:hover {
 }
 
 /* ========== FILTER PANEL ========== */
-.filter-panel {
-  position: fixed;
-  top: 0;
-  right: -300px;
-  width: 280px;
-  height: 100%;
-  background-color: var(--color-white);
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 1001;
-  padding: var(--spacing-lg);
-  overflow-y: auto;
-  transition: right var(--transition-normal) ease;
-}
-
-.filter-panel.open {
-  right: 0;
-}
-
 .filter-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: none;
+  z-index: 900;
   opacity: 0;
-  transition: opacity var(--transition-normal) ease;
-}
-
-.filter-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-primary-light);
-}
-
-.filter-panel-title {
-  font-size: var(--font-size-xl);
-  color: var(--color-primary);
-  font-weight: 500;
-  margin: 0;
-}
-
-.close-filter-btn {
-  background: none;
-  border: none;
-  color: var(--color-gray-700);
-  cursor: pointer;
-  font-size: 20px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-circle);
-  transition: background-color var(--transition-fast);
-}
-
-.close-filter-btn:hover {
-  background-color: var(--color-gray-200);
+  visibility: hidden;
+  transition: opacity var(--transition-normal);
 }
 
 .filter-overlay.active {
@@ -1606,74 +1553,70 @@ select[multiple] option:hover {
   visibility: visible;
 }
 
-.active-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-  margin-top: var(--spacing-xs);
+.filter-panel {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100vh;
+  background-color: var(--color-white);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow-y: auto;
+  transition: right var(--transition-normal);
 }
 
-.filter-tag {
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  padding: 4px 10px;
-  border-radius: 16px;
-  font-size: var(--font-size-xs);
-  max-width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.filter-panel.open {
+  right: 0;
 }
 
-.filter-tag .remove-filter {
-  margin-left: var(--spacing-xs);
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-circle);
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  font-size: 10px;
+.filter-panel-header {
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-gray-300);
+}
+
+.filter-panel-title {
+  font-size: var(--font-size-lg);
+}
+
+.close-filter-btn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--color-gray-600);
   cursor: pointer;
+  padding: var(--spacing-xs);
 }
 
-.filter-tag .remove-filter:hover {
-  background-color: var(--color-primary-dark);
+.close-filter-btn:hover {
+  color: var(--color-danger);
 }
 
 .filter-heading {
-  font-size: var(--font-size-lg);
-  color: var(--color-primary);
-  margin: var(--spacing-lg) 0 var(--spacing-md);
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-primary-light);
+  font-size: var(--font-size-md);
+  font-weight: 600;
 }
 
-.filter-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: var(--spacing-lg);
-}
-
-.filter-actions button, 
-.filter-actions a {
-  width: 100%;
-  text-align: center;
-}
-
-.filter-badge {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  padding: 3px var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  margin-left: 10px;
+/* Styles responsives améliorés pour le panneau de filtres */
+@media (max-width: 767px) {
+  .filter-panel {
+    width: 85%;
+    max-width: 320px;
+    right: -100%;
+    padding: var(--spacing-md);
+  }
+  
+  /* Assurer que le panneau est toujours visible en entier */
+  .filter-panel.open {
+    bottom: 0;
+    max-height: 100vh;
+  }
+  
+  /* Style amélioré pour overlay sur mobile */
+  .filter-overlay.active {
+    z-index: 900;
+  }
 }
 
 /* ========== STAR RATING SYSTEM ========== */

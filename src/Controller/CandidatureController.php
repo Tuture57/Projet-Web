@@ -20,8 +20,14 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class CandidatureController extends AbstractController
 {
     #[Route('/', name: 'candidature_index')]
+    #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, ApplicationRepository $applicationRepository): Response
     {
+        // Empêcher les pilotes (sauf admin) d'accéder à cette page
+        if ($this->isGranted('ROLE_PILOT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Les pilotes ne peuvent pas accéder à cette page.');
+        }
+        
         /** @var User $user */
         $user = $this->getUser();
         
@@ -43,6 +49,12 @@ class CandidatureController extends AbstractController
         EntityManagerInterface $entityManager,
         ApplicationRepository $applicationRepository
     ): Response {
+        // Empêcher les pilotes (sauf admin) de postuler
+        if ($this->isGranted('ROLE_PILOT') && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Les pilotes ne peuvent pas postuler aux offres de stage.');
+            return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
+        }
+        
         /** @var User $user */
         $user = $this->getUser();
         

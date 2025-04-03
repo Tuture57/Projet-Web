@@ -94,7 +94,7 @@
     </div>
 </div>
 
-{% if is_granted('ROLE_STUDENT') %}
+{% if is_granted('ROLE_STUDENT') and not (is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN')) %}
 <div class="card mb-lg">
     <div class="application-actions d-flex gap-md align-center justify-between flex-wrap">
         {% if hasApplied %}
