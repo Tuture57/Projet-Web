@@ -20,7 +20,9 @@
             <h2 class="mb-sm">{{ application.offer.title }}</h2>
             <div class="application-meta d-flex align-center gap-md">
                 <span class="status-badge {{ application.status|lower|replace({' ': '-'}) }}">
-                    {{ application.status }}
+                    {% if application.status == 'Pending' %}En attente{% endif %}
+                    {% if application.status == 'Accepted' %}Acceptée{% endif %}
+                    {% if application.status == 'Rejected' %}Refusée{% endif %}
                 </span>
                 <span class="meta-item">
                     <i class="fas fa-calendar-alt"></i> Candidature envoyée le {{ application.applicationDate|date('d/m/Y') }}

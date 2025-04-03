@@ -79,8 +79,6 @@
     {# Pagination #}
     {{ knp_pagination_render(pilots, 'pagination/pagination.html.twig') }}
 {% else %}
-    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
-        <p>Aucun pilote trouvé.</p>
-    </div>
+
 {% endif %}
 {% endblock %}

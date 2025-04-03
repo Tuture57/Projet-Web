@@ -796,11 +796,11 @@ select[multiple] option:hover {
 .avatar {
   width: 35px;
   height: 35px;
-  background-image: url('../images/pfp.png');
   background-size: cover;
   background-position: center;
   border-radius: var(--border-radius-circle);
   margin-right: var(--spacing-sm);
+  border: var(--border-width) solid var(--color-white);
 }
 
 .action-icon {

@@ -96,8 +96,6 @@
     {# Pagination #}
     {{ knp_pagination_render(students, 'pagination/pagination.html.twig') }}
 {% else %}
-    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
-        <p>Aucun étudiant trouvé.</p>
-    </div>
+
 {% endif %}
 {% endblock %}

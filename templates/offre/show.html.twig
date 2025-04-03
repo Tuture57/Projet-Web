@@ -101,7 +101,11 @@
             <div class="application-status-container d-flex align-center gap-md flex-wrap">
                 <div class="application-status status-{{ applicationStatus|lower|replace({' ': '-'}) }} p-sm rounded-md">
                     <i class="fas fa-info-circle"></i>
-                    <span>Statut de votre candidature: <strong>{{ applicationStatus }}</strong></span>
+                    <span>Statut de votre candidature: <strong>
+                        {% if applicationStatus == 'Pending' %}En attente{% endif %}
+                        {% if applicationStatus == 'Accepted' %}Acceptée{% endif %}
+                        {% if applicationStatus == 'Rejected' %}Refusée{% endif %}
+                    </strong></span>
                 </div>
                 <a href="{{ path('candidature_details', {'id': applicationId}) }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-eye"></i> Voir ma candidature
@@ -231,7 +235,9 @@
                         <div class="offer-header mb-sm">
                             <h3>{{ application.user.firstName }} {{ application.user.lastName }}</h3>
                             <span class="status-badge {{ application.status|lower|replace({' ': '-'}) }}">
-                                {{ application.status }}
+                                {% if application.status == 'Pending' %}En attente{% endif %}
+                                {% if application.status == 'Accepted' %}Acceptée{% endif %}
+                                {% if application.status == 'Rejected' %}Refusée{% endif %}
                             </span>
                         </div>
                         <div class="offer-location mb-sm">

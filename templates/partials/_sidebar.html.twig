@@ -41,10 +41,27 @@
         </li>
     </ul>
     <div class="user-profile">
-        <a href="{{ path('user_profil') }}" class="profile-link d-flex align-center">
-            <div class="avatar"></div>
+        <div class="profile-link d-flex align-center">
+            {% if app.user %}
+                {% set upload_path = 'uploads/students' %}
+                {% if is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN') %}
+                    {% set upload_path = 'uploads/pilots' %}
+                {% elseif is_granted('ROLE_ADMIN') %}
+                    {% set upload_path = 'uploads/admins' %}
+                {% endif %}
+                
+                {% include 'partials/_image_display.html.twig' with {
+                    'entity': app.user,
+                    'upload_path': upload_path,
+                    'alt': app.user.firstName ~ ' ' ~ app.user.lastName,
+                    'image_class': 'avatar',
+                    'placeholder_class': 'avatar'
+                } %}
+            {% else %}
+                <div class="avatar"></div>
+            {% endif %}
             <span>{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Utilisateur' }}</span>
-        </a>
+        </div>
         <a href="{{ path('app_logout') }}" class="action-icon" title="Se déconnecter">
             <i class="fas fa-sign-out-alt"></i>
         </a>
