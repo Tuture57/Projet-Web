@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qui sommes-nous ?</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="welcome.css">
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo">Alt.</div>
-            <button class="login-btn"><i class="fas fa-user"></i> Se connecter</button>
+            <a class="login-btn" href="{{ path('app_login') }}"><i class="fas fa-user"></i> Se connecter</a>
         </header>
         <main>
             <h1>BIENVENUE</h1>
@@ -29,7 +29,7 @@
                     </p>
                 </div>
                 <div class="about-image">
-                    <img src="stage.jpeg" alt="Handshake between two people at a desk">
+                    <img src="{{ asset('images/stage.jpeg') }}" alt="Handshake between two people at a desk">
                 </div>
             </div>
             <div class="contact-section">

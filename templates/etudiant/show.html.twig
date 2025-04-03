@@ -184,9 +184,17 @@
                         
                         <div class="offer-footer d-flex justify-between align-center mt-md">
                             <span class="offer-date text-muted">Postulé le {{ application.applicationDate|date('d/m/Y') }}</span>
-                            <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-eye"></i> Voir l'offre
-                            </a>
+                            <div class="action-buttons d-flex gap-sm">
+                                <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Voir l'offre
+                                </a>
+                                
+                                {% if is_granted('ROLE_PILOT') or is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('candidature_details', {'id': application.id}) }}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-file-alt"></i> Voir la candidature
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 {% endif %}
