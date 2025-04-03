@@ -8,7 +8,8 @@ parameters:
     company_logos_directory: '../public/uploads/company'
     student_photos_directory: '../public/uploads/students'
     pilot_photos_directory: '../public/uploads/pilots'
-    cv_directory: '%kernel.project_dir%/public/uploads/cv'
+    admin_photos_directory: '../public/uploads/admins'
+    cv_directory: '../public/uploads/cv'
 
 services:
     # default configuration for services in *this* file

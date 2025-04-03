@@ -10,6 +10,11 @@
             <a href="{{ path('home') }}"><i class="fas fa-home"></i> Accueil</a>
         </li>
         <li class="separator"></li>
+        {% if is_granted('ROLE_ADMIN') %}
+        <li class="{{ app.request.attributes.get('_route') == 'admin' ? 'active' : '' }}">
+            <a href="{{ path('admin') }}"><i class="fas fa-user-shield"></i> Administrateurs</a>
+        </li>
+        {% endif %}
         <li class="{{ app.request.attributes.get('_route') == 'entreprise' ? 'active' : '' }}">
             <a href="{{ path('entreprise') }}"><i class="fas fa-building"></i> Entreprises</a>
         </li>

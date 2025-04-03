@@ -57,6 +57,8 @@ security:
         - { path: ^/wishlist, roles: [ROLE_ADMIN, ROLE_STUDENT] }
         - { path: ^/candidatures, roles: [ROLE_ADMIN, ROLE_STUDENT] }
 
+        - { path: ^/administrateurs, roles: [ROLE_ADMIN] }
+
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

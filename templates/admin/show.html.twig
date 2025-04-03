@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ admin.firstName }} {{ admin.lastName }}{% endblock %}
+
+{% block body %}
+<div class="company-header mb-lg">
+    <div class="back-button mb-md">
+        <a href="{{ path('admin') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux administrateurs</a>
+    </div>
+    
+    <div class="company-profile">
+        <div class="company-logo-container">
+            {% include 'partials/_image_display.html.twig' with {
+                'entity': admin,
+                'upload_path': 'uploads/admins',
+                'alt': admin.firstName ~ ' ' ~ admin.lastName,
+                'image_class': 'company-logo',
+                'placeholder_class': 'company-logo-placeholder',
+                'name': admin.firstName ~ ' ' ~ admin.lastName
+            } %}
+        </div>
+        
+        <div class="company-info">
+            <h1>{{ admin.firstName }} {{ admin.lastName }}</h1>
+            
+            <div class="admin-actions d-flex gap-sm">
+                <a href="{{ path('admin_edit', {'id': admin.id}) }}" class="btn btn-edit btn-sm">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                
+                <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete({{ admin.id }})">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+            </div>
+            
+            <form id="delete-form-{{ admin.id }}" action="{{ path('admin_delete', {'id': admin.id}) }}" method="post" style="display: none;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ admin.id) }}">
+            </form>
+            
+            <div class="company-rating">
+                <span class="badge badge-primary">Administrateur</span>
+            </div>
+            
+            <div class="company-details">
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ admin.email }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet administrateur ?')) {
+        document.getElementById('delete-form-' + id).submit();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administrateurs{% endblock %}
+
+{% block body %}
+{# Barre de recherche #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'admin',
+    'placeholder': 'Rechercher par nom, prénom ou email',
+    'active_filters': {
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
+
+{# Panneau de filtres #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'admin',
+    'filters': [],
+    'sort_options': [
+        {'value': 'lastName_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'lastName_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'firstName_asc', 'label': 'Prénom (A-Z)'},
+        {'value': 'firstName_desc', 'label': 'Prénom (Z-A)'}
+    ]
+} %}
+
+{# En-tête des résultats #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Administrateurs',
+    'items': admins,
+    'route_name': 'admin',
+    'entity_name_plural': 'administrateurs',
+    'action_button': {
+        'route': 'admin_new',
+        'icon': 'fas fa-plus',
+        'label': 'Ajouter un administrateur'
+    }
+} %}
+
+{% if admins|length > 0 %}
+    <div class="item-list">
+        {% for item in admins %}
+            <a href="{{ path('admin_show', {'id': item.id}) }}" class="item d-flex align-center">
+                {% if item.imageName %}
+                    <img src="{{ asset('uploads/admins/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        {{ item.firstName|first|upper }}{{ item.lastName|first|upper }}
+                    </div>
+                {% endif %}
+                
+                <div class="item-details flex-1">
+                    <h2 class="m-0 mb-xs">{{ item.firstName }} {{ item.lastName }}</h2>
+                    
+                    <div class="item-location">
+                        <i class="fas fa-envelope"></i> {{ item.email }}
+                    </div>
+                </div>
+                
+                <div class="item-rating">
+                    <span class="badge badge-primary">Administrateur</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(admins, 'pagination/pagination.html.twig') }}
+{% elseif not (no_results_message_displayed is defined and no_results_message_displayed) %}
+    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
+        <p>Aucun administrateur trouvé.</p>
+    </div>
+{% endif %}
+{% endblock %}
