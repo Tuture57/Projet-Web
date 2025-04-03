@@ -4,9 +4,9 @@
 {% block title %}{{ student.firstName }} {{ student.lastName }}{% endblock %}
 
 {% block body %}
-<div class="company-header">
-    <div class="back-button">
-        <a href="{{ path('etudiant') }}"><i class="fas fa-arrow-left"></i> Retour aux étudiants</a>
+<div class="company-header mb-lg">
+    <div class="back-button mb-md">
+        <a href="{{ path('etudiant') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux étudiants</a>
     </div>
     
     <div class="company-profile">
@@ -24,12 +24,12 @@
             <h1>{{ student.firstName }} {{ student.lastName }}</h1>
             
             {% if is_granted('ROLE_PILOT') %}
-                <div class="admin-actions">
-                    <a href="{{ path('etudiant_edit', {'id': student.id}) }}" class="btn-edit">
+                <div class="admin-actions d-flex gap-sm">
+                    <a href="{{ path('etudiant_edit', {'id': student.id}) }}" class="btn btn-edit btn-sm">
                         <i class="fas fa-edit"></i> Modifier
                     </a>
                     
-                    <a href="#" class="btn-delete" onclick="confirmDelete({{ student.id }})">
+                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete({{ student.id }})">
                         <i class="fas fa-trash"></i> Supprimer
                     </a>
                 </div>
@@ -42,9 +42,9 @@
             {% if student.searchStatus %}
                 <div class="company-rating">
                     <span class="status-badge 
-                        {% if student.searchStatus == 'En recherche' %}status-searching{% endif %}
-                        {% if student.searchStatus == 'Stage trouvé' %}status-found{% endif %}
-                        {% if student.searchStatus == 'Non disponible' %}status-unavailable{% endif %}
+                        {% if student.searchStatus == 'En recherche' %}status-pending{% endif %}
+                        {% if student.searchStatus == 'Stage trouvé' %}status-accepted{% endif %}
+                        {% if student.searchStatus == 'Non disponible' %}status-rejected{% endif %}
                     ">
                         {{ student.searchStatus }}
                     </span>
@@ -70,11 +70,11 @@
     </div>
 </div>
 
-<div class="company-description card">
-    <h2>Informations complémentaires</h2>
+<div class="card mb-lg">
+    <h2 class="mb-md">Informations complémentaires</h2>
     <div class="description-content">
         {% if student.address is defined and student.address %}
-            <div class="address-section">
+            <div class="address-section mb-md">
                 <h3><i class="fas fa-map-marker-alt"></i> Adresse</h3>
                 <p>{{ student.address }}</p>
             </div>
@@ -83,26 +83,28 @@
         {% if student.bio is defined and student.bio %}
             <div class="bio-section">
                 <h3><i class="fas fa-user"></i> Biographie</h3>
-                {{ student.bio|raw }}
+                <div class="p-md bg-light rounded-md">
+                    {{ student.bio|raw }}
+                </div>
             </div>
         {% else %}
-            <p>Aucune information complémentaire disponible.</p>
+            <p class="text-muted">Aucune information complémentaire disponible.</p>
         {% endif %}
     </div>
 </div>
 
-<div class="company-offers card">
-    <div class="offers-header">
-        <h2>Stages</h2>
+<div class="card">
+    <div class="d-flex justify-between align-center mb-lg">
+        <h2 class="m-0">Stages</h2>
         
         {% if applications is defined and applications|length > 0 %}
             <div class="offer-filters">
-                <div class="filter-label">Filtrer par statut :</div>
-                <div class="filter-buttons">
+                <div class="filter-label mb-sm">Filtrer par statut :</div>
+                <div class="filter-buttons d-flex gap-sm flex-wrap">
                     {% set current_filters = app.request.query.all()['filters'] is defined ? app.request.query.all()['filters'] : [] %}
                     
                     <a href="{{ path('etudiant_show', {'id': student.id}) }}" 
-                       class="filter-btn {% if current_filters is empty %}active{% endif %}">
+                       class="filter-btn alt {% if current_filters is empty %}active{% endif %}">
                         Tous
                     </a>
                     
@@ -112,7 +114,7 @@
                                 ? current_filters|filter(f => f != 'Pending') 
                                 : current_filters|merge(['Pending'])
                         }) }}" 
-                       class="filter-btn {% if 'Pending' in current_filters %}active{% endif %}">
+                       class="filter-btn alt {% if 'Pending' in current_filters %}active{% endif %}">
                         En attente
                     </a>
                     
@@ -122,7 +124,7 @@
                                 ? current_filters|filter(f => f != 'Accepted') 
                                 : current_filters|merge(['Accepted'])
                         }) }}" 
-                       class="filter-btn {% if 'Accepted' in current_filters %}active{% endif %}">
+                       class="filter-btn alt {% if 'Accepted' in current_filters %}active{% endif %}">
                         Acceptés
                     </a>
                     
@@ -132,7 +134,7 @@
                                 ? current_filters|filter(f => f != 'Rejected') 
                                 : current_filters|merge(['Rejected'])
                         }) }}" 
-                       class="filter-btn {% if 'Rejected' in current_filters %}active{% endif %}">
+                       class="filter-btn alt {% if 'Rejected' in current_filters %}active{% endif %}">
                         Refusés
                     </a>
                 </div>
@@ -141,7 +143,7 @@
     </div>
     
     {% if applications is defined and applications|length > 0 %}
-        <div class="offer-list">
+        <div class="offer-list d-flex flex-column gap-md">
             {% set displayed_applications = false %}
             {% set active_filters = app.request.query.all()['filters'] is defined ? app.request.query.all()['filters'] : [] %}
             
@@ -149,9 +151,9 @@
                 {% if active_filters is empty or application.status in active_filters %}
                     {% set displayed_applications = true %}
                     <div class="offer-item">
-                        <div class="offer-header">
+                        <div class="offer-header mb-sm">
                             <h3>{{ application.offer.title }}</h3>
-                            <span class="offer-type 
+                            <span class="status-badge 
                                 {% if application.status == 'Accepted' %}status-accepted{% endif %}
                                 {% if application.status == 'Pending' %}status-pending{% endif %}
                                 {% if application.status == 'Rejected' %}status-rejected{% endif %}
@@ -163,13 +165,13 @@
                         </div>
                         
                         {% if application.offer.company %}
-                        <div class="offer-location">
+                        <div class="offer-location mb-xs">
                             <i class="fas fa-building"></i>
                             <span>{{ application.offer.company.name }}</span>
                         </div>
                         {% endif %}
                         
-                        <div class="offer-duration">
+                        <div class="offer-duration mb-md">
                             <i class="far fa-clock"></i>
                             <span>
                                 {% if application.offer.startDate is defined and application.offer.endDate is defined %}
@@ -180,10 +182,10 @@
                             </span>
                         </div>
                         
-                        <div class="offer-footer">
-                            <span class="offer-date">Postulé le {{ application.applicationDate|date('d/m/Y') }}</span>
-                            <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn-view-offer">
-                                Voir l'offre <i class="fas fa-arrow-right"></i>
+                        <div class="offer-footer d-flex justify-between align-center mt-md">
+                            <span class="offer-date text-muted">Postulé le {{ application.applicationDate|date('d/m/Y') }}</span>
+                            <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Voir l'offre
                             </a>
                         </div>
                     </div>
@@ -191,16 +193,16 @@
             {% endfor %}
             
             {% if not displayed_applications %}
-                <div class="no-offers">
+                <div class="no-offers text-center p-xl bg-light rounded-lg">
                     <i class="far fa-file-alt"></i>
-                    <p>Aucun stage ne correspond aux filtres sélectionnés</p>
+                    <p class="mt-md">Aucun stage ne correspond aux filtres sélectionnés</p>
                 </div>
             {% endif %}
         </div>
     {% else %}
-        <div class="no-offers">
+        <div class="no-offers text-center p-xl bg-light rounded-lg">
             <i class="far fa-file-alt"></i>
-            <p>Aucun stage pour le moment</p>
+            <p class="mt-md">Aucun stage pour le moment</p>
         </div>
     {% endif %}
 </div>

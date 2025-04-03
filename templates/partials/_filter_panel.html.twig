@@ -1,6 +1,6 @@
 <div class="filter-panel" id="filterPanel">
-    <div class="filter-panel-header">
-        <h3 class="filter-panel-title">Filtres</h3>
+    <div class="filter-panel-header d-flex justify-between align-center mb-lg">
+        <h3 class="filter-panel-title m-0">Filtres</h3>
         <button type="button" class="close-filter-btn" id="closeFilterBtn">
             <i class="fas fa-times"></i>
         </button>
@@ -12,11 +12,11 @@
             <input type="hidden" name="search" value="{{ app.request.query.get('search') }}">
         {% endif %}
         
-        <h3 class="filter-heading">Filtrer par</h3>
+        <h3 class="filter-heading mb-md">Filtrer par</h3>
         
         {% for filter in filters %}
-            <div class="form-group">
-                <label for="{{ filter.name }}">{{ filter.label }}</label>
+            <div class="form-group mb-md">
+                <label for="{{ filter.name }}" class="mb-sm">{{ filter.label }}</label>
                 <select name="{{ filter.name }}" id="{{ filter.name }}" class="form-control">
                     <option value="">{{ filter.placeholder|default('Tous') }}</option>
                     {% for option in filter.options %}
@@ -29,8 +29,8 @@
         {% endfor %}
         
         {% if sort_options is defined and sort_options|length > 0 %}
-        <div class="form-group">
-            <label for="sortBy">Trier par</label>
+        <div class="form-group mb-md">
+            <label for="sortBy" class="mb-sm">Trier par</label>
             <select name="sortBy" id="sortBy" class="form-control">
                 {% for option in sort_options %}
                     <option value="{{ option.value }}" {% if app.request.query.get('sortBy') == option.value %}selected{% endif %}>
@@ -41,9 +41,13 @@
         </div>
         {% endif %}
         
-        <div class="filter-actions">
-            <button type="submit" class="btn-primary">Appliquer</button>
-            <a href="{{ path(route_name) }}" class="btn-secondary">Réinitialiser</a>
+        <div class="filter-actions d-flex flex-column gap-sm mt-lg">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check"></i> Appliquer
+            </button>
+            <a href="{{ path(route_name) }}" class="btn btn-secondary">
+                <i class="fas fa-undo"></i> Réinitialiser
+            </a>
         </div>
     </form>
 </div>

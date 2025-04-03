@@ -57,8 +57,7 @@
 {% if students|length > 0 %}
     <div class="item-list">
         {% for item in students %}
-            <a href="{{ path('etudiant_show', {'id': item.id}) }}" class="item">
-                {# Utiliser la même structure de classes CSS que pour les entreprises #}
+            <a href="{{ path('etudiant_show', {'id': item.id}) }}" class="item d-flex align-center">
                 {% if item.imageName %}
                     <img src="{{ asset('uploads/students/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
                 {% else %}
@@ -67,8 +66,8 @@
                     </div>
                 {% endif %}
                 
-                <div class="item-details">
-                    <h2>{{ item.firstName }} {{ item.lastName }}</h2>
+                <div class="item-details flex-1">
+                    <h2 class="m-0 mb-xs">{{ item.firstName }} {{ item.lastName }}</h2>
                     
                     {% if item.school %}
                         <div class="item-location">
@@ -79,7 +78,13 @@
                 
                 <div class="item-rating">
                     {% if item.searchStatus %}
-                        <span class="no-rating">{{ item.searchStatus }}</span>
+                        <span class="status-badge 
+                            {% if item.searchStatus == 'En recherche' %}status-pending{% endif %}
+                            {% if item.searchStatus == 'Stage trouvé' %}status-accepted{% endif %}
+                            {% if item.searchStatus == 'Non disponible' %}status-rejected{% endif %}
+                        ">
+                            {{ item.searchStatus }}
+                        </span>
                     {% else %}
                         <span class="no-rating">Statut non défini</span>
                     {% endif %}
@@ -91,7 +96,7 @@
     {# Pagination #}
     {{ knp_pagination_render(students, 'pagination/pagination.html.twig') }}
 {% else %}
-    <div class="no-results">
+    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
         <p>Aucun étudiant trouvé.</p>
     </div>
 {% endif %}

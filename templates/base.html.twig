@@ -8,29 +8,49 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     {% block stylesheets %}{% endblock %}
 </head>
-    <body>
-        <div class="container">
-            {% include 'partials/_sidebar.html.twig' %}
-            
-            <div class="main-content">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ label }} alert-dismissible">
-                            {{ message }}
-                            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
-                                <span>&times;</span>
-                            </button>
-                        </div>
-                    {% endfor %}
-                {% endfor %}   
-                {% block body %}{% endblock %}
-            </div>
-        </div>
+<body>
+    <div class="container">
+        {% include 'partials/_sidebar.html.twig' %}
         
-        {% block javascripts %}{% endblock %}
-        <script src="{{ asset('js/script.js') }}"></script>
-        {% if app.request.get('_route') starts with 'entreprise_show' %}
+        <div class="main-content overflow-auto">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible mb-lg rounded-md">
+                        <div class="d-flex align-center gap-sm">
+                            {% if label == 'success' %}
+                                <i class="fas fa-check-circle text-success"></i>
+                            {% elseif label == 'error' or label == 'danger' %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% elseif label == 'warning' %}
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                            {% elseif label == 'info' %}
+                                <i class="fas fa-info-circle text-info"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="close position-absolute" style="top: 10px; right: 10px;" onclick="this.parentElement.style.display='none'">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endfor %}   
+            {% block body %}{% endblock %}
+            
+            <footer class="site-footer mt-lg p-md">
+                <div class="footer-links d-flex justify-center gap-md">
+                    <a href="{{ path('mentions_legales') }}" class="text-muted">Mentions légales</a>
+                    <a href="{{ path('cgu') }}" class="text-muted">CGU</a>
+                    <span class="text-muted">&copy; {{ "now"|date("Y") }} Alt Internships</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    {% block javascripts %}{% endblock %}
+    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/form-validation.js') }}"></script>
+    {% if app.request.get('_route') starts with 'entreprise_show' %}
         <script src="{{ asset('js/rating.js') }}"></script>
-        {% endif %}
-    </body>
+    {% endif %}
+</body>
 </html>

@@ -26,7 +26,7 @@ class Application
      */
     private $cvFile;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $coverLetter = null;
 
     #[ORM\Column(length: 50)]

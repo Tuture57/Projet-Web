@@ -10,9 +10,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class WishlistController extends AbstractController
 {
     #[Route('/wishlist', name: 'wishlist_index')]
-    #[IsGranted('ROLE_STUDENT')]
+    #[IsGranted('ROLE_STUDENT', message: 'Seuls les étudiants et administrateurs peuvent accéder à cette page')]
     public function index(): Response
     {
+        // Si c'est un admin et non un étudiant, vérifier manuellement l'accès
+        if (!$this->isGranted('ROLE_STUDENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Seuls les étudiants et administrateurs peuvent accéder à cette page');
+        }
+        
         $user = $this->getUser();
         
         // Récupérer toutes les offres en favoris de l'utilisateur

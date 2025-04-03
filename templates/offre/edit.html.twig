@@ -4,17 +4,17 @@
 {% block title %}Modifier {{ offer.title }}{% endblock %}
 
 {% block body %}
-<div class="form-page">
+<div class="form-page card">
     {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
-        <div class="form-header">
-            <h1>Modifier l'offre de stage</h1>
-            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn-back">
+        <div class="header-with-actions mb-lg d-flex justify-between align-center">
+            <h1 class="m-0">Modifier l'offre de stage</h1>
+            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Retour à l'offre
             </a>
         </div>
 
-        <div class="form-section">
-            <h2>Informations générales</h2>
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Informations générales</h2>
             <div class="form-group">
                 {{ form_label(form.title) }}
                 {{ form_widget(form.title) }}
@@ -28,16 +28,16 @@
             </div>
         </div>
 
-        <div class="form-section">
-            <h2>Détails du stage</h2>
-            <div class="form-row">
-                <div class="form-group">
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Détails du stage</h2>
+            <div class="form-row mb-md">
+                <div class="form-group flex-1">
                     {{ form_label(form.startDate) }}
                     {{ form_widget(form.startDate) }}
                     {{ form_errors(form.startDate) }}
                 </div>
 
-                <div class="form-group">
+                <div class="form-group flex-1">
                     {{ form_label(form.endDate) }}
                     {{ form_widget(form.endDate) }}
                     {{ form_errors(form.endDate) }}
@@ -45,14 +45,14 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group">
+                <div class="form-group flex-1">
                     {{ form_label(form.remuneration) }}
                     {{ form_widget(form.remuneration) }}
                     {{ form_errors(form.remuneration) }}
                 </div>
 
                 {% if form.company is defined %}
-                <div class="form-group">
+                <div class="form-group flex-1">
                     {{ form_label(form.company) }}
                     {{ form_widget(form.company) }}
                     {{ form_errors(form.company) }}
@@ -61,8 +61,8 @@
             </div>
         </div>
 
-        <div class="form-section">
-            <h2>Compétences requises</h2>
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Compétences requises</h2>
             <div class="form-group">
                 {{ form_label(form.skills) }}
                 {{ form_widget(form.skills) }}
@@ -70,9 +70,9 @@
             </div>
         </div>
 
-        <div class="form-section">
-            <h2>Statut de l'offre</h2>
-            <div class="form-checkbox">
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Statut de l'offre</h2>
+            <div class="form-checkbox d-flex align-center gap-sm">
                 {{ form_widget(form.isActive) }}
                 {{ form_label(form.isActive) }}
                 {{ form_errors(form.isActive) }}
@@ -80,10 +80,10 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn-primary">
+            <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Enregistrer les modifications
             </button>
-            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn-secondary">
+            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Annuler
             </a>
         </div>

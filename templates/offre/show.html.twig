@@ -4,9 +4,9 @@
 {% block title %}{{ offer.title }} - Offre de stage{% endblock %}
 
 {% block body %}
-<div class="company-header">
-    <div class="back-button">
-        <a href="{{ path('offre') }}"><i class="fas fa-arrow-left"></i> Retour aux offres</a>
+<div class="company-header mb-lg">
+    <div class="back-button mb-md">
+        <a href="{{ path('offre') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux offres</a>
     </div>
     
     <div class="company-profile">
@@ -30,17 +30,17 @@
             <h1>{{ offer.title }}</h1>
             
             {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT'))%}
-                <div class="admin-actions">
-                    <a href="{{ path('offre_edit', {'id': offer.id}) }}" class="btn-edit">
+                <div class="admin-actions d-flex gap-sm">
+                    <a href="{{ path('offre_edit', {'id': offer.id}) }}" class="btn btn-edit btn-sm">
                         <i class="fas fa-edit"></i> Modifier
                     </a>
                     
-                    <a href="{{ path('offre_toggle', {'id': offer.id}) }}" class="btn-toggle">
+                    <a href="{{ path('offre_toggle', {'id': offer.id}) }}" class="btn {% if offer.isActive %}btn-warning{% else %}btn-success{% endif %} btn-sm">
                         <i class="fas {{ offer.isActive ? 'fa-times-circle' : 'fa-check-circle' }}"></i>
                         {{ offer.isActive ? 'Désactiver' : 'Activer' }}
                     </a>
                     
-                    <a href="#" class="btn-delete" onclick="confirmDelete({{ offer.id }})">
+                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete({{ offer.id }})">
                         <i class="fas fa-trash"></i> Supprimer
                     </a>
                 </div>
@@ -54,36 +54,36 @@
                 <span class="status-badge {{ offer.isActive ? 'status-accepted' : 'status-rejected' }}">
                     {{ offer.isActive ? 'Active' : 'Inactive' }}
                 </span>
-                <span class="offer-creation-date">
+                <span class="offer-creation-date text-muted ml-sm">
                     Publiée le {{ offer.creationDate|date('d/m/Y') }}
                 </span>
             </div>
             
-            <div class="company-details">
-                <div class="detail-item">
+            <div class="company-details mt-md">
+                <div class="detail-item mb-xs">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>{{ offer.remuneration|number_format(2, ',', ' ') }} € / mois</span>
                 </div>
                 
-                <div class="detail-item">
+                <div class="detail-item mb-xs">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Du {{ offer.startDate|date('d/m/Y') }} au {{ offer.endDate|date('d/m/Y') }}</span>
                 </div>
                 
-                <div class="detail-item">
+                <div class="detail-item mb-xs">
                     <i class="fas fa-clock"></i>
                     <span>Durée: {{ offer.startDate.diff(offer.endDate).days }} jours</span>
                 </div>
                 
                 {% if offer.company %}
-                    <div class="detail-item">
+                    <div class="detail-item mb-xs">
                         <i class="fas fa-building"></i>
                         <span>
-                            <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}">{{ offer.company.name }}</a>
+                            <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}" class="text-primary">{{ offer.company.name }}</a>
                         </span>
                     </div>
                     {% if offer.company.phone is defined %}
-                        <div class="detail-item">
+                        <div class="detail-item mb-xs">
                             <i class="fas fa-phone"></i>
                             <span>{{ offer.company.phone }}</span>
                         </div>
@@ -95,62 +95,64 @@
 </div>
 
 {% if is_granted('ROLE_STUDENT') %}
-<div class="card">
-    <div class="application-actions">
+<div class="card mb-lg">
+    <div class="application-actions d-flex gap-md align-center justify-between flex-wrap">
         {% if hasApplied %}
-            <div class="application-status-container">
-                <div class="application-status status-{{ applicationStatus|lower|replace({' ': '-'}) }}">
+            <div class="application-status-container d-flex align-center gap-md flex-wrap">
+                <div class="application-status status-{{ applicationStatus|lower|replace({' ': '-'}) }} p-sm rounded-md">
                     <i class="fas fa-info-circle"></i>
                     <span>Statut de votre candidature: <strong>{{ applicationStatus }}</strong></span>
                 </div>
-                <a href="{{ path('candidature_details', {'id': applicationId}) }}" class="btn-view-application">
+                <a href="{{ path('candidature_details', {'id': applicationId}) }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-eye"></i> Voir ma candidature
                 </a>
             </div>
         {% else %}
             {% if offer.isActive %}
-                <a href="{{ path('candidature_postuler', {'id': offer.id}) }}" class="btn-primary">
+                <a href="{{ path('candidature_postuler', {'id': offer.id}) }}" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Postuler à cette offre
                 </a>
             {% else %}
-                <button class="btn-disabled" disabled>
+                <button class="btn btn-secondary" disabled>
                     <i class="fas fa-ban"></i> Cette offre n'est plus disponible
                 </button>
             {% endif %}
         {% endif %}
         
+        {% if (is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN')) and not (is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN')) %}
         <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post" class="wishlist-form">
             <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
-            <button type="submit" class="btn-wishlist {{ isInWishlist ? 'in-wishlist' : '' }}">
+            <button type="submit" class="btn {% if isInWishlist %}btn-danger{% else %}btn-secondary{% endif %}">
                 <i class="{{ isInWishlist ? 'fas fa-heart' : 'far fa-heart' }}"></i>
                 {{ isInWishlist ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
             </button>
         </form>
+        {% endif %}
     </div>
 </div>
 {% endif %}
 
-<div class="company-description card">
-    <h2>Description du poste</h2>
-    <div class="description-content">
+<div class="card mb-lg">
+    <h2 class="mb-md">Description du poste</h2>
+    <div class="description-content p-md bg-light rounded-md">
         {{ offer.description|nl2br }}
     </div>
 </div>
 
 {% if offer.skills|length > 0 %}
-<div class="company-description card">
-    <h2>Compétences requises</h2>
-    <div class="description-content">
+<div class="card mb-lg">
+    <h2 class="mb-md">Compétences requises</h2>
+    <div class="description-content d-flex flex-wrap gap-sm">
         {% for skill in offer.skills %}
-            <span class="skill-tag">{{ skill.name }}</span>
+            <span class="badge badge-primary">{{ skill.name }}</span>
         {% endfor %}
     </div>
 </div>
 {% endif %}
 
 {% if offer.company and offer.company.address %}
-<div class="company-description card">
-    <h2>Lieu du stage</h2>
+<div class="card mb-lg">
+    <h2 class="mb-md">Lieu du stage</h2>
     <div class="description-content">
         <p>
             {% if offer.company.address.street is defined %}{{ offer.company.address.street }}{% endif %}
@@ -162,8 +164,8 @@
 {% endif %}
 
 {% if offer.company %}
-<div class="company-description card">
-    <h2>À propos de l'entreprise</h2>
+<div class="card mb-lg">
+    <h2 class="mb-md">À propos de l'entreprise</h2>
     <div class="company-profile-compact">
         <div class="company-profile-left">
             {% include 'partials/_image_display.html.twig' with {
@@ -175,18 +177,18 @@
             } %}
         </div>
         <div class="company-profile-right">
-            <h3 class="company-name">{{ offer.company.name }}</h3>
+            <h3 class="company-name mb-sm">{{ offer.company.name }}</h3>
             
-            <div class="company-meta">
+            <div class="company-meta mb-md">
                 {% if offer.company.activity is defined and offer.company.activity %}
-                    <div class="company-meta-item">
+                    <div class="company-meta-item mb-xs">
                         <i class="fas fa-briefcase"></i>
                         <span>{{ offer.company.activity }}</span>
                     </div>
                 {% endif %}
                 
                 {% if offer.company.address %}
-                    <div class="company-meta-item">
+                    <div class="company-meta-item mb-xs">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>
                             {% if offer.company.address.city is defined %}{{ offer.company.address.city }}{% endif %}
@@ -196,21 +198,21 @@
                 {% endif %}
                 
                 {% if offer.company.website is defined and offer.company.website %}
-                    <div class="company-meta-item">
+                    <div class="company-meta-item mb-xs">
                         <i class="fas fa-globe"></i>
-                        <span><a href="{{ offer.company.website }}" target="_blank">Site web</a></span>
+                        <span><a href="{{ offer.company.website }}" target="_blank" class="text-primary">Site web</a></span>
                     </div>
                 {% endif %}
             </div>
             
             {% if offer.company.description is defined and offer.company.description %}
-                <div class="company-excerpt">
+                <div class="company-excerpt mb-md">
                     {{ offer.company.description|striptags|slice(0, 100) }}{% if offer.company.description|length > 100 %}...{% endif %}
                 </div>
             {% endif %}
             
             <div class="company-action">
-                <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}" class="btn-secondary">
+                <a href="{{ path('entreprise_show', {'id': offer.company.id}) }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-building"></i> Voir le profil complet
                 </a>
             </div>
@@ -221,24 +223,24 @@
 
 {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_PILOT')) %}
     {% if offer.applications|length > 0 %}
-        <div class="company-offers card">
-            <h2>Candidatures reçues ({{ offer.applications|length }})</h2>
-            <div class="offer-list">
+        <div class="card mb-lg">
+            <h2 class="mb-md">Candidatures reçues <span class="badge badge-primary ml-xs">{{ offer.applications|length }}</span></h2>
+            <div class="offer-list d-flex flex-column gap-md">
                 {% for application in offer.applications %}
-                    <div class="offer-item">
-                        <div class="offer-header">
+                    <div class="offer-item shadow-sm">
+                        <div class="offer-header mb-sm">
                             <h3>{{ application.user.firstName }} {{ application.user.lastName }}</h3>
-                            <span class="offer-type status-badge {{ application.status|lower|replace({' ': '-'}) }}">
+                            <span class="status-badge {{ application.status|lower|replace({' ': '-'}) }}">
                                 {{ application.status }}
                             </span>
                         </div>
-                        <div class="offer-location">
+                        <div class="offer-location mb-sm">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Candidature envoyée le {{ application.applicationDate|date('d/m/Y') }}</span>
                         </div>
                         
-                        <div class="offer-meta">
-                            <div class="applicant-info">
+                        <div class="offer-meta mb-md">
+                            <div class="applicant-info d-flex flex-wrap gap-md">
                                 {% if application.user.email %}
                                     <div class="meta-item">
                                         <i class="fas fa-envelope"></i>
@@ -255,17 +257,17 @@
                             </div>
                         </div>
                         
-                        <div class="offer-footer">
-                            <a href="{{ path('candidature_details', {'id': application.id}) }}" class="btn-view-offer">
-                                Voir la candidature <i class="fas fa-arrow-right"></i>
+                        <div class="offer-footer d-flex justify-between align-center flex-wrap gap-sm">
+                            <a href="{{ path('candidature_details', {'id': application.id}) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Voir la candidature
                             </a>
                             
                             {% if application.status == 'Pending' %}
-                                <div class="application-buttons">
-                                    <a href="{{ path('candidature_accepter', {'id': application.id}) }}" class="btn-accept">
+                                <div class="application-buttons d-flex gap-sm">
+                                    <a href="{{ path('candidature_accepter', {'id': application.id}) }}" class="btn btn-success btn-sm">
                                         <i class="fas fa-check"></i> Accepter
                                     </a>
-                                    <a href="{{ path('candidature_refuser', {'id': application.id}) }}" class="btn-reject">
+                                    <a href="{{ path('candidature_refuser', {'id': application.id}) }}" class="btn btn-danger btn-sm">
                                         <i class="fas fa-times"></i> Refuser
                                     </a>
                                 </div>
@@ -274,19 +276,19 @@
                     </div>
                     
                     {% if application.status == 'Accepted' %}
-                        <div class="card mt-3">
-                            <h3><i class="fas fa-check-circle"></i> Candidature acceptée</h3>
+                        <div class="card mb-md bg-light border-primary-light">
+                            <h3 class="mb-sm text-success"><i class="fas fa-check-circle"></i> Candidature acceptée</h3>
                             <div class="accepted-info">
-                                <p>Cette candidature a été acceptée. Les coordonnées de contact sont maintenant disponibles pour les deux parties.</p>
+                                <p class="mb-md">Cette candidature a été acceptée. Les coordonnées de contact sont maintenant disponibles pour les deux parties.</p>
                                 
                                 {% if is_granted('ROLE_STUDENT') %}
-                                    <div class="contact-info">
-                                        <h4>Contact de l'entreprise:</h4>
-                                        <ul>
-                                            <li><strong>Nom:</strong> {{ application.offer.company.name }}</li>
-                                            <li><strong>Email:</strong> {{ application.offer.company.email }}</li>
+                                    <div class="contact-info p-md bg-white rounded-md shadow-sm">
+                                        <h4 class="mb-sm">Contact de l'entreprise:</h4>
+                                        <ul class="pl-md">
+                                            <li class="mb-xs"><strong>Nom:</strong> {{ application.offer.company.name }}</li>
+                                            <li class="mb-xs"><strong>Email:</strong> {{ application.offer.company.email }}</li>
                                             {% if application.offer.company.phone is defined %}
-                                                <li><strong>Téléphone:</strong> {{ application.offer.company.phone }}</li>
+                                                <li class="mb-xs"><strong>Téléphone:</strong> {{ application.offer.company.phone }}</li>
                                             {% endif %}
                                         </ul>
                                     </div>
@@ -298,8 +300,8 @@
             </div>
         </div>
     {% else %}
-        <div class="no-offers card">
-            <i class="fas fa-folder-open"></i>
+        <div class="card mb-lg bg-light text-center p-xl">
+            <i class="fas fa-folder-open mb-md" style="font-size: 2rem; color: var(--color-gray-400);"></i>
             <p>Aucune candidature n'a encore été reçue pour cette offre.</p>
         </div>
     {% endif %}

@@ -3,7 +3,11 @@
 {% block title %}Nouvelle entreprise{% endblock %}
 
 {% block body %}
-<div class="form-page">
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Nouvelle entreprise</h1>
+    </div>
+    
     {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
         {% include 'partials/form/_company_form.html.twig' with {
             'form': form,

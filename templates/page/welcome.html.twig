@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenue</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-    <div class="container text-center mt-5">
-        <h1>Bienvenue sur notre site</h1>
-        <p class="lead mt-4">Merci de votre visite. Pour accéder à toutes les fonctionnalités, veuillez vous connecter.</p>
-        
-        <div class="mt-5">
-            <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">Se connecter</a>
+<body class="bg-light">
+    <div class="container d-flex justify-center align-center text-center" style="height: 100vh;">
+        <div class="card p-xl" style="max-width: 600px;">
+            <h1 class="mb-lg">Bienvenue sur notre site</h1>
+            <p class="mb-xl">Merci de votre visite. Pour accéder à toutes les fonctionnalités, veuillez vous connecter.</p>
+            
+            <div>
+                <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </a>
+            </div>
         </div>
     </div>
-
 </body>
 </html>

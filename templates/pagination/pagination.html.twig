@@ -1,14 +1,14 @@
 {% if pageCount > 1 %}
-<div class="pagination">
+<div class="pagination d-flex justify-center align-center flex-wrap gap-sm mb-lg mt-lg">
     {% if first is defined and current != first %}
-        <a href="{{ path(route, query|merge({(pageParameterName): first})) }}" class="page-item page-first">
-            &lt;&lt;
+        <a href="{{ path(route, query|merge({(pageParameterName): first})) }}" class="page-item page-first" aria-label="First page">
+            <i class="fas fa-angle-double-left"></i>
         </a>
     {% endif %}
 
     {% if previous is defined %}
-        <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="page-item page-prev">
-            &lt;
+        <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="page-item page-prev" aria-label="Previous page">
+            <i class="fas fa-angle-left"></i>
         </a>
     {% endif %}
 
@@ -23,14 +23,14 @@
     {% endfor %}
 
     {% if next is defined %}
-        <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="page-item page-next">
-            &gt;
+        <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="page-item page-next" aria-label="Next page">
+            <i class="fas fa-angle-right"></i>
         </a>
     {% endif %}
-
+    
     {% if last is defined and current != last %}
-        <a href="{{ path(route, query|merge({(pageParameterName): last})) }}" class="page-item page-last">
-            &gt;&gt;
+        <a href="{{ path(route, query|merge({(pageParameterName): last})) }}" class="page-item page-last" aria-label="Last page">
+            <i class="fas fa-angle-double-right"></i>
         </a>
     {% endif %}
 </div>

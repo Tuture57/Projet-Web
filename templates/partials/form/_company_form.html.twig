@@ -1,69 +1,70 @@
 {# filepath: c:\wamp64\www\Projet-Web\templates\partials\form\_company_form.html.twig #}
 {# Informations générales #}
-<div class="form-section">
-    <h2>Informations générales</h2>
+<div class="form-section mb-lg">
+    <h2 class="mb-md">Informations générales</h2>
     
     <div class="form-group">
         {{ form_label(form.name) }}
-        {{ form_widget(form.name) }}
+        {{ form_widget(form.name, {'attr': {'required': true, 'minlength': '2', 'maxlength': '100'}}) }}
         {{ form_errors(form.name) }}
     </div>
     
-    {# Email et téléphone #}
     <div class="form-group">
         {{ form_label(form.email) }}
-        {{ form_widget(form.email) }}
+        {{ form_widget(form.email, {'attr': {'required': true, 'type': 'email', 'pattern': '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'}}) }}
         {{ form_errors(form.email) }}
     </div>
     
     <div class="form-group">
         {{ form_label(form.phone) }}
-        {{ form_widget(form.phone) }}
+        {{ form_widget(form.phone, {'attr': {'pattern': '^[0-9+\s()-]{8,20}$'}}) }}
+        <small class="text-muted">Format: +XX (XXX) XXX-XXXX ou équivalent</small>
         {{ form_errors(form.phone) }}
     </div>
     
     <div class="form-group">
         {{ form_label(form.description) }}
-        {{ form_widget(form.description) }}
+        {{ form_widget(form.description, {'attr': {'required': true, 'minlength': '20'}}) }}
         {{ form_errors(form.description) }}
     </div>
     
-    {# Upload d'image - Taille thumbnail #}
-    <div class="form-group image-upload-container">
+    <div class="form-group">
         {{ form_label(form.imageFile) }}
         
         {% if company.imageName %}
             <div class="image-preview">
-                <img src="{{ asset('uploads/company/' ~ company.imageName) }}" alt="{{ company.name }} logo" class="thumbnail-image">
+                <img src="{{ asset('uploads/company/' ~ company.imageName) }}" alt="{{ company.name }} logo" class="rounded-md shadow-sm">
             </div>
         {% endif %}
         
-        {{ form_widget(form.imageFile) }}
-        <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+        {{ form_widget(form.imageFile, {'attr': {'class': 'custom-file-input'}}) }}
+        <div class="file-input-info mt-xs">
+            <p><i class="fas fa-info-circle"></i> Format recommandé: JPG, PNG. Taille maximale: 2Mo</p>
+        </div>
         {{ form_errors(form.imageFile) }}
     </div>
 </div>
 
 {# Adresse #}
 {% if form.address is defined %}
-<div class="form-section">
-    <h2>Adresse</h2>
+<div class="form-section mb-lg">
+    <h2 class="mb-md">Adresse</h2>
     <div class="address-item">
         <div class="form-group">
             {{ form_label(form.address.street) }}
-            {{ form_widget(form.address.street) }}
+            {{ form_widget(form.address.street, {'attr': {'required': true}}) }}
             {{ form_errors(form.address.street) }}
         </div>
         
         <div class="form-group">
             {{ form_label(form.address.city) }}
-            {{ form_widget(form.address.city) }}
+            {{ form_widget(form.address.city, {'attr': {'required': true}}) }}
             {{ form_errors(form.address.city) }}
         </div>
         
         <div class="form-group">
             {{ form_label(form.address.country) }}
-            {{ form_widget(form.address.country) }}
+            {{ form_widget(form.address.country, {'attr': {'required': true}}) }}
             {{ form_errors(form.address.country) }}
         </div>
     </div>
@@ -72,8 +73,8 @@
 
 {# Autres champs spécifiques #}
 {% if form.numberOfInterns is defined %}
-<div class="form-section">
-    <h2>Informations supplémentaires</h2>
+<div class="form-section mb-lg">
+    <h2 class="mb-md">Informations supplémentaires</h2>
     
     <div class="form-group">
         {{ form_label(form.numberOfInterns) }}
@@ -85,6 +86,10 @@
 
 {# Boutons d'action #}
 <div class="form-actions">
-    <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
-    <a href="{{ path('entreprise') }}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+    <a href="{{ path('entreprise') }}" class="btn btn-secondary">
+        <i class="fas fa-times"></i> Annuler
+    </a>
 </div>

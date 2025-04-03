@@ -24,4 +24,16 @@ class PageController extends AbstractController
     {
         return $this->render('page/aide.html.twig');
     }
+
+    #[Route('/mentions-legales', name: 'mentions_legales')]
+    public function mentionsLegales(): Response
+    {
+        return $this->render('page/mentions_legales.html.twig');
+    }
+
+    #[Route('/conditions-generales-utilisation', name: 'cgu')]
+    public function cgu(): Response
+    {
+        return $this->render('page/cgu.html.twig');
+    }
 }

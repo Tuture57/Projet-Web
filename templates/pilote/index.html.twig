@@ -50,7 +50,7 @@
 {% if pilots|length > 0 %}
     <div class="item-list">
         {% for item in pilots %}
-            <a href="{{ path('pilote_show', {'id': item.id}) }}" class="item">
+            <a href="{{ path('pilote_show', {'id': item.id}) }}" class="item d-flex align-center">
                 {% if item.imageName %}
                     <img src="{{ asset('uploads/pilots/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
                 {% else %}
@@ -59,8 +59,8 @@
                     </div>
                 {% endif %}
                 
-                <div class="item-details">
-                    <h2>{{ item.firstName }} {{ item.lastName }}</h2>
+                <div class="item-details flex-1">
+                    <h2 class="m-0 mb-xs">{{ item.firstName }} {{ item.lastName }}</h2>
                     
                     {% if item.school %}
                         <div class="item-location">
@@ -70,7 +70,7 @@
                 </div>
                 
                 <div class="item-rating">
-                    <span class="no-rating">Pilote</span>
+                    <span class="badge badge-primary">Pilote</span>
                 </div>
             </a>
         {% endfor %}
@@ -79,7 +79,7 @@
     {# Pagination #}
     {{ knp_pagination_render(pilots, 'pagination/pagination.html.twig') }}
 {% else %}
-    <div class="no-results">
+    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
         <p>Aucun pilote trouvé.</p>
     </div>
 {% endif %}
