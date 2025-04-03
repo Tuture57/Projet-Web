@@ -3,17 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue</title>
+    <title>Qui sommes-nous ?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="welcome.css">
 </head>
 <body>
-    <div class="container text-center mt-5">
-        <h1>Bienvenue sur notre site</h1>
-        <p class="lead mt-4">Merci de votre visite. Pour accéder à toutes les fonctionnalités, veuillez vous connecter.</p>
-        
-        <div class="mt-5">
-            <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">Se connecter</a>
-        </div>
+    <div class="container">
+        <header>
+            <div class="logo">Alt.</div>
+            <button class="login-btn"><i class="fas fa-user"></i> Se connecter</button>
+        </header>
+        <main>
+            <h1>BIENVENUE</h1>
+            <div class="about-section">
+                <div class="about-text">
+                    <h2>Qui sommes-nous ?</h2>
+                    <p>
+                        Nous sommes une entreprise privée leader dans le domaine de la mise en relation entre les étudiants et les entreprises pour des stages. En tant que plateforme, nous offrons une plateforme réseau de mise en relation entre les jeunes talents tout en répondant aux besoins spécifiques des entreprises à la recherche de stagiaires qualifiés.
+                    </p>
+                    <p>
+                        Nous mettons à la disposition une plateforme intuitive aux étudiants et aux entreprises, tout en offrant aux utilisateurs un profit à la fois ambitieux professionnelles, tout en offrant aux utilisateurs un accès facile aux entreprises.
+                    </p>
+                    <p>
+                        Notre engagement est de rendre le processus de recherche de stage plus simple, plus rapide et plus efficace, en contribuant au développement des compétences des étudiants et à l’évolution de la carrière professionnelle de chacun.
+                    </p>
+                </div>
+                <div class="about-image">
+                    <img src="stage.jpeg" alt="Handshake between two people at a desk">
+                </div>
+            </div>
+            <div class="contact-section">
+                <h3>Contactez-nous</h3>
+                <div class="email-bar">
+                    <i class="fas fa-envelope"></i>
+                    <span>contact@altplatform.com</span>
+                </div>
+            </div>
+        </main>
     </div>
-
 </body>
 </html>
