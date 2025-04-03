@@ -55,8 +55,8 @@
 <div class="form-section mb-lg">
     <h2 class="mb-md">Mot de passe</h2>
     {% if student.id is not null %}
-    <p class="text-muted mb-md">Laissez vide pour conserver le mot de passe actuel.</p>
-    {% else %}
+        <p class="text-muted mb-md">Laissez vide pour conserver le mot de passe actuel.</p>
+    {% endif %}
     <div class="form-group">
         {{ form_label(form.plainPassword.first) }}
         {{ form_widget(form.plainPassword.first, {'attr': {'required': student.id is null, 'minlength': '8', 'pattern': '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'}}) }}
@@ -69,10 +69,9 @@
         {{ form_widget(form.plainPassword.second, {'attr': {'required': student.id is null, 'minlength': '8'}}) }}
         {{ form_errors(form.plainPassword.second) }}
     </div>
-    {% endif %}
 </div>
 
-{# Boutons d'action - Identique à l'entreprise #}
+{# Boutons d'action - Déplacés en dernier #}
 <div class="form-actions">
     <button type="submit" class="btn btn-primary">
         <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}

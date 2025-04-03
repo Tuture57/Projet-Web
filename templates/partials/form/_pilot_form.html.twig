@@ -50,7 +50,7 @@
     <h2 class="mb-md">Mot de passe</h2>
     {% if pilot.id is not null %}
         <p class="text-muted mb-md">Laissez vide pour conserver le mot de passe actuel.</p>
-    {% else %}
+    {% endif %}
     <div class="form-group">
         {{ form_label(form.plainPassword.first) }}
         {{ form_widget(form.plainPassword.first, {'attr': {'required': pilot.id is null, 'minlength': '8', 'pattern': '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'}}) }}
@@ -63,9 +63,9 @@
         {{ form_widget(form.plainPassword.second, {'attr': {'required': pilot.id is null, 'minlength': '8'}}) }}
         {{ form_errors(form.plainPassword.second) }}
     </div>
-    {% endif %}
 </div>
 
+{# Boutons d'action - Déplacés en dernier #}
 <div class="form-actions">
     <button type="submit" class="btn btn-primary">
         <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
