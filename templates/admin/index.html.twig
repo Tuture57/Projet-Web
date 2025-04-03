@@ -67,8 +67,5 @@
     {# Pagination #}
     {{ knp_pagination_render(admins, 'pagination/pagination.html.twig') }}
 {% elseif not (no_results_message_displayed is defined and no_results_message_displayed) %}
-    <div class="no-results text-center p-xl bg-light rounded-lg shadow-sm">
-        <p>Aucun administrateur trouvé.</p>
-    </div>
 {% endif %}
 {% endblock %}
