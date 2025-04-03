@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\OfferType;
 use App\Repository\OfferRepository;
 use App\Repository\ApplicationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,12 @@ final class OffreController extends AbstractController
         $queryBuilder = $offerRepository->createQueryBuilder('o')
             ->leftJoin('o.company', 'c')
             ->leftJoin('o.skills', 's');
+        
+        // Filtrer les offres inactives pour les étudiants qui ne sont pas admin ou pilote
+        if ($this->isGranted('ROLE_STUDENT') && !$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
+            $queryBuilder->andWhere('o.isActive = :isActive')
+                ->setParameter('isActive', true);
+        }
         
         // Récupérer les paramètres de recherche
         $search = $request->query->get('search', '');
@@ -306,33 +313,64 @@ final class OffreController extends AbstractController
         ]);
     }
     
-    #[Route('/offres/{id}/toggle-wishlist', name: 'offre_toggle_wishlist', methods: ['POST'])]
-    #[IsGranted('ROLE_STUDENT')]
-    public function toggleWishlist(Offer $offer, Request $request, EntityManagerInterface $entityManager): Response
-    {        
-        // Vérifier le token CSRF
+    #[Route('/toggle-wishlist/{id}', name: 'offre_toggle_wishlist')]
+    #[IsGranted('ROLE_USER')]
+    public function toggleWishlist(
+        Offer $offer,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
+    ): Response {
+        // Verify CSRF token
         if (!$this->isCsrfTokenValid('toggle-wishlist', $request->request->get('token'))) {
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
+            throw $this->createAccessDeniedException('Invalid CSRF token');
         }
         
+        // Get current user
         /** @var User $user */
         $user = $this->getUser();
         
-        // Ajouter ou retirer l'utilisateur de la liste des favoris
-        if ($offer->getWishListUsers()->contains($user)) {
-            $offer->removeWishListUser($user);
-            $message = 'L\'offre a été retirée de vos favoris.';
-        } else {
-            $offer->addWishListUser($user);
-            $message = 'L\'offre a été ajoutée à vos favoris.';
+        // Make sure user is a Student or Admin for wishlist functionality, but not a Pilot
+        if (!$this->isGranted('ROLE_STUDENT') && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Seuls les étudiants et administrateurs peuvent ajouter des offres à leurs favoris.');
+            return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
         }
         
-        $entityManager->flush();
-        $this->addFlash('success', $message);
+        // Explicitement empêcher les pilotes d'utiliser cette fonctionnalité
+        if ($this->isGranted('ROLE_PILOT') && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Les pilotes ne peuvent pas ajouter d\'offres à leurs favoris.');
+            return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
+        }
         
-        // Rediriger vers la page précédente
-        $referer = $request->headers->get('referer');
-        return $this->redirect($referer ?: $this->generateUrl('offre_show', ['id' => $offer->getId()]));
+        // Check if the offer is already in the wishlist
+        $isInWishlist = false;
+        foreach ($user->getWishListOffers() as $wishlistOffer) {
+            if ($wishlistOffer->getId() === $offer->getId()) {
+                $isInWishlist = true;
+                break;
+            }
+        }
+        
+        // Toggle wishlist status
+        if ($isInWishlist) {
+            $user->removeWishListOffer($offer);
+            $this->addFlash('success', 'Offre retirée de vos favoris.');
+        } else {
+            $user->addWishListOffer($offer);
+            $this->addFlash('success', 'Offre ajoutée à vos favoris.');
+        }
+        
+        // Save changes
+        $entityManager->persist($user);
+        $entityManager->flush();
+        
+        // Redirect back to offer page or wishlist
+        $referrer = $request->headers->get('referer');
+        if (str_contains($referrer, 'wishlist')) {
+            return $this->redirectToRoute('wishlist_index');
+        }
+        
+        return $this->redirectToRoute('offre_show', ['id' => $offer->getId()]);
     }
 
     #[Route('/offres/{id}/apply', name: 'offre_apply', methods: ['GET'])]

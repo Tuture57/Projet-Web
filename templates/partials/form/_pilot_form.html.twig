@@ -1,74 +1,76 @@
 {# templates/partials/form/_pilot_form.html.twig #}
 
-{# Informations personnelles #}
-<div class="form-section">
-    <h2>Informations personnelles</h2>
+<div class="form-section mb-lg">
+    <h2 class="mb-md">Informations personnelles</h2>
     
-    <div class="form-row">
-        <div class="form-group col-md-6">
+    <div class="form-row d-flex gap-md mb-md">
+        <div class="form-group flex-1">
             {{ form_label(form.firstName) }}
-            {{ form_widget(form.firstName) }}
+            {{ form_widget(form.firstName, {'attr': {'required': true, 'minlength': '2', 'maxlength': '50'}}) }}
             {{ form_errors(form.firstName) }}
         </div>
         
-        <div class="form-group col-md-6">
+        <div class="form-group flex-1">
             {{ form_label(form.lastName) }}
-            {{ form_widget(form.lastName) }}
+            {{ form_widget(form.lastName, {'attr': {'required': true, 'minlength': '2', 'maxlength': '50'}}) }}
             {{ form_errors(form.lastName) }}
         </div>
     </div>
     
     <div class="form-group">
         {{ form_label(form.email) }}
-        {{ form_widget(form.email) }}
+        {{ form_widget(form.email, {'attr': {'required': true, 'type': 'email', 'pattern': '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'}}) }}
         {{ form_errors(form.email) }}
     </div>
     
     <div class="form-group">
         {{ form_label(form.school) }}
-        {{ form_widget(form.school) }}
+        {{ form_widget(form.school, {'attr': {'required': true}}) }}
         {{ form_errors(form.school) }}
     </div>
     
-    {# Upload d'image - Même structure que pour les étudiants #}
-    <div class="form-group image-upload-container">
+    <div class="form-group">
         {{ form_label(form.imageFile) }}
         
         {% if pilot.imageName %}
             <div class="image-preview">
-                <img src="{{ asset('uploads/pilots/' ~ pilot.imageName) }}" alt="{{ pilot.firstName }} {{ pilot.lastName }}" class="thumbnail-image">
+                <img src="{{ asset('uploads/pilots/' ~ pilot.imageName) }}" alt="{{ pilot.firstName }} {{ pilot.lastName }}" class="rounded-md shadow-sm">
             </div>
         {% endif %}
         
-        {{ form_widget(form.imageFile) }}
-        <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+        {{ form_widget(form.imageFile, {'attr': {'class': 'custom-file-input'}}) }}
+        <div class="file-input-info mt-xs">
+            <p><i class="fas fa-info-circle"></i> Format recommandé: JPG, PNG. Taille maximale: 2Mo</p>
+        </div>
         {{ form_errors(form.imageFile) }}
     </div>
 </div>
 
-{# Mot de passe - Spécifique aux pilotes #}
-<div class="form-section">
-    <h2>Mot de passe</h2>
+<div class="form-section mb-lg">
+    <h2 class="mb-md">Mot de passe</h2>
     {% if pilot.id is not null %}
-        <p class="help-text">Laissez vide pour conserver le mot de passe actuel.</p>
-    {% endif %}
-
-    
+        <p class="text-muted mb-md">Laissez vide pour conserver le mot de passe actuel.</p>
+    {% else %}
     <div class="form-group">
         {{ form_label(form.plainPassword.first) }}
-        {{ form_widget(form.plainPassword.first) }}
+        {{ form_widget(form.plainPassword.first, {'attr': {'required': pilot.id is null, 'minlength': '8', 'pattern': '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'}}) }}
+        <small class="text-muted">Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.</small>
         {{ form_errors(form.plainPassword.first) }}
     </div>
     
     <div class="form-group">
         {{ form_label(form.plainPassword.second) }}
-        {{ form_widget(form.plainPassword.second) }}
+        {{ form_widget(form.plainPassword.second, {'attr': {'required': pilot.id is null, 'minlength': '8'}}) }}
         {{ form_errors(form.plainPassword.second) }}
     </div>
+    {% endif %}
 </div>
 
-{# Boutons d'action - Identique à l'étudiant #}
 <div class="form-actions">
-    <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
-    <a href="{{ path('pilote') }}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+    <a href="{{ path('pilote') }}" class="btn btn-secondary">
+        <i class="fas fa-times"></i> Annuler
+    </a>
 </div>

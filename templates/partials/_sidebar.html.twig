@@ -26,11 +26,13 @@
         <li class="{{ app.request.attributes.get('_route') == 'offre' ? 'active' : '' }}">
             <a href="{{ path('offre') }}"><i class="fas fa-briefcase"></i> Offres</a>
         </li>
-        {% if is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN') %}
+        {% if (is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN')) and not (is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN')) %}
         <li class="separator"></li>
         <li class="{{ app.request.attributes.get('_route') == 'wishlist_index' ? 'active' : '' }}">
             <a href="{{ path('wishlist_index') }}"><i class="fas fa-heart"></i> Wish-list</a>
         </li>
+        {% endif %}
+        {% if is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN') %}
         <li class="{{ app.request.attributes.get('_route') == 'candidature_index' ? 'active' : '' }}">
             <a href="{{ path('candidature_index') }}"><i class="fas fa-file-alt"></i> Mes candidatures</a>
         </li>
@@ -41,10 +43,12 @@
         </li>
     </ul>
     <div class="user-profile">
-        <a href="{{ path('user_profil') }}" class="profile-link">
+        <a href="{{ path('user_profil') }}" class="profile-link d-flex align-center">
             <div class="avatar"></div>
             <span>{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Utilisateur' }}</span>
         </a>
-        <a href="{{ path('app_logout') }}" class="action-icon"><i class="fas fa-sign-out-alt"></i></a>
+        <a href="{{ path('app_logout') }}" class="action-icon" title="Se déconnecter">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
     </div>
 </div>

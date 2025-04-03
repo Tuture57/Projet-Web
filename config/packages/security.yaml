@@ -28,8 +28,9 @@ security:
                 target: home
 
     role_hierarchy:
-        ROLE_ADMIN: [ROLE_PILOT]
-        ROLE_PILOT: [ROLE_STUDENT]
+        ROLE_ADMIN: [ROLE_USER, ROLE_STUDENT, ROLE_PILOT]
+        ROLE_PILOT: [ROLE_USER, ROLE_STUDENT]
+        ROLE_STUDENT: [ROLE_USER]
 
     access_control:
         - { path: ^/$, roles: PUBLIC_ACCESS }

@@ -151,24 +151,28 @@ class CandidatureController extends AbstractController
     }
     
     #[Route('/accepter/{id}', name: 'candidature_accepter')]
-    public function accepter(
-        Application $application,
-        EntityManagerInterface $entityManager
-    ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        
-        // Vérifier que l'offre associée appartient bien à l'entreprise
-        if ($application->getOffer()->getCompany() !== $user && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à gérer cette candidature.');
+    #[IsGranted('ROLE_PILOT')]
+    public function accepter(Application $application, EntityManagerInterface $entityManager): Response
+    {
+        // Vérification des autorisations
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_PILOT')) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à accepter cette candidature.');
         }
         
+        // Modification du statut de la candidature
         $application->setStatus('Accepted');
+        
+        // Désactivation de l'offre correspondante
+        $offer = $application->getOffer();
+        if ($offer) {
+            $offer->setIsActive(false);
+        }
+        
         $entityManager->flush();
         
-        $this->addFlash('success', 'La candidature a été acceptée.');
+        $this->addFlash('success', 'La candidature a été acceptée et l\'offre a été automatiquement désactivée.');
         
-        return $this->redirectToRoute('entreprise_candidatures');
+        return $this->redirectToRoute('candidature_details', ['id' => $application->getId()]);
     }
     
     #[Route('/refuser/{id}', name: 'candidature_refuser')]

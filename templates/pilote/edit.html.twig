@@ -4,7 +4,14 @@
 {% block title %}Modifier {{ pilot.firstName }} {{ pilot.lastName }}{% endblock %}
 
 {% block body %}
-<div class="form-page">
+<div class="form-page card">
+    <div class="header-with-actions mb-lg d-flex justify-between align-center">
+        <h1 class="m-0">Modifier {{ pilot.firstName }} {{ pilot.lastName }}</h1>
+        <a href="{{ path('pilote_show', {'id': pilot.id}) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour au profil du pilote
+        </a>
+    </div>
+    
     {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
         {% include 'partials/form/_pilot_form.html.twig' with {
             'form': form,

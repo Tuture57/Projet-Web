@@ -3,9 +3,9 @@
 {% block title %}{{ company.name }}{% endblock %}
 
 {% block body %}
-<div class="company-header">
-    <div class="back-button">
-        <a href="{{ path('entreprise') }}"><i class="fas fa-arrow-left"></i> Retour aux entreprises</a>
+<div class="company-header mb-lg">
+    <div class="back-button mb-md">
+        <a href="{{ path('entreprise') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux entreprises</a>
     </div>
     
     <div class="company-profile">
@@ -23,12 +23,12 @@
             <h1>{{ company.name }}</h1>
             
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
-                <div class="admin-actions">
-                    <a href="{{ path('entreprise_edit', {'id': company.id}) }}" class="btn-edit">
+                <div class="admin-actions d-flex gap-sm">
+                    <a href="{{ path('entreprise_edit', {'id': company.id}) }}" class="btn btn-edit btn-sm">
                         <i class="fas fa-edit"></i> Modifier
                     </a>
                     
-                    <a href="#" class="btn-delete" onclick="confirmDelete({{ company.id }})">
+                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete({{ company.id }})">
                         <i class="fas fa-trash"></i> Supprimer
                     </a>
                 </div>
@@ -39,7 +39,7 @@
             {% endif %}
             
             {% if company.averageRating is not null and company.averageRating > 0 %}
-                <div class="company-rating">
+                <div class="company-rating d-flex align-center">
                     <div class="stars">
                         {% for i in 1..5 %}
                             {% if i <= company.averageRating|round(0, 'floor') %}
@@ -86,8 +86,8 @@
 </div>
 
 {% if company.description %}
-<div class="company-description card">
-    <h2>À propos de {{ company.name }}</h2>
+<div class="card mb-lg">
+    <h2 class="mb-md">À propos de {{ company.name }}</h2>
     <div class="description-content">
         {{ company.description|length > 150 ? company.description|slice(0, 150) ~ '...' : company.description }}
     </div>
@@ -96,14 +96,14 @@
 
 <!-- Formulaire de notation -->
 {% if app.user %}
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>Noter cette entreprise</h2>
+<div class="card mb-lg">
+    <div class="card-header mb-md">
+        <h2 class="m-0">Noter cette entreprise</h2>
     </div>
     <div class="card-body">
         <form action="{{ path('entreprise_rate', {'id': company.id}) }}" method="post" id="rating-form">
-            <div class="rating-selector">
-                <p>Choisissez une note :</p>
+            <div class="rating-selector mb-lg">
+                <p class="mb-sm">Choisissez une note :</p>
                 <div class="star-rating">
                     {% set userRating = null %}
                     {% if app.user.ratings is defined %}
@@ -120,37 +120,43 @@
                     {% endfor %}
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Soumettre</button>
+            <button type="submit" class="btn btn-primary">Soumettre</button>
         </form>
         
         {% if userRating %}
-        <form action="{{ path('entreprise_remove_rating', {'id': company.id}) }}" method="post" id="remove-rating-form" class="mt-3">
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre avis ?')">
-                Supprimer mon avis
-            </button>
-        </form>
+        <div class="rating-actions mt-md">
+            <form action="{{ path('entreprise_remove_rating', {'id': company.id}) }}" method="post" id="remove-rating-form">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre avis ?')">
+                    <i class="fas fa-trash"></i> Supprimer mon avis
+                </button>
+            </form>
+        </div>
         {% endif %}
     </div>
 </div>
 {% else %}
-<div class="card mt-4">
-    <div class="card-body">
-        <p>Connectez-vous pour noter cette entreprise.</p>
-        <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+<div class="card mb-lg">
+    <div class="card-body text-center p-lg">
+        <p class="mb-md">Connectez-vous pour noter cette entreprise.</p>
+        <a href="{{ path('app_login') }}" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+        </a>
     </div>
 </div>
 {% endif %}
 
-<div class="company-offers card">
-    <h2>Offres actuelles <span class="offer-count">{{ offers|length }}</span></h2>
+<div class="card mb-lg">
+    <div class="d-flex justify-between align-center mb-lg">
+        <h2 class="m-0">Offres actuelles <span class="badge badge-primary ml-xs">{{ offers|length }}</span></h2>
+    </div>
     
     {% if offers|length > 0 %}
-        <div class="offer-list">
+        <div class="offer-list d-flex flex-column gap-md">
             {% for offer in offers %}
                 <div class="offer-item">
                     <div class="offer-header">
                         <h3>{{ offer.title }}</h3>
-                        <span class="offer-type">Stage</span>
+                        <span class="badge badge-primary">Stage</span>
                     </div>
                     
                     {% if offer.company and offer.company.address %}
@@ -171,7 +177,7 @@
                     
                     <div class="offer-footer">
                         <span class="offer-date">Publiée le {{ offer.creationDate|date('d/m/Y') }}</span>
-                        <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn-view-offer">
+                        <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-primary btn-sm">
                             Voir l'offre <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -179,9 +185,9 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="no-offers">
+        <div class="no-offers text-center p-xl">
             <i class="far fa-file-alt"></i>
-            <p>Aucune offre disponible pour le moment</p>
+            <p class="mt-md">Aucune offre disponible pour le moment</p>
         </div>
     {% endif %}
 </div>

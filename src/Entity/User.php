@@ -192,13 +192,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getWishListOffers(): Collection
     {
+        // Initialize the collection if it's null
+        if ($this->wishListOffers === null) {
+            $this->wishListOffers = new ArrayCollection();
+        }
         return $this->wishListOffers;
     }
 
     public function addWishListOffer(Offer $wishListOffer): static
     {
-        if (!$this->wishListOffers->contains($wishListOffer)) {
+        if (!$this->getWishListOffers()->contains($wishListOffer)) {
             $this->wishListOffers->add($wishListOffer);
+            $wishListOffer->addWishListUser($this); // Ensure both sides of the relationship are updated
         }
 
         return $this;
@@ -206,7 +211,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeWishListOffer(Offer $wishListOffer): static
     {
-        $this->wishListOffers->removeElement($wishListOffer);
+        if ($this->wishListOffers->removeElement($wishListOffer)) {
+            $wishListOffer->removeWishListUser($this); // Ensure both sides of the relationship are updated
+        }
 
         return $this;
     }

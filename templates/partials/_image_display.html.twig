@@ -1,7 +1,7 @@
 {% if entity.imageName %}
     <img src="{{ asset(upload_path ~ '/' ~ entity.imageName) }}" alt="{{ alt|default('Image') }}" class="{{ image_class|default('entity-image') }}">
 {% else %}
-    <div class="{{ placeholder_class|default('image-placeholder') }}">
+    <div class="{{ placeholder_class|default('image-placeholder') }} d-flex justify-center align-center">
         {% if 'students' in upload_path or 'pilots' in upload_path %}
             {{ entity.firstName|first|upper }}{{ entity.lastName|first|upper }}
         {% else %}

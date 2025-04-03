@@ -1,8 +1,8 @@
 <div class="filter-overlay" id="filterOverlay"></div>
 
-<div class="search-bar">
-    <form action="{{ path(route_name) }}" method="get" class="search-form">
-        <div class="search-input-container">
+<div class="search-bar mb-lg">
+    <form action="{{ path(route_name) }}" method="get" class="search-form d-flex align-center w-100">
+        <div class="search-input-container flex-1">
             <button type="submit" class="search-submit-btn">
                 <i class="fas fa-search search-icon"></i>
             </button>
@@ -16,8 +16,8 @@
             {% endif %}
         {% endfor %}
         
-        <button type="button" class="filter-btn">
-            <i class="fa fa-filter"></i>
+        <button type="button" class="filter-btn ml-sm">
+            <i class="fas fa-filter"></i>
         </button>
     </form>
 </div>
