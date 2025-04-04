@@ -204,6 +204,6 @@ class CandidatureController extends AbstractController
         
         $this->addFlash('success', 'La candidature a été refusée.');
         
-        return $this->redirectToRoute('entreprise_candidatures');
+        return $this->redirectToRoute('candidature_details', ['id' => $application->getId()]);
     }
 }
