@@ -1,0 +1,14 @@
+<div class="form-group image-upload-container">
+    {{ form_label(form.imageFile) }}
+    
+    {# Affichage de l'image actuelle si elle existe #}
+    {% if entity.imageName %}
+        <div class="image-preview">
+            <img src="{{ asset(upload_path ~ '/' ~ entity.imageName) }}" alt="{{ alt|default('Image') }}" class="current-image">
+        </div>
+    {% endif %}
+    
+    {{ form_widget(form.imageFile) }}
+    <div class="file-input-info">Format recommandé: JPG, PNG. Taille maximale: 2Mo</div>
+    {{ form_errors(form.imageFile) }}
+</div>

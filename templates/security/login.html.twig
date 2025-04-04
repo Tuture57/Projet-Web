@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div class="d-flex justify-center align-center" style="min-height: 100vh;">
+        <div class="card shadow-md" style="max-width: 400px; width: 100%;">
+            <h1 class="text-center mb-lg">Connexion</h1>
+
+            {# Affichage des erreurs d'authentification #}
+            {% if error %}
+                <div class="alert alert-danger mb-lg">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="post" class="d-flex flex-column gap-md">
+                {# Champ email #}
+                <div class="form-group">
+                    <label for="email" class="mb-sm">Email</label>
+                    <div class="position-relative">
+                        <i class="fas fa-envelope position-absolute" style="left: 10px; top: 12px; color: var(--color-gray-600);"></i>
+                        <input type="email" name="_username" id="email" value="{{ last_username }}" class="integrated-input" style="padding-left: 35px;" required>
+                    </div>
+                </div>
+
+                {# Champ mot de passe #}
+                <div class="form-group">
+                    <label for="password" class="mb-sm">Mot de passe</label>
+                    <div class="position-relative">
+                        <i class="fas fa-lock position-absolute" style="left: 10px; top: 12px; color: var(--color-gray-600);"></i>
+                        <input type="password" name="_password" id="password" class="integrated-input" style="padding-left: 35px;" required>
+                    </div>
+                </div>
+
+                {# Token CSRF pour sécuriser le formulaire #}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button type="submit" class="btn btn-primary mt-md">
+                    <i class="fas fa-sign-in-alt mr-xs"></i> Se connecter
+                </button>
+            </form>
+            
+            {# Lien de retour à l'accueil #}
+            <div class="text-center mt-lg">
+                <a href="{{ path('home') }}" class="text-primary">
+                    <i class="fas fa-arrow-left mr-xs"></i> Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

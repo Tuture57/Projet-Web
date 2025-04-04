@@ -1,0 +1,75 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo"><a href="{{ path('home') }}">Alt.</a></div>
+        <button id="sidebar-toggle" class="toggle-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <ul class="nav-menu">
+        <li class="{{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">
+            <a href="{{ path('home') }}"><i class="fas fa-home"></i> Accueil</a>
+        </li>
+        <li class="separator"></li>
+        {% if is_granted('ROLE_ADMIN') %}
+        <li class="{{ app.request.attributes.get('_route') == 'admin' ? 'active' : '' }}">
+            <a href="{{ path('admin') }}"><i class="fas fa-user-shield"></i> Administrateurs</a>
+        </li>
+        {% endif %}
+        <li class="{{ app.request.attributes.get('_route') == 'entreprise' ? 'active' : '' }}">
+            <a href="{{ path('entreprise') }}"><i class="fas fa-building"></i> Entreprises</a>
+        </li>
+        {% if is_granted('ROLE_ADMIN') %}
+        <li class="{{ app.request.attributes.get('_route') == 'pilote' ? 'active' : '' }}">
+            <a href="{{ path('pilote') }}"><i class="fas fa-lightbulb"></i> Pilotes</a>
+        </li>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+        <li class="{{ app.request.attributes.get('_route') == 'etudiant' ? 'active' : '' }}">
+            <a href="{{ path('etudiant') }}"><i class="fas fa-user-graduate"></i> Etudiants</a>
+        </li>
+        {% endif %}
+        <li class="{{ app.request.attributes.get('_route') == 'offre' ? 'active' : '' }}">
+            <a href="{{ path('offre') }}"><i class="fas fa-briefcase"></i> Offres</a>
+        </li>
+        {% if (is_granted('ROLE_STUDENT') or is_granted('ROLE_ADMIN')) and not (is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN')) %}
+        <li class="separator"></li>
+        <li class="{{ app.request.attributes.get('_route') == 'wishlist_index' ? 'active' : '' }}">
+            <a href="{{ path('wishlist_index') }}"><i class="fas fa-heart"></i> Wish-list</a>
+        </li>
+        <li class="{{ app.request.attributes.get('_route') == 'candidature_index' ? 'active' : '' }}">
+            <a href="{{ path('candidature_index') }}"><i class="fas fa-file-alt"></i> Mes candidatures</a>
+        </li>
+        {% endif %}
+        <li class="separator"></li>
+        <li class="{{ app.request.attributes.get('_route') == 'aide' ? 'active' : '' }}">
+            <a href="{{ path('aide') }}"><i class="fas fa-question-circle"></i> Aide et support</a>
+        </li>
+    </ul>
+    <div class="user-profile">
+        <div class="profile-link d-flex align-center">
+            {% if app.user %}
+                {# Définition du chemin d'upload en fonction du rôle de l'utilisateur #}
+                {% set upload_path = 'uploads/students' %}
+                {% if is_granted('ROLE_PILOT') and not is_granted('ROLE_ADMIN') %}
+                    {% set upload_path = 'uploads/pilots' %}
+                {% elseif is_granted('ROLE_ADMIN') %}
+                    {% set upload_path = 'uploads/admins' %}
+                {% endif %}
+                
+                {% include 'partials/_image_display.html.twig' with {
+                    'entity': app.user,
+                    'upload_path': upload_path,
+                    'alt': app.user.firstName ~ ' ' ~ app.user.lastName,
+                    'image_class': 'avatar',
+                    'placeholder_class': 'avatar'
+                } %}
+            {% else %}
+                <div class="avatar"></div>
+            {% endif %}
+            <span>{{ app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Utilisateur' }}</span>
+        </div>
+        <a href="{{ path('app_logout') }}" class="action-icon" title="Se déconnecter">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+</div>

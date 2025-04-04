@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Entreprises{% endblock %}
+
+{% block body %}
+{# Barre de recherche pour les entreprises #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'entreprise',
+    'placeholder': 'Chercher par entreprise',
+    'active_filters': {
+        'country': app.request.query.get('country'),
+        'city': app.request.query.get('city'),
+        'minRating': app.request.query.get('minRating'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
+
+{# Panneau de filtres pour affiner la recherche #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'entreprise',
+    'filters': [
+        {
+            'name': 'country',
+            'label': 'Pays',
+            'placeholder': 'Tous les pays',
+            'options': countries|map(c => {'value': c.country, 'label': c.country})
+        },
+        {
+            'name': 'city',
+            'label': 'Ville',
+            'placeholder': 'Toutes les villes',
+            'options': cities|map(c => {'value': c.city, 'label': c.city})
+        },
+        {
+            'name': 'minRating',
+            'label': 'Note minimale',
+            'placeholder': 'Toutes les notes',
+            'options': [
+                {'value': '1', 'label': '★ et plus'},
+                {'value': '2', 'label': '★★ et plus'},
+                {'value': '3', 'label': '★★★ et plus'},
+                {'value': '4', 'label': '★★★★ et plus'},
+                {'value': '5', 'label': '★★★★★'}
+            ]
+        }
+    ],
+    'sort_options': [
+        {'value': 'name_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'name_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'rating_desc', 'label': 'Meilleure note'},
+        {'value': 'rating_asc', 'label': 'Note la plus basse'}
+    ]
+} %}
+
+{# En-tête avec titre et bouton d'action #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Entreprises',
+    'items': companies,
+    'route_name': 'entreprise',
+    'entity_name_plural': 'entreprises',
+    'action_button': is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') ? {
+        'route': 'entreprise_new',
+        'icon': 'fas fa-plus',
+        'label': 'Créer une entreprise'
+    } : null
+} %}
+
+{% if companies|length > 0 %}
+    {# Liste des entreprises #}
+    <div class="item-list">
+        {% for item in companies %}
+            {% include 'partials/_list_item.html.twig' with {
+                'item': item,
+                'route': 'entreprise',
+                'upload_path': 'uploads/company'
+            } %}
+        {% endfor %}
+    </div>
+    
+    {# Pagination pour la liste des entreprises #}
+    {{ knp_pagination_render(companies, 'pagination/pagination.html.twig') }}
+{% else %}
+
+{% endif %}
+{% endblock %}

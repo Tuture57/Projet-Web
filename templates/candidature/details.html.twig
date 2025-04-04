@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la candidature{% endblock %}
+
+{% block body %}
+<div class="page-header mb-lg">
+    {# Bouton de retour adapté au rôle de l'utilisateur #}
+    <div class="back-button mb-md">
+        {% if is_granted('ROLE_STUDENT') %}
+            <a href="{{ path('candidature_index') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour à mes candidatures</a>
+        {% else %}
+            <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour à l'offre</a>
+        {% endif %}
+    </div>
+    <h1>Détails de la candidature</h1>
+</div>
+
+{# En-tête avec les infos principales et les actions possibles #}
+<div class="card mb-lg">
+    <div class="application-header d-flex justify-between align-center">
+        <div class="application-info">
+            <h2 class="mb-sm">{{ application.offer.title }}</h2>
+            <div class="application-meta d-flex align-center gap-md">
+                <span class="status-badge {{ application.status|lower|replace({' ': '-'}) }}">
+                    {% if application.status == 'Pending' %}En attente{% endif %}
+                    {% if application.status == 'Accepted' %}Acceptée{% endif %}
+                    {% if application.status == 'Rejected' %}Refusée{% endif %}
+                </span>
+                <span class="meta-item">
+                    <i class="fas fa-calendar-alt"></i> Candidature envoyée le {{ application.applicationDate|date('d/m/Y') }}
+                </span>
+            </div>
+        </div>
+        
+        {# Actions pour les entreprises, admins et pilotes #}
+        {% if is_granted('ROLE_COMPANY') or is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+            {% if application.status == 'Pending' %}
+                <div class="application-actions d-flex gap-sm">
+                    <a href="{{ path('candidature_accepter', {'id': application.id}) }}" class="btn btn-success btn-sm">
+                        <i class="fas fa-check"></i> Accepter
+                    </a>
+                    <a href="{{ path('candidature_refuser', {'id': application.id}) }}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-times"></i> Refuser
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        {# Option d'annulation pour l'étudiant #}
+        {% if is_granted('ROLE_STUDENT') and application.status == 'Pending' and app.user.id == application.user.id %}
+            <div class="application-actions">
+                <a href="{{ path('candidature_annuler', {'id': application.id}) }}" class="btn btn-danger btn-sm" 
+                   onclick="return confirm('Êtes-vous sûr de vouloir annuler cette candidature ?')">
+                    <i class="fas fa-ban"></i> Annuler ma candidature
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{# Informations sur le candidat et l'offre #}
+<div class="d-flex flex-wrap gap-lg mb-lg">
+    {# Carte avec les infos du candidat #}
+    <div class="flex-1">
+        <div class="card h-100">
+            <h3 class="mb-md"><i class="fas fa-user-graduate"></i> Informations sur le candidat</h3>
+            <div class="candidate-info d-flex flex-column gap-sm">
+                <div class="info-item d-flex justify-between">
+                    <span class="info-label font-weight-bold">Nom:</span>
+                    <span class="info-value">{{ application.user.firstName }} {{ application.user.lastName }}</span>
+                </div>
+                <div class="info-item d-flex justify-between">
+                    <span class="info-label font-weight-bold">Email:</span>
+                    <span class="info-value">{{ application.user.email }}</span>
+                </div>
+                
+                <div class="info-item d-flex justify-between mt-md">
+                    <span class="info-label font-weight-bold">CV:</span>
+                    {% if application.cv %}
+                        <a href="{{ asset('uploads/cv/' ~ application.cv) }}" class="btn btn-primary btn-sm" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Télécharger le CV
+                        </a>
+                    {% else %}
+                        <span class="text-muted">Aucun CV fourni</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# Carte avec les infos de l'offre #}
+    <div class="flex-1">
+        <div class="card h-100">
+            <h3 class="mb-md"><i class="fas fa-briefcase"></i> Informations sur l'offre</h3>
+            <div class="offer-info d-flex flex-column gap-sm">
+                <div class="info-item d-flex justify-between">
+                    <span class="info-label font-weight-bold">Entreprise:</span>
+                    <span class="info-value">{{ application.offer.company.name }}</span>
+                </div>
+                <div class="info-item d-flex justify-between">
+                    <span class="info-label font-weight-bold">Période:</span>
+                    <span class="info-value">Du {{ application.offer.startDate|date('d/m/Y') }} au {{ application.offer.endDate|date('d/m/Y') }}</span>
+                </div>
+                <div class="info-item d-flex justify-between">
+                    <span class="info-label font-weight-bold">Rémunération:</span>
+                    <span class="info-value">{{ application.offer.remuneration|number_format(2, ',', ' ') }} € / mois</span>
+                </div>
+                
+                {# Liste des compétences requises #}
+                {% if application.offer.skills|length > 0 %}
+                    <div class="info-item mt-md">
+                        <span class="info-label font-weight-bold d-block mb-sm">Compétences requises:</span>
+                        <div class="skills-list d-flex flex-wrap gap-xs">
+                            {% for skill in application.offer.skills %}
+                                <span class="badge badge-primary">{{ skill.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="info-item mt-md">
+                    <a href="{{ path('offre_show', {'id': application.offer.id}) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-eye"></i> Voir l'offre complète
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Lettre de motivation #}
+{% if application.coverLetter %}
+    <div class="card mb-lg">
+        <h3 class="mb-md"><i class="fas fa-envelope-open-text"></i> Lettre de motivation</h3>
+        <div class="cover-letter-content p-md bg-light rounded-md">
+            {{ application.coverLetter|nl2br }}
+        </div>
+    </div>
+{% endif %}
+
+{# Informations supplémentaires pour les candidatures acceptées #}
+{% if application.status == 'Accepted' %}
+    <div class="card alert-success border border-primary-light">
+        <h3 class="mb-md text-success"><i class="fas fa-check-circle"></i> Candidature acceptée</h3>
+        <div class="accepted-info">
+            <p class="mb-md">Cette candidature a été acceptée. Les coordonnées de contact sont maintenant disponibles pour les deux parties.</p>
+            
+            {# Affichage des coordonnées de l'entreprise pour l'étudiant #}
+            {% if is_granted('ROLE_STUDENT') %}
+                <div class="contact-info p-md bg-white rounded-md shadow-sm">
+                    <h4 class="mb-sm">Contact de l'entreprise:</h4>
+                    <ul class="p-md">
+                        <li class="mb-xs"><strong>Nom:</strong> {{ application.offer.company.name }}</li>
+                        <li class="mb-xs"><strong>Email:</strong> {{ application.offer.company.email }}</li>
+                        {% if application.offer.company.phone %}
+                            <li class="mb-xs"><strong>Téléphone:</strong> {{ application.offer.company.phone }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

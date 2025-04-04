@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle entreprise{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Nouvelle entreprise</h1>
+    </div>
+    
+    {# Formulaire de création d'entreprise #}
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        {% include 'partials/form/_company_form.html.twig' with {
+            'form': form,
+            'company': company,
+            'button_label': 'Créer'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

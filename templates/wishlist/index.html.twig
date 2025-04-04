@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes offres favorites{% endblock %}
+
+{% block body %}
+<div class="page-header mb-lg">
+    <h1>Mes offres favorites</h1>
+</div>
+
+<div class="wishlist-container">
+    {% if offers|length > 0 %}
+        {# Affichage des offres favorites si elles existent #}
+        <div class="item-list">
+            {% for offer in offers %}
+                <div class="offer-item">
+                    <div class="offer-header">
+                        <h3>{{ offer.title }}</h3>
+                        <span class="badge badge-primary">Stage</span>
+                    </div>
+                    
+                    {% if offer.company and offer.company.address %}
+                    <div class="offer-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ offer.company.address.city }}, {{ offer.company.address.country }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="offer-duration">
+                        <i class="far fa-clock"></i>
+                        <span>{{ offer.startDate|date('d/m/Y') }} - {{ offer.endDate|date('d/m/Y') }}</span>
+                    </div>
+                    
+                    <div class="offer-description">
+                        {# Tronque la description si trop longue #}
+                        {{ offer.description|length > 150 ? offer.description|slice(0, 150) ~ '...' : offer.description }}
+                    </div>
+                    
+                    <div class="offer-footer">
+                        <div class="company-name">
+                            {% if offer.company %}
+                                <i class="fas fa-building"></i> {{ offer.company.name }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-sm">
+                            <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Voir l'offre
+                            </a>
+                            
+                            {# Formulaire pour retirer des favoris #}
+                            <form action="{{ path('offre_toggle_wishlist', {'id': offer.id}) }}" method="post">
+                                <input type="hidden" name="token" value="{{ csrf_token('toggle-wishlist') }}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-heart-broken"></i> Retirer des favoris
+                                </button>
+                            </form>
+                            
+                            <a href="{{ path('candidature_postuler', {'id': offer.id}) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-paper-plane"></i> Postuler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {# Message si aucune offre favorite #}
+        <div class="no-offers text-center p-xl">
+            <i class="far fa-heart"></i>
+            <p class="mt-md mb-lg">Vous n'avez pas encore ajouté d'offres à vos favoris.</p>
+            <a href="{{ path('offre') }}" class="btn btn-primary">
+                Parcourir les offres disponibles
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

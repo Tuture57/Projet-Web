@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau pilote{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Nouveau pilote</h1>
+    </div>
+    
+    {# Formulaire de création de pilote #}
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_pilot_form.html.twig' with {
+            'form': form,
+            'pilot': pilot,
+            'button_label': 'Créer'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

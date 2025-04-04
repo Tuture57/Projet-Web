@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Étudiants{% endblock %}
+
+{% block body %}
+{# Barre de recherche pour les étudiants #}
+{% include 'partials/_search_bar.html.twig' with {
+    'route_name': 'etudiant',
+    'placeholder': 'Rechercher par nom, prénom ou email',
+    'active_filters': {
+        'school': app.request.query.get('school'),
+        'status': app.request.query.get('status'),
+        'sortBy': app.request.query.get('sortBy')
+    }
+} %}
+
+{# Panneau de filtres pour affiner la recherche #}
+{% include 'partials/_filter_panel.html.twig' with {
+    'route_name': 'etudiant',
+    'filters': [
+        {
+            'name': 'school',
+            'label': 'École',
+            'placeholder': 'Toutes les écoles',
+            'options': schools
+        },
+        {
+            'name': 'status',
+            'label': 'Statut de recherche',
+            'placeholder': 'Tous les statuts',
+            'options': statuses
+        }
+    ],
+    'sort_options': [
+        {'value': 'lastName_asc', 'label': 'Nom (A-Z)'},
+        {'value': 'lastName_desc', 'label': 'Nom (Z-A)'},
+        {'value': 'firstName_asc', 'label': 'Prénom (A-Z)'},
+        {'value': 'firstName_desc', 'label': 'Prénom (Z-A)'},
+        {'value': 'school_asc', 'label': 'École (A-Z)'},
+        {'value': 'school_desc', 'label': 'École (Z-A)'}
+    ]
+} %}
+
+{# En-tête des résultats avec titre et bouton d'action #}
+{% include 'partials/_search_results_header.html.twig' with {
+    'title': 'Étudiants',
+    'items': students,
+    'route_name': 'etudiant',
+    'entity_name_plural': 'étudiants',
+    'action_button': (is_granted('ROLE_PILOT') or is_granted('ROLE_ADMIN')) ? {
+        'route': 'etudiant_new',
+        'icon': 'fas fa-plus',
+        'label': 'Ajouter un étudiant'
+    } : null
+} %}
+
+{% if students|length > 0 %}
+    {# Liste des étudiants #}
+    <div class="item-list">
+        {% for item in students %}
+            <a href="{{ path('etudiant_show', {'id': item.id}) }}" class="item d-flex align-center">
+                {% if item.imageName %}
+                    <img src="{{ asset('uploads/students/' ~ item.imageName) }}" alt="{{ item.firstName }} {{ item.lastName }}" class="item-logo">
+                {% else %}
+                    <div class="item-logo-placeholder">
+                        {{ item.firstName|first|upper }}{{ item.lastName|first|upper }}
+                    </div>
+                {% endif %}
+                
+                <div class="item-details flex-1">
+                    <h2 class="m-0 mb-xs">{{ item.firstName }} {{ item.lastName }}</h2>
+                    
+                    {% if item.school %}
+                        <div class="item-location">
+                            <i class="fas fa-university"></i> {{ item.school }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="item-rating">
+                    {% if item.searchStatus %}
+                        <span class="status-badge 
+                            {% if item.searchStatus == 'En recherche' %}status-pending{% endif %}
+                            {% if item.searchStatus == 'Stage trouvé' %}status-accepted{% endif %}
+                            {% if item.searchStatus == 'Non disponible' %}status-rejected{% endif %}
+                        ">
+                            {{ item.searchStatus }}
+                        </span>
+                    {% else %}
+                        <span class="no-rating">Statut non défini</span>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    
+    {# Pagination #}
+    {{ knp_pagination_render(students, 'pagination/pagination.html.twig') }}
+{% else %}
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions Légales{% endblock %}
+
+{% block body %}
+<div class="card mb-lg">
+    <h1 class="mb-lg">Mentions Légales</h1>
+    
+    <div class="legal-content">
+        {# Section informations légales de l'entreprise #}
+        <h2 class="mb-md">1. Informations légales</h2>
+        <p class="mb-sm">Le site Alt est édité par :</p>
+        <ul class="mb-lg">
+            <li><strong>Raison sociale :</strong> Alt Internships SAS</li>
+            <li><strong>Forme juridique :</strong> Société par Actions Simplifiée (SAS)</li>
+            <li><strong>Capital social :</strong> 50 000 €</li>
+            <li><strong>Numéro SIRET :</strong> 123 456 789 00012</li>
+            <li><strong>Numéro d'immatriculation RCS :</strong> Paris B 123 456 789</li>
+            <li><strong>Siège social :</strong> 25 rue de la Paix, 75002 Paris, France</li>
+            <li><strong>Numéro de téléphone :</strong> +33 1 23 45 67 89</li>
+            <li><strong>Email :</strong> contact@alt-internships.fr</li>
+            <li><strong>Directeur de la publication :</strong> Jean Dupont, Président</li>
+        </ul>
+        
+        {# Informations sur l'hébergement #}
+        <h2 class="mb-md">2. Hébergement</h2>
+        <p class="mb-lg">Le site Alt est hébergé par :</p>
+        <ul class="mb-lg">
+            <li><strong>Raison sociale :</strong> OVH SAS</li>
+            <li><strong>Adresse :</strong> 2 rue Kellermann, 59100 Roubaix, France</li>
+            <li><strong>Téléphone :</strong> +33 9 72 10 10 10</li>
+            <li><strong>Site web :</strong> www.ovh.com</li>
+        </ul>
+        
+        {# Section propriété intellectuelle #}
+        <h2 class="mb-md">3. Propriété intellectuelle</h2>
+        <p class="mb-sm">L'ensemble des éléments constituant le site Alt (textes, graphismes, logiciels, photographies, images, vidéos, sons, plans, logos, marques, etc.) ainsi que le site lui-même, sont protégés par les lois en vigueur au titre de la propriété intellectuelle.</p>
+        <p class="mb-lg">Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques. La reproduction de tout ou partie de ce site sur quelque support que ce soit est formellement interdite sauf autorisation expresse du directeur de la publication.</p>
+        
+        {# Section protection des données #}
+        <h2 class="mb-md">4. Protection des données personnelles</h2>
+        <p class="mb-sm">Alt s'engage à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.</p>
+        <p class="mb-lg">Les informations collectées font l'objet d'un traitement informatique destiné à faciliter la mise en relation entre étudiants et entreprises pour des stages. Le responsable de traitement est Alt Internships SAS. Pour exercer vos droits d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition, veuillez nous contacter à l'adresse suivante : dpo@alt-internships.fr.</p>
+        
+        {# Section cookies #}
+        <h2 class="mb-md">5. Cookies</h2>
+        <p class="mb-lg">Le site utilise des cookies pour améliorer l'expérience utilisateur. En naviguant sur notre site, vous acceptez notre politique en matière de cookies. Vous pouvez configurer votre navigateur pour refuser les cookies, mais cela pourrait affecter certaines fonctionnalités du site.</p>
+        
+        {# Section juridiction #}
+        <h2 class="mb-md">6. Loi applicable et juridiction</h2>
+        <p class="mb-lg">Les présentes mentions légales sont soumises au droit français. En cas de litige, les tribunaux français seront seuls compétents.</p>
+        
+        <p class="text-muted font-italic">Dernière mise à jour : {{ "now"|date("d/m/Y") }}</p>
+    </div>
+</div>
+{% endblock %}

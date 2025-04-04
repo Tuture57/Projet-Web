@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ company.name }}{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Modifier {{ company.name }}</h1>
+        <a href="{{ path('entreprise_show', {'id': company.id}) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour au profil de l'entreprise
+        </a>
+    </div>
+    
+    {# Formulaire de modification d'entreprise #}
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        {% include 'partials/form/_company_form.html.twig' with {
+            'form': form,
+            'company': company,
+            'button_label': 'Mettre à jour'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

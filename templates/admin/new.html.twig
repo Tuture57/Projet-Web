@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel administrateur{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Nouvel administrateur</h1>
+    </div>
+    
+    {# Formulaire de création d'administrateur #}
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_admin_form.html.twig' with {
+            'form': form,
+            'admin': admin,
+            'button_label': 'Créer'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

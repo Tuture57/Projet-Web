@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel étudiant{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Nouvel étudiant</h1>
+    </div>
+    
+    {# Formulaire de création d'étudiant #}
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_student_form.html.twig' with {
+            'form': form,
+            'student': student,
+            'button_label': 'Créer'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

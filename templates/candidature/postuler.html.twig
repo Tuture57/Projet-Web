@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Postuler à l'offre{% endblock %}
+
+{% block body %}
+<div class="form-page">
+    {# En-tête du formulaire avec titre et bouton de retour #}
+    <div class="form-header mb-lg d-flex justify-between align-center">
+        <h1 class="m-0">Postuler à l'offre : {{ offer.title }}</h1>
+        <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour à l'offre
+        </a>
+    </div>
+
+    {# Résumé de l'offre dans une carte #}
+    <div class="card mb-lg">
+        <div class="offer-summary">
+            <h2 class="mb-md">Résumé de l'offre</h2>
+            <div class="offer-details d-flex flex-column gap-sm">
+                <div class="detail-item">
+                    <i class="fas fa-building"></i>
+                    <span>{{ offer.company.name }}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Du {{ offer.startDate|date('d/m/Y') }} au {{ offer.endDate|date('d/m/Y') }}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>{{ offer.remuneration|number_format(2, ',', ' ') }} € / mois</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Formulaire de candidature #}
+    <div class="card">
+        <h2 class="mb-lg">Formulaire de candidature</h2>
+        
+        {{ form_start(form, {'attr': {'class': 'application-form'}}) }}
+            <div class="form-section">
+                {# Champ pour la lettre de motivation #}
+                <div class="form-group">
+                    {{ form_label(form.coverLetter) }} <span class="text-danger">*</span>
+                    {{ form_widget(form.coverLetter, {'attr': {
+                        'required': true, 
+                        'minlength': '100', 
+                        'class': 'character-counter',
+                        'data-max': '10000'
+                    }}) }}
+                    <div class="character-count-container d-flex justify-between mt-xs">
+                        <div class="text-muted">Expliquez votre motivation, vos compétences pertinentes et pourquoi vous seriez un bon candidat pour ce stage.</div>
+                        <div class="character-count">0 / 10000 caractères</div>
+                    </div>
+                    {{ form_errors(form.coverLetter) }}
+                </div>
+
+                {# Champ pour le téléchargement du CV #}
+                <div class="form-group">
+                    {{ form_label(form.cvFile) }} <span class="text-danger">*</span>
+                    {{ form_widget(form.cvFile, {'attr': {'required': true, 'class': 'custom-file-input', 'accept': '.pdf,.doc,.docx'}}) }}
+                    {{ form_errors(form.cvFile) }}
+                    {{ form_help(form.cvFile) }}
+                    
+                    <div class="file-input-info mt-xs">
+                        <p><i class="fas fa-info-circle"></i> Veuillez télécharger votre CV au format PDF, DOC ou DOCX.</p>
+                    </div>
+                </div>
+            </div>
+
+            {# Boutons d'action du formulaire #}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Envoyer ma candidature
+                </button>
+                <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Compteur de caractères pour la lettre de motivation
+    const textareas = document.querySelectorAll('.character-counter');
+    
+    textareas.forEach(textarea => {
+        const maxLength = textarea.getAttribute('data-max') || 10000;
+        const countDisplay = textarea.parentElement.querySelector('.character-count');
+        
+        if (countDisplay) {
+            // Initialiser le compteur
+            updateCount(textarea, countDisplay, maxLength);
+            
+            // Mettre à jour le compteur quand l'utilisateur tape
+            textarea.addEventListener('input', function() {
+                updateCount(this, countDisplay, maxLength);
+            });
+        }
+    });
+    
+    // Fonction pour mettre à jour l'affichage du compteur de caractères
+    function updateCount(textarea, display, max) {
+        const currentLength = textarea.value.length;
+        display.textContent = `${currentLength} / ${max} caractères`;
+        
+        // Changer la couleur quand on approche de la limite
+        if (currentLength > max * 0.9) {
+            display.classList.add('text-danger');
+        } else if (currentLength > max * 0.7) {
+            display.classList.add('text-warning');
+            display.classList.remove('text-danger');
+        } else {
+            display.classList.remove('text-warning', 'text-danger');
+        }
+    }
+});
+</script>
+{% endblock %}

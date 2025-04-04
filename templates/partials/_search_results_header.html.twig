@@ -1,0 +1,30 @@
+<div class="header-with-actions d-flex justify-between align-center mb-lg">
+    <div class="flex-1">
+        <h1 class="m-0">
+            {{ title }}
+            {# Affiche le terme de recherche s'il existe #}
+            {% if app.request.query.get('search') %}
+                <span class="search-term text-muted ml-xs">- Résultats pour "{{ app.request.query.get('search') }}"</span>
+            {% endif %}
+        </h1>
+        {# Conteneur pour les filtres actifs #}
+        <div class="active-filters d-flex gap-sm flex-wrap mt-xs" id="activeFilters">
+        </div>
+    </div>
+    {# Bouton d'action optionnel #}
+    {% if action_button is defined and action_button is not null %}
+        <a href="{{ path(action_button.route) }}" class="btn btn-primary">
+            <i class="{{ action_button.icon }}"></i> {{ action_button.label }}
+        </a>
+    {% endif %}
+</div>
+
+{# Message si aucun résultat n'est trouvé pour la recherche #}
+{% if items|length == 0 and app.request.query.get('search') %}
+    <div class="no-results bg-light p-xl rounded-lg text-center mb-lg">
+        <p class="mb-md">Aucun résultat trouvé pour "{{ app.request.query.get('search') }}"</p>
+        <a href="{{ path(route_name) }}" class="btn btn-secondary">
+            <i class="fas fa-list"></i> Voir tous les {{ entity_name_plural }}
+        </a>
+    </div>
+{% endif %}

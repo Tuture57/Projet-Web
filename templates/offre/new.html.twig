@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une offre de stage{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    {{ form_start(form, {'attr': {'class': 'company-form'}}) }}
+        <div class="header-with-actions mb-lg d-flex justify-between align-center">
+            <h1 class="m-0">Créer une offre de stage</h1>
+            <a href="{{ path('offre') }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        {# Section d'informations générales #}
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Informations générales</h2>
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title, {'attr': {'required': true, 'minlength': '5', 'maxlength': '100'}}) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description, {'attr': {'required': true, 'minlength': '50'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+        </div>
+
+        {# Section des détails du stage #}
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Détails du stage</h2>
+            <div class="form-row mb-md">
+                <div class="form-group flex-1">
+                    {{ form_label(form.startDate) }}
+                    {{ form_widget(form.startDate, {'attr': {'required': true}}) }}
+                    {{ form_errors(form.startDate) }}
+                </div>
+
+                <div class="form-group flex-1">
+                    {{ form_label(form.endDate) }}
+                    {{ form_widget(form.endDate, {'attr': {'required': true}}) }}
+                    {{ form_errors(form.endDate) }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    {{ form_label(form.remuneration) }}
+                    {{ form_widget(form.remuneration, {'attr': {'required': true, 'min': '0', 'step': '0.01'}}) }}
+                    {{ form_errors(form.remuneration) }}
+                </div>
+
+                {% if form.company is defined %}
+                <div class="form-group flex-1">
+                    {{ form_label(form.company) }}
+                    {{ form_widget(form.company, {'attr': {'required': true}}) }}
+                    {{ form_errors(form.company) }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Section des compétences requises #}
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Compétences requises</h2>
+            <div class="form-group">
+                {{ form_label(form.skills) }}
+                {{ form_widget(form.skills) }}
+                {{ form_errors(form.skills) }}
+            </div>
+        </div>
+
+        {# Section du statut de l'offre #}
+        <div class="form-section mb-lg">
+            <h2 class="mb-md">Statut de l'offre</h2>
+            <div class="form-checkbox d-flex align-center gap-sm">
+                {{ form_widget(form.isActive) }}
+                {{ form_label(form.isActive) }}
+                {{ form_errors(form.isActive) }}
+            </div>
+        </div>
+
+        {# Boutons d'action du formulaire #}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+            <a href="{{ path('offre') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupération du sélecteur de compétences
+        const skillsSelect = document.getElementById('{{ form.skills.vars.id }}');
+        
+        if (skillsSelect) {
+            // Configuration du select multiple
+            skillsSelect.setAttribute('multiple', 'multiple');
+            skillsSelect.style.height = '200px';
+            skillsSelect.style.width = '100%';
+            skillsSelect.classList.add('custom-select');
+            
+            // Création de la barre de recherche
+            const searchContainer = document.createElement('div');
+            searchContainer.style.marginBottom = '10px';
+            
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Rechercher une compétence...';
+            searchInput.style.width = '100%';
+            searchInput.style.padding = '8px';
+            searchInput.style.borderRadius = '4px';
+            searchInput.style.border = '1px solid #ddd';
+            searchInput.classList.add('form-control');
+            
+            searchContainer.appendChild(searchInput);
+            
+            // Insertion de la barre de recherche
+            skillsSelect.parentNode.insertBefore(searchContainer, skillsSelect);
+            
+            // Fonction pour filtrer les options
+            function filterOptions() {
+                const searchTerm = searchInput.value.toLowerCase();
+                Array.from(skillsSelect.options).forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    option.style.display = optionText.includes(searchTerm) ? '' : 'none';
+                });
+            }
+            
+            // Écoute des événements de recherche
+            searchInput.addEventListener('input', filterOptions);
+            
+            // Application du style pour les options sélectionnées
+            const style = document.createElement('style');
+            style.textContent = `
+                #{{ form.skills.vars.id }} option:checked {
+                    background-color: #6B5B95 !important;
+                    color: white !important;
+                }
+                #{{ form.skills.vars.id }} option:hover {
+                    background-color: #E8EAF6 !important;
+                }
+                .form-control:focus {
+                    border-color: #6B5B95;
+                    box-shadow: 0 0 0 0.2rem rgba(107, 91, 149, 0.25);
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Empêcher la désélection lors du clic
+            skillsSelect.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                
+                const option = e.target;
+                if (option.tagName === 'OPTION') {
+                    option.selected = !option.selected;
+                    
+                    // Déclenchement d'un événement change
+                    const event = new Event('change');
+                    this.dispatchEvent(event);
+                }
+                
+                return false;
+            });
+        }
+    });
+</script>
+{% endblock %}

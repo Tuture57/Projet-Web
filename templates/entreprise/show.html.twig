@@ -1,0 +1,210 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ company.name }}{% endblock %}
+
+{% block body %}
+<div class="company-header mb-lg">
+    <div class="back-button mb-md">
+        <a href="{{ path('entreprise') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Retour aux entreprises</a>
+    </div>
+    
+    <div class="company-profile">
+        <div class="company-logo-container">
+            {% include 'partials/_image_display.html.twig' with {
+                'entity': company,
+                'upload_path': 'uploads/company',
+                'alt': company.name ~ ' logo',
+                'image_class': 'company-logo',
+                'placeholder_class': 'company-logo-placeholder'
+            } %}
+        </div>
+        
+        <div class="company-info">
+            <h1>{{ company.name }}</h1>
+            
+            {# Boutons d'administration pour les rôles admins et pilotes #}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PILOT') %}
+                <div class="admin-actions d-flex gap-sm">
+                    <a href="{{ path('entreprise_edit', {'id': company.id}) }}" class="btn btn-edit btn-sm">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete({{ company.id }})">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </div>
+                
+                <form id="delete-form-{{ company.id }}" action="{{ path('entreprise_delete', {'id': company.id}) }}" method="post" style="display: none;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ company.id) }}">
+                </form>
+            {% endif %}
+            
+            {# Affichage de la note moyenne de l'entreprise #}
+            {% if company.averageRating is not null and company.averageRating > 0 %}
+                <div class="company-rating d-flex align-center">
+                    <div class="stars">
+                        {% for i in 1..5 %}
+                            {% if i <= company.averageRating|round(0, 'floor') %}
+                                <i class="fas fa-star"></i>
+                            {% elseif i - 0.5 <= company.averageRating %}
+                                <i class="fas fa-star-half-alt"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-value">{{ company.averageRating|number_format(1) }}</span>
+                    <span class="rating-details">({{ company.ratings|length }} avis)</span>
+                </div>
+            {% else %}
+                <span class="no-rating">Non évalué</span>
+            {% endif %}
+            
+            <div class="company-details">
+                {% if company.address %}
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ company.address.city }}, {{ company.address.country }}</span>
+                    </div>
+                {% endif %}
+                
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ company.email }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ company.phone }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>{{ company.numberOfInterns }} stagiaires</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Section description de l'entreprise #}
+{% if company.description %}
+<div class="card mb-lg">
+    <h2 class="mb-md">À propos de {{ company.name }}</h2>
+    <div class="description-content">
+        {{ company.description|length > 150 ? company.description|slice(0, 150) ~ '...' : company.description }}
+    </div>
+</div>
+{% endif %}
+
+{# Formulaire de notation pour les utilisateurs connectés #}
+{% if app.user %}
+<div class="card mb-lg">
+    <div class="card-header mb-md">
+        <h2 class="m-0">Noter cette entreprise</h2>
+    </div>
+    <div class="card-body">
+        <form action="{{ path('entreprise_rate', {'id': company.id}) }}" method="post" id="rating-form">
+            <div class="rating-selector mb-lg">
+                <p class="mb-sm">Choisissez une note :</p>
+                <div class="star-rating">
+                    {% set userRating = null %}
+                    {% if app.user.ratings is defined %}
+                        {% for rating in app.user.ratings %}
+                            {% if rating.company and rating.company.id == company.id %}
+                                {% set userRating = rating.score %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% for i in 5..1 %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if userRating == i %}checked{% endif %} />
+                        <label for="star{{ i }}"><i class="{% if userRating >= i %}fas{% else %}far{% endif %} fa-star"></i></label>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Soumettre</button>
+        </form>
+        
+        {# Option de suppression de l'avis existant #}
+        {% if userRating %}
+        <div class="rating-actions mt-md">
+            <form action="{{ path('entreprise_remove_rating', {'id': company.id}) }}" method="post" id="remove-rating-form">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre avis ?')">
+                    <i class="fas fa-trash"></i> Supprimer mon avis
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="card mb-lg">
+    <div class="card-body text-center p-lg">
+        <p class="mb-md">Connectez-vous pour noter cette entreprise.</p>
+        <a href="{{ path('app_login') }}" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{# Liste des offres de l'entreprise #}
+<div class="card mb-lg">
+    <div class="d-flex justify-between align-center mb-lg">
+        <h2 class="m-0">Offres actuelles <span class="badge badge-primary ml-xs">{{ offers|length }}</span></h2>
+    </div>
+    
+    {% if offers|length > 0 %}
+        <div class="offer-list d-flex flex-column gap-md">
+            {% for offer in offers %}
+                <div class="offer-item">
+                    <div class="offer-header">
+                        <h3>{{ offer.title }}</h3>
+                        <span class="badge badge-primary">Stage</span>
+                    </div>
+                    
+                    {% if offer.company and offer.company.address %}
+                    <div class="offer-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ offer.company.address.city }}, {{ offer.company.address.country }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="offer-duration">
+                        <i class="far fa-clock"></i>
+                        <span>{{ offer.startDate|date('d/m/Y') }} - {{ offer.endDate|date('d/m/Y') }}</span>
+                    </div>
+                    
+                    <div class="offer-description">
+                        {{ offer.description|length > 150 ? offer.description|slice(0, 150) ~ '...' : offer.description }}
+                    </div>
+                    
+                    <div class="offer-footer">
+                        <span class="offer-date">Publiée le {{ offer.creationDate|date('d/m/Y') }}</span>
+                        <a href="{{ path('offre_show', {'id': offer.id}) }}" class="btn btn-primary btn-sm">
+                            Voir l'offre <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-offers text-center p-xl">
+            <i class="far fa-file-alt"></i>
+            <p class="mt-md">Aucune offre disponible pour le moment</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    // Fonction de confirmation de suppression d'entreprise
+    function confirmDelete(companyId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')) {
+            document.getElementById('delete-form-' + companyId).submit();
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ student.firstName }} {{ student.lastName }}{% endblock %}
+
+{% block body %}
+<div class="form-page card">
+    <div class="header-with-actions mb-lg">
+        <h1 class="m-0">Modifier {{ student.firstName }} {{ student.lastName }}</h1>
+        <a href="{{ path('etudiant_show', {'id': student.id}) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour au profil de l'étudiant
+        </a>
+    </div>
+    
+    {# Formulaire de modification d'un étudiant #}
+    {{ form_start(form, {'attr': {'class': 'user-form'}}) }}
+        {% include 'partials/form/_student_form.html.twig' with {
+            'form': form,
+            'student': student,
+            'button_label': 'Mettre à jour'
+        } %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

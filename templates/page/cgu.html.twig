@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions Générales d'Utilisation{% endblock %}
+
+{% block body %}
+<div class="card mb-lg">
+    <h1 class="mb-lg">Conditions Générales d'Utilisation</h1>
+    
+    <div class="legal-content">
+        <p class="mb-lg">Dernière mise à jour : {{ "now"|date("d/m/Y") }}</p>
+        
+        {# Section acceptation des conditions #}
+        <h2 class="mb-md">1. Acceptation des conditions</h2>
+        <p class="mb-lg">En accédant et en utilisant la plateforme Alt, vous acceptez d'être lié par les présentes Conditions Générales d'Utilisation (CGU). Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.</p>
+        
+        {# Description du service proposé #}
+        <h2 class="mb-md">2. Description du service</h2>
+        <p class="mb-lg">Alt est une plateforme de mise en relation entre étudiants et entreprises pour faciliter la recherche et la proposition de stages. Nous proposons aux étudiants de consulter des offres de stage, de postuler et de suivre leurs candidatures. Les entreprises peuvent publier des offres, gérer les candidatures et communiquer avec les candidats.</p>
+        
+        {# Conditions d'inscription à la plateforme #}
+        <h2 class="mb-md">3. Conditions d'inscription</h2>
+        <p class="mb-sm">Pour utiliser Alt, vous devez :</p>
+        <ul class="mb-lg">
+            <li>Avoir au moins 18 ans ou l'âge de la majorité légale dans votre pays</li>
+            <li>Fournir des informations exactes, complètes et à jour lors de l'inscription</li>
+            <li>Maintenir la confidentialité de votre mot de passe et de votre compte</li>
+            <li>Être responsable de toutes les activités qui se produisent sous votre compte</li>
+            <li>Pour les étudiants : être actuellement inscrit dans un établissement d'enseignement</li>
+            <li>Pour les entreprises : être légalement constituées et autorisées à proposer des stages</li>
+        </ul>
+        
+        {# Règles de comportement sur la plateforme #}
+        <h2 class="mb-md">4. Contenu et comportement</h2>
+        <p class="mb-sm">Vous acceptez de ne pas :</p>
+        <ul class="mb-lg">
+            <li>Publier du contenu illégal, trompeur, malveillant ou discriminatoire</li>
+            <li>Publier des offres de stage fictives ou trompeuses</li>
+            <li>Utiliser la plateforme pour envoyer des communications non sollicitées</li>
+            <li>Collecter des informations sur d'autres utilisateurs sans leur consentement</li>
+            <li>Tenter d'accéder au compte d'un autre utilisateur</li>
+            <li>Utiliser la plateforme d'une manière qui pourrait la désactiver, la surcharger ou l'endommager</li>
+        </ul>
+        
+        {# Section propriété intellectuelle #}
+        <h2 class="mb-md">5. Propriété intellectuelle</h2>
+        <p class="mb-lg">Tous les droits de propriété intellectuelle relatifs à la plateforme et son contenu (textes, images, logos, etc.) sont la propriété exclusive d'Alt Internships SAS ou de ses concédants de licence. Vous ne pouvez pas utiliser, copier ou modifier ce contenu sans autorisation préalable.</p>
+        
+        {# Section protection des données #}
+        <h2 class="mb-md">6. Protection des données personnelles</h2>
+        <p class="mb-lg">Nous collectons et traitons vos données personnelles conformément à notre politique de confidentialité et au Règlement Général sur la Protection des Données (RGPD). Nous utilisons ces données pour fournir et améliorer nos services, communiquer avec vous et respecter nos obligations légales.</p>
+        
+        {# Limitation de responsabilité #}
+        <h2 class="mb-md">7. Limitation de responsabilité</h2>
+        <p class="mb-lg">Alt n'est pas responsable de la qualité, de la sécurité ou de la légalité des offres de stage publiées, ni de la conduite des utilisateurs. Nous ne sommes pas partie aux accords entre étudiants et entreprises. Notre plateforme est fournie "telle quelle" sans garantie d'aucune sorte.</p>
+        
+        {# Modifications des CGU #}
+        <h2 class="mb-md">8. Modification des conditions</h2>
+        <p class="mb-lg">Nous nous réservons le droit de modifier ces CGU à tout moment. Les modifications entreront en vigueur dès leur publication. L'utilisation continue de la plateforme après ces modifications constitue votre acceptation des nouvelles conditions.</p>
+        
+        {# Section résiliation #}
+        <h2 class="mb-md">9. Résiliation</h2>
+        <p class="mb-lg">Nous pouvons suspendre ou résilier votre accès à la plateforme à tout moment, pour toute raison, sans préavis ni responsabilité. Vous pouvez également fermer votre compte à tout moment.</p>
+        
+        {# Loi applicable #}
+        <h2 class="mb-md">10. Loi applicable</h2>
+        <p class="mb-lg">Ces CGU sont régies par le droit français. Tout litige relatif à leur interprétation et/ou à leur exécution relève des tribunaux français.</p>
+        
+        {# Informations de contact #}
+        <h2 class="mb-md">11. Contact</h2>
+        <p class="mb-lg">Pour toute question concernant ces CGU, veuillez nous contacter à l'adresse : legal@alt-internships.fr</p>
+    </div>
+</div>
+{% endblock %}
